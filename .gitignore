@@ -66,3 +66,7 @@ crashlytics-build.properties
 
 
 UserSettings/Layouts/
+
+# Android build output
+apk/
+*_BurstDebugInformation_DoNotShip/
