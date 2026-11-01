@@ -10,8 +10,6 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
-# layout folder
-/[Uu]serSettings/[Ll]ayouts/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
@@ -65,7 +63,6 @@ sysinfo.txt
 crashlytics-build.properties
 
 
-UserSettings/Layouts/
 
 # Android build output
 apk/
