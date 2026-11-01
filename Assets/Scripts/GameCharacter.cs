@@ -20,6 +20,9 @@ public partial class GameCharacter : MonoBehaviour
     public float minPitch = -10f;
     public float maxPitch = 50f;
 
+    // Testing switch: when true the mouse does not move the camera at all (look code is kept, just skipped)
+    public bool staticCamera = true;
+
     private float pitch;
     private bool mouseLook;
     private int ignoreMouseFrames;
@@ -49,7 +52,7 @@ public partial class GameCharacter : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) SetCursorLocked(false);
         else if (Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
 
-        mouseLook = Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
+        mouseLook = !staticCamera && Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
         if (ignoreMouseFrames > 0) ignoreMouseFrames--;
     }
 
