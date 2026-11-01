@@ -16,15 +16,47 @@ public partial class GameCharacter : MonoBehaviour
     public float mouseSensitivity = 5.0f;
     public float speed = 10;
 
-    // Start is called before the first frame update
-    //void Start()
-    //{
+    // Camera look limits in degrees: negative = looking up, positive = looking down
+    public float minPitch = -10f;
+    public float maxPitch = 50f;
 
-    //}
+    private float pitch;
+    private bool mouseLook;
+    private int ignoreMouseFrames;
+
+    void Start()
+    {
+        // start from the camera's current pitch (-180..180) instead of Euler 0..360
+        pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, characterCam.localEulerAngles.x), minPitch, maxPitch);
+        SetCursorLocked(true);
+    }
+
+    // When the window regains focus Unity reports one huge mouse movement; skip a couple of frames.
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus) ignoreMouseFrames = 2;
+    }
+
+    private void SetCursorLocked(bool locked)
+    {
+        Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !locked;
+        ignoreMouseFrames = 2;
+    }
+
+    private void HandleCursor()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) SetCursorLocked(false);
+        else if (Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
+
+        mouseLook = Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
+        if (ignoreMouseFrames > 0) ignoreMouseFrames--;
+    }
 
     // Update is called once per frame
     void Update()
     {
+        HandleCursor();
         if (gravity) ApplyGravity();
         if (drive)
         {
@@ -54,40 +86,17 @@ public partial class GameCharacter : MonoBehaviour
     }
     private void Rotate()
     {
+        if (!mouseLook) return;
         float horz = inputManager.MouseX;
         characterLocation.transform.Rotate(0, horz * mouseSensitivity, 0); // good for rotate X
     }
-    private void FixUpsideDownCamera()
-    {
-        if (characterCam.localEulerAngles.z == 180)
-            characterCam.Rotate(0, -characterCam.localEulerAngles.y, 180);
-    }
     private void RotateY()
     {
-        // input
-        float vert = inputManager.MouseY;
-        // variable
-        float camY;
-        // easy function to set variable
-        void calY()
-        {
-            camY = (characterCam.localEulerAngles.x);
-        }
-        characterCam.Rotate(-(vert * mouseSensitivity), 0, 0); // good for cam vert movement
-        // limiting the movement
-        int topL = 0, topH = 350, bot = 50; // setting top and bottom limits
-        calY(); // update/declare camY
-        if (camY < topL && camY > topH) // check if to high
-        {
-            characterCam.Rotate((vert * mouseSensitivity), 0, 0);
-        }
-        calY(); // recalculate
-        if (camY > bot && camY < topH) // check if to low
-        {
-            characterCam.Rotate((vert * mouseSensitivity), 0, 0);
-        }
-        // fix the upside down camera issue; MIGHT BE A ISSUE LATER
-        FixUpsideDownCamera();
+        if (!mouseLook) return;
+
+        // moving the mouse up (positive) looks up (negative pitch)
+        pitch = Mathf.Clamp(pitch - inputManager.MouseY * mouseSensitivity, minPitch, maxPitch);
+        characterCam.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
 }
