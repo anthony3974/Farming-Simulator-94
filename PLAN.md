@@ -55,3 +55,12 @@ This is an initial plan from reading the code. It is not the plan from the earli
 ## Open questions
 - What was in the original plan from the earlier chats?
 - Is multiplayer or an AI helper planned, or is this single-player only?
+
+## Noted from play-testing (to do, not yet started)
+- **Crop type shows "TypeOat" / "TypeWheat".** `FieldController` sends `cropType.ToString()`, which is the enum name. Show "Oat" / "Wheat" / "Barley" instead (and a friendly status such as "Growing 2/3", "Ready to harvest").
+- **Field pop-up redesign.** Currently one semi-transparent white panel with 7 plain text objects and no labels. Wanted: dark-gray background, yellow border, coloured labels with white values (for example `Size:` label coloured, value white), possibly a split layout.
+- **Camera looks up and gets stuck after leaving and re-entering the Game window.** Causes found in `GameCharacter.RotateY`:
+  1. the cursor is never locked, so moving the mouse out of and back into the window gives a huge `Mouse Y` delta in one frame;
+  2. the upper limit check `camY < 0 && camY > 350` can never be true, so only the lower limit is enforced;
+  3. the clamp works on Euler angles, which wrap at 360.
+  Fix: keep a `pitch` float, clamp it (for example -80 to 80), lock the cursor on click and unlock on Escape, and ignore mouse input while unlocked or for the first frame after focus.

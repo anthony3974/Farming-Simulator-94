@@ -13,18 +13,26 @@ public class FieldView : MonoBehaviour
     public TMP_Text txtStatus;
     public TMP_Text txtFertilized;
 
+    // colour of the labels ("Size:", "Owner:", ...); the values stay white
+    private const string LabelColor = "#FFC933";
+
+    private static string Line(string label, string value)
+    {
+        return $"<color={LabelColor}>{label}:</color> {value}";
+    }
+
     public void UpdateUI(bool isPlayerInside, string name = "", string owner = "", string value = "", string size = "", string type = "", string status = "", string fertilized = "")
     {
         if (isPlayerInside)
         {
             gameObject.SetActive(isPlayerInside);
-            txtName.text = name;
-            txtOwner.text = owner;
-            txtValue.text = value;
-            txtSize.text = size;
-            txtType.text = type;
-            txtStatus.text = status;
-            txtFertilized.text = fertilized;
+            txtName.text = Line("Field", name);
+            txtOwner.text = Line("Owner", owner);
+            txtValue.text = Line("Value", value);
+            txtSize.text = Line("Size", size);
+            txtType.text = Line("Crop", type);
+            txtStatus.text = Line("Status", status);
+            txtFertilized.text = Line("Fertilized", fertilized);
         }
         else
         {

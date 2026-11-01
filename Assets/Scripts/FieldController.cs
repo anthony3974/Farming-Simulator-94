@@ -185,7 +185,46 @@ public class FieldController : MonoBehaviour
 
     private void RefreshUI()
     {
-        fieldView.UpdateUI(true, fieldName, ownerName, value.ToString(), size.ToString(), cropType.ToString(), crop.ToString(), fertStage.ToString());
+        fieldView.UpdateUI(true, fieldName, ownerName, value.ToString("N0"), size.ToString("N0"), CropName(), StatusName(), FertilizerName());
+    }
+
+    // Readable text for the pop-up (the enum names contain "Type", "Wheat1", ...)
+    private string CropName()
+    {
+        switch (cropType)
+        {
+            case Crops.TypeWheat: return "Wheat";
+            case Crops.TypeBarley: return "Barley";
+            case Crops.TypeOat: return "Oat";
+            default: return "None";
+        }
+    }
+
+    private string StatusName()
+    {
+        switch (crop)
+        {
+            case Crops.Dirt: return "Empty";
+            case Crops.Planted: return "Planted";
+            case Crops.Wheat1:
+            case Crops.Barley1:
+            case Crops.Oat1: return "Growing 1/3";
+            case Crops.Wheat2:
+            case Crops.Barley2:
+            case Crops.Oat2: return "Growing 2/3";
+            case Crops.Wheat3:
+            case Crops.Barley3:
+            case Crops.Oat3: return "Growing 3/3";
+            case Crops.WheatReady:
+            case Crops.BarleyReady:
+            case Crops.OatReady: return "Ready!";
+            default: return crop.ToString();
+        }
+    }
+
+    private string FertilizerName()
+    {
+        return fertStage == 0 ? "No" : $"Stage {fertStage}";
     }
 
     private void InputKey()
