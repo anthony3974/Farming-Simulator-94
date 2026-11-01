@@ -25,13 +25,14 @@ public class TouchControls : MonoBehaviour
         Canvas canvas = CreateCanvas();
 
         // steering, bottom-left
-        CreateButton(canvas, TouchButton.Left, "<", bottomRight: false, x: 60, y: 60, size: 220);
-        CreateButton(canvas, TouchButton.Right, ">", bottomRight: false, x: 320, y: 60, size: 220);
+        CreateButton(canvas, TouchButton.Left, "<", bottomRight: false, x: 60, y: 60, size: 150);
+        CreateButton(canvas, TouchButton.Right, ">", bottomRight: false, x: 240, y: 60, size: 150);
 
-        // driving + use, right side, kept above the field pop-up in the bottom-right corner
-        CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: 60, y: 330, size: 200);
-        CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: 290, y: 330, size: 200);
-        CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: 60, y: 560, size: 200);
+        // driving + use, right side, kept above the field pop-up (bottom-right, 260 px tall)
+        // and below the crop counters (top-right)
+        CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: 60, y: 310, size: 150);
+        CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: 240, y: 310, size: 150);
+        CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: 60, y: 490, size: 150);
     }
 
     private static void EnsureEventSystem()
