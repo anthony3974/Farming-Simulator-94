@@ -111,6 +111,15 @@ Phase 1 is done (see above). Still to do:
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
 
 ## Repo housekeeping
-- The `apk/` build folder is ignored (`*.apk`), but two small files under `apk/FarmSim943D_BurstDebugInformation_DoNotShip/` are tracked. Untrack them and ignore the folder (`git rm -r --cached apk/FarmSim943D_BurstDebugInformation_DoNotShip` and add `apk/` plus `*_BurstDebugInformation_DoNotShip/` to `.gitignore`).
-- **The repo is about 2 GB**, mostly large textures in `AllSkyFree` (Cold Sunset 76 MB, Deep Dusk 48 MB) and `TerrainSampleAssets` normal maps (about 34 MB each, 5+ files). GitHub works but warns above 1 GB. Options later: Git LFS for `*.tif`, `*.png`, `*.exr`, `*.hdr` (this needs a history rewrite to shrink existing size), or delete unused sky/terrain textures. Not urgent.
+- [x] Android build output is no longer tracked; `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
+- **UserSettings stays tracked** (editor layout and search settings are wanted on every machine). Note: `UserSettings/Layouts/` is listed in `.gitignore`, so the window-layout files are *not* actually in git. Remove that ignore line and commit the two `default-*.dwlt` files if the layout should sync between machines.
+- **`AllSkyFree` is left alone** (320 MB, to be dealt with later by the owner).
+- **Repo size is about 2.2 GB** (tracked files), nearly all of it unused texture packs:
+  - `Assets/TerrainSampleAssets/Textures` is 1.93 GB (1.3 GB terrain layer textures, 0.56 GB heightmaps, 0.05 GB detail textures) and **nothing in `GameScene` or the terrain data uses it** (the terrain has no terrain layers; the sky is the default skybox).
+  - `Assets/AllSkyFree` is 320 MB, also not used by the scene.
+  - Removing files only helps future clones if the history is rewritten too (`git filter-repo` plus a force push). Decide before doing anything. Git LFS only makes sense for large files we keep.
+- Ask before shrinking anything.
 
+## Next up
+- **2D version analysis:** the finished 2D game is on GitHub. Clone it into a separate folder (outside this project) and read it to build the feature checklist for the 3D version (what is sold, prices, upgrades, vehicles, buying land).
+- **Selling point:** a building is chosen as the sell point for now (to be confirmed which one). Needs a hitbox / trigger collider. Then Phase 3.
