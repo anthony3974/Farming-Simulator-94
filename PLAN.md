@@ -64,3 +64,41 @@ This is an initial plan from reading the code. It is not the plan from the earli
   2. the upper limit check `camY < 0 && camY > 350` can never be true, so only the lower limit is enforced;
   3. the clamp works on Euler angles, which wrap at 360.
   Fix: keep a `pitch` float, clamp it (for example -80 to 80), lock the cursor on click and unlock on Escape, and ignore mouse input while unlocked or for the first frame after focus.
+
+## Progress so far
+- [x] Baseline pushed and tagged (`baseline-2022.3.55`)
+- [x] Upgraded Unity 2022.3.55f1 to 6000.0.85f1; removed unused HDRP/URP packages (project uses the Built-in render pipeline)
+- [x] Phase 1 fixes: overlapping fields, stale pop-up, wasted growth timer, unused `using` lines
+- [x] "TypeOat" text bug fixed (pop-up now shows Wheat / Barley / Oat / None and "Growing n/3", "Ready!")
+- [x] Field pop-up redesign and matching crop-counter panel (dark background, yellow border, gold labels, white values)
+- [x] Camera fix: `pitch` float with clamp, cursor lock (Esc releases), mouse ignored on focus change
+- [x] `FieldController` refactor: enums + colour table, shared materials, editable `growTime` and `sizeDivisor`, missing-reference check
+- [x] Android controls phase 1: `InputManager` takes touch input, `TouchControls` builds on-screen buttons at runtime
+- [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
+
+## Android port (notes for revising later)
+Phase 1 is done (see above). Still to do:
+1. **Test the touch buttons in the editor.** Tick `Show Touch Controls` on `InputManager`, check layout, drive, and plant/harvest with USE. Adjust button sizes/positions from screenshots.
+2. **Make the existing UI scale.** The scene Canvas uses *Constant Pixel Size* (reference 800x600), so the counters and field pop-up will be the wrong size on phones. Switch it to *Scale With Screen Size* (for example 1920x1080, match 0.5) and re-check both panels.
+3. **Check the touch layout against the pop-up.** GAS / BRAKE / USE sit above the bottom-right pop-up (260 px tall + 20 px margin); verify on a real screen, including phones with a notch or rounded corners (safe area).
+4. **Touch look.** When `staticCamera` is turned off again, add a drag-to-look area (the cursor is not locked in touch mode, so `GameCharacter` mouse look does not apply on a phone).
+5. **Player Settings for Android:**
+   - minimum API level is 22 but Unity 6 needs 23 or higher; set it deliberately
+   - force landscape orientation
+   - IL2CPP + ARM64 for release builds
+   - set a proper package name and app name (the default is a placeholder)
+6. **Install Android Build Support** (Unity Hub > Installs > gear on 6000.0.85f1 > Add modules: Android Build Support, OpenJDK, Android SDK & NDK Tools). Close the editor while it installs.
+7. **Performance on a phone.** Likely cost: terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`. Test and lower the quality settings for the Android quality level if needed.
+8. **First device build.** Build an APK, install it on a phone (enable "install unknown apps"), then test controls, UI size and frame rate.
+9. **Sharing options.** APK only works for Android friends. A WebGL build on itch.io would be easier for friends with a PC (just a link), but has its own limits.
+10. **Optional later:** replace `<` `>` `GAS` `BRAKE` `USE` text labels with icons; haptic feedback; a pause/settings button.
+
+## Other things noticed (not yet scheduled)
+- `InputManager.Debug` hides `UnityEngine.Debug`; rename it.
+- `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
+- The field pop-up is visible at game start with placeholder text until the player first leaves a field. Hide it until needed.
+- `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
+- Package manager shows `com.unity.ide.vscode` as deprecated; remove it (Visual Studio Editor package already supports VS Code).
+- `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
+- No sell point, money or prices yet (Phase 3 above).
+
