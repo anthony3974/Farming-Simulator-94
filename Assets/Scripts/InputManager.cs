@@ -1,9 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>The on-screen buttons shown on touch devices.</summary>
+public enum TouchButton { Left, Right, Gas, Brake, Interact }
+
+/// <summary>
+/// Single place the game reads input from. Keyboard/mouse always work; on Android (or when
+/// <see cref="showTouchControls"/> is ticked in the editor) on-screen buttons feed the same values.
+/// </summary>
+// Run before every other script so they all see this frame's input.
+[DefaultExecutionOrder(-100)]
 public class InputManager : MonoBehaviour
 {
+    [Tooltip("Show the on-screen touch buttons in the editor too (they always show on Android/iOS).")]
+    public bool showTouchControls = false;
+
     private bool debug;
     private float horizontal;
     private float vertical;
@@ -15,28 +25,60 @@ public class InputManager : MonoBehaviour
     private bool down;
     private bool left;
 
+    // touch state, set by TouchControls
+    private bool touchLeft;
+    private bool touchRight;
+    private bool touchGas;
+    private bool touchBrake;
+    private bool touchInteractQueued;
+
+    /// <summary>True when the on-screen buttons are active.</summary>
+    public bool TouchControlsActive { get; private set; }
+
+    void Awake()
+    {
+        if (Application.isMobilePlatform || showTouchControls)
+        {
+            TouchControlsActive = true;
+            gameObject.AddComponent<TouchControls>();
+        }
+    }
+
+    /// <summary>Called by the on-screen buttons.</summary>
+    public void SetTouch(TouchButton button, bool pressed)
+    {
+        switch (button)
+        {
+            case TouchButton.Left: touchLeft = pressed; break;
+            case TouchButton.Right: touchRight = pressed; break;
+            case TouchButton.Gas: touchGas = pressed; break;
+            case TouchButton.Brake: touchBrake = pressed; break;
+            case TouchButton.Interact: if (pressed) touchInteractQueued = true; break;
+        }
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1))
             debug = !debug;
 
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        float touchH = (touchRight ? 1f : 0f) - (touchLeft ? 1f : 0f);
+        float touchV = (touchGas ? 1f : 0f) - (touchBrake ? 1f : 0f);
+
+        horizontal = Mathf.Clamp(Input.GetAxis("Horizontal") + touchH, -1f, 1f);
+        vertical = Mathf.Clamp(Input.GetAxis("Vertical") + touchV, -1f, 1f);
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
 
-        up = false; right = false; down = false; left = false;
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            up = true;
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            down = true;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            right = true;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            left = true;
+        up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || touchGas;
+        down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || touchBrake;
+        right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || touchRight;
+        left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || touchLeft;
 
-        interact = Input.GetKeyDown(KeyCode.E);
+        interact = Input.GetKeyDown(KeyCode.E) || touchInteractQueued;
+        touchInteractQueued = false;
     }
+
     public float Horizontal { get => horizontal; set => horizontal = value; }
     public float Vertical { get => vertical; set => vertical = value; }
     public float MouseX { get => mouseX; set => mouseX = value; }

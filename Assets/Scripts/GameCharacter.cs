@@ -31,7 +31,8 @@ public partial class GameCharacter : MonoBehaviour
     {
         // start from the camera's current pitch (-180..180) instead of Euler 0..360
         pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, characterCam.localEulerAngles.x), minPitch, maxPitch);
-        SetCursorLocked(true);
+        // with on-screen touch buttons the cursor must stay free so they can be clicked
+        SetCursorLocked(!inputManager.TouchControlsActive);
     }
 
     // When the window regains focus Unity reports one huge mouse movement; skip a couple of frames.
@@ -50,7 +51,7 @@ public partial class GameCharacter : MonoBehaviour
     private void HandleCursor()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) SetCursorLocked(false);
-        else if (Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
+        else if (!inputManager.TouchControlsActive && Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
 
         mouseLook = !staticCamera && Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
         if (ignoreMouseFrames > 0) ignoreMouseFrames--;
