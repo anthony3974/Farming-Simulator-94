@@ -1,6 +1,24 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-Unity 2022.3.55f1. Scene: `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`.
+> ## >>> NEXT UP: Wheat Selling Station (the first sell point) <<<
+>
+> **When asked "what's next?", the answer is this task.** It is the first step of Phase 3 (economy).
+>
+> **The building:** the **Wheat Selling Station**. In `GameScene` it is the object `Wheat Selling` (Hierarchy: Terrain > Buildings > Wheat Selling, position about 923, 13, 63). It already has a *solid* `BoxCollider` (not a trigger), so vehicles collide with it. **It has no trigger zone yet. The owner will create that trigger/collision area themselves.**
+>
+> **Plan for this task**
+> 1. *(Owner)* Add the trigger zone: a child object of the building with a `BoxCollider` ticked **Is Trigger**, placed and sized where the truck should stand to sell (in front of the building).
+> 2. *(Claude)* Add a `Building` script with a type (Sell, Buy, Paint, Dealer, Gas) and a trigger. It copies the pattern in `FieldController` (the `fieldsInside` list, so only the building the player is in reacts, and the E key / USE button run its action). The Wheat Selling Station is type Sell, crop Wheat.
+> 3. *(Claude)* Add money to `PlayerValues` and show it in the counters panel (same style as the other lines).
+> 4. *(Claude)* Sell action: pressing E / USE inside the trigger sells **all stored wheat** for money and empties the wheat counter. Price starts at the 2D game's value, **0.65 to 0.75 dollars per unit** (random each sale), exposed as Inspector fields. Show a short message like "Wheat Sold, Profit (xxx$)" (the 2D game showed one).
+> 5. *(Both)* Test: harvest wheat, drive to the station, press USE, check the money.
+>
+> **Open choice:** the 2D game had one station per crop (Wheat, Barley, Oat). For now only the Wheat Selling Station exists, so only wheat sells there. Barley and oats need their own stations (or one station that buys everything) later.
+>
+> **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
+
+
+Unity 6000.0.85f1 (upgraded from 2022.3.55f1). Scene: `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`.
 This is an initial plan from reading the code. It is not the plan from the earlier chats. Edit it as you remember more.
 
 ## Improvements needed
@@ -105,14 +123,14 @@ Phase 1 is done (see above). Still to do:
 
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
-- **Two existing buildings have no purpose yet** (`Assets/Prefabs`: `House`, `Garage EX`, plus `houseTop.fbx`). Candidates: one becomes the **sell point / market**; the other a **barn / storage** or a **shop** (buy fields, fertiliser). Decide when starting Phase 3.
+- **Sell point: the `Wheat Selling Station`** (object `Wheat Selling` in the scene; decided). The other unused buildings (`House`, `Garage EX`) can become the seed shop, fertilizer shop, dealer or paint shop later.
 - **Map:** the old 2D map is not being copied. The 3D map is being laid out fresh, so sell point placement is open.
-- **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. Open question: which features did the 2D version have (prices, upgrades, vehicles, buying land)? Use it as the feature checklist.
+- **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. Open question: which features did the 2D version have (prices, upgrades, vehicles, buying land)? Use it as the feature checklist (see the 2D analysis below).
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
 
 ## Repo housekeeping
-- [x] Android build output is no longer tracked; `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
-- **UserSettings stays tracked** (editor layout and search settings are wanted on every machine). Note: `UserSettings/Layouts/` is listed in `.gitignore`, so the window-layout files are *not* actually in git. Remove that ignore line and commit the two `default-*.dwlt` files if the layout should sync between machines.
+- [x] Android build output is no longer tracked (committed and pushed); `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
+- [x] **UserSettings stays tracked**, and `UserSettings/Layouts/` (the window layouts) is now tracked too, so the editor layout follows the repo.
 - **`AllSkyFree` is left alone** (320 MB, to be dealt with later by the owner).
 - **Repo size is about 2.2 GB** (tracked files), nearly all of it unused texture packs:
   - `Assets/TerrainSampleAssets/Textures` is 1.93 GB (1.3 GB terrain layer textures, 0.56 GB heightmaps, 0.05 GB detail textures) and **nothing in `GameScene` or the terrain data uses it** (the terrain has no terrain layers; the sky is the default skybox).
@@ -122,4 +140,43 @@ Phase 1 is done (see above). Still to do:
 
 ## Next up
 - **2D version analysis:** the finished 2D game is on GitHub. Clone it into a separate folder (outside this project) and read it to build the feature checklist for the 3D version (what is sold, prices, upgrades, vehicles, buying land).
-- **Selling point:** a building is chosen as the sell point for now (to be confirmed which one). Needs a hitbox / trigger collider. Then Phase 3.
+- **Selling point:** the `Wheat Selling Station` (see NEXT UP at the top). The owner creates the trigger zone; Claude writes the `Building` script and the money/sell logic.
+
+## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
+Source: `anthony3974/Sim94`. Everything below was read from the code, not played.
+
+**Goal of the 2D game:** buy many fields, take care of them, harvest, sell, and use the money to buy and paint vehicles.
+
+### What the 2D game has (checklist for the 3D version)
+| Feature | 2D behaviour |
+|---|---|
+| Crops | Wheat, Barley, Oats. Stages: Empty, Planted (about 30 s), Stage 1/2/3, Ready. Total 160 to 205 s. Stage 1 takes 40% of the random time, stage 2 35%, stage 3 25%. |
+| Fields | 13 fields, each with a name, an owner and a size (for example 3.35, 1.41, 1.92). You start owning field 19 by the house. The other 12 belong to random AI names and are planted automatically. |
+| Planting | Press the interact key in your own empty field, then J / K / L for wheat / barley / oats. Costs seeds (size x 450 to 550). |
+| Fertilizer | Two levels, one per growth stage. Costs compost (size x 250 to 350) each time. Each level adds +50% yield. |
+| Harvest | Yield = size x 550 to 650. The **harvester** adds another +60%. |
+| Selling crops | At one **selling station per crop** (Wheat, Barley, Oat). Pays 0.65 to 0.75 dollars per unit and empties your stock. |
+| Buying fields | Cost = size x 1,250. Selling a field back returns the same amount (no loss); an AI owner takes it and replants. |
+| Shops | **Sids Seed Shop** (1,000 seeds for 450 to 550 dollars), **Franks Fert Shop** (1,000 compost for 400 to 500), **Joes Paint Shop** (repaint a vehicle, 1,750), **Case Dealer** (buy van or harvester, 5,000 each), **Jerrys Gas Station** (diesel, 2 dollars per unit). |
+| Vehicles | Tractor (speed 8, start), Van (speed 10, fast travel and selling), Harvester (speed 6, +60% yield). Four colours each (red, yellow, blue, green). Keys 1 / 2 / 3 switch vehicle. |
+| Fuel | Diesel tank of 100. Moving uses 1 unit about every 200 movement ticks. At 0 it is game over. |
+| Start values | 5,000 dollars, 100 diesel, 2,000 seeds, 1,000 each of wheat / barley / oats, 1,000 compost. |
+| Save / load | Text files: fields, owners, resources, colours. Also saves on close. |
+| Start screen | Name entry (used for the house address), Start (new game) and Load. |
+
+### How the 2D game does "hitboxes"
+There is **no collision**; the README says so ("there is no collision yet"). The only "hitbox" is a rectangle for each field and building. Each frame, the game checks whether the player's centre point is inside one of the rectangles and sets `isIn`. Then the key press (interact, fertilize, harvest, buy, sell) does what that place's type says. Buildings have a `Business` type: Selling, Buying, Painting, Dealing, Gas.
+
+### What this means for the 3D version
+- The 3D fields already work the same way: a trigger collider plus `fieldsInside`. **Buildings should use the same pattern**: a `Building` component with a trigger collider and a type enum (Sell, Buy, Paint, Dealer, Gas). The `USE` button and E key then do what the building says.
+- **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
+- **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
+- **Not in the 3D game yet:** money, seeds, compost, diesel, field ownership, buying and selling fields, vehicle switching, painting, dealer, save/load, AI owners planting fields.
+- **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
+- **Suggested order for Phase 3:** (1) money in `PlayerValues` and the counters panel, (2) a `Building` trigger with a sell action on the chosen building, (3) seeds and a seed shop, (4) field buying, (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
+
+### Assets in the 2D repo that could be reused
+- `backround.png` (3500x3000), the full map. A layout reference only; the 3D map is built fresh.
+- Tractor, van and harvester sprites (four colours each) and `garage.png`, `tittle.png` (title screen).
+- `Read Me.txt`, `Saves/*.txt` (save format).
+
