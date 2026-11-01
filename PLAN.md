@@ -74,22 +74,24 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] Camera fix: `pitch` float with clamp, cursor lock (Esc releases), mouse ignored on focus change
 - [x] `FieldController` refactor: enums + colour table, shared materials, editable `growTime` and `sizeDivisor`, missing-reference check
 - [x] Android controls phase 1: `InputManager` takes touch input, `TouchControls` builds on-screen buttons at runtime
+- [x] Touch buttons tested in the editor, resized and re-laid out; main Canvas now *Scale With Screen Size* (1920x1080, match 0.5)
+- [x] Android Player Settings configured, first APK built and running (tested on an Android VM; not yet on a real phone)
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
 Phase 1 is done (see above). Still to do:
-1. **Test the touch buttons in the editor.** Tick `Show Touch Controls` on `InputManager`, check layout, drive, and plant/harvest with USE. Adjust button sizes/positions from screenshots.
-2. **Make the existing UI scale.** The scene Canvas uses *Constant Pixel Size* (reference 800x600), so the counters and field pop-up will be the wrong size on phones. Switch it to *Scale With Screen Size* (for example 1920x1080, match 0.5) and re-check both panels.
-3. **Check the touch layout against the pop-up.** GAS / BRAKE / USE sit above the bottom-right pop-up (260 px tall + 20 px margin); verify on a real screen, including phones with a notch or rounded corners (safe area).
+1. ~~**Test the touch buttons in the editor.**~~ DONE. Tick `Show Touch Controls` on `InputManager`, check layout, drive, and plant/harvest with USE. Adjust button sizes/positions from screenshots.
+2. ~~**Make the existing UI scale.**~~ DONE. The scene Canvas uses *Constant Pixel Size* (reference 800x600), so the counters and field pop-up will be the wrong size on phones. Switch it to *Scale With Screen Size* (for example 1920x1080, match 0.5) and re-check both panels.
+3. (Partly done: no overlaps at 1920x1080.) **Check the touch layout against the pop-up.** GAS / BRAKE / USE sit above the bottom-right pop-up (260 px tall + 20 px margin); verify on a real screen, including phones with a notch or rounded corners (safe area).
 4. **Touch look.** When `staticCamera` is turned off again, add a drag-to-look area (the cursor is not locked in touch mode, so `GameCharacter` mouse look does not apply on a phone).
-5. **Player Settings for Android:**
+5. ~~**Player Settings for Android:**~~ DONE (landscape, API 23+, IL2CPP, ARM64, package name).
    - minimum API level is 22 but Unity 6 needs 23 or higher; set it deliberately
    - force landscape orientation
    - IL2CPP + ARM64 for release builds
    - set a proper package name and app name (the default is a placeholder)
-6. **Install Android Build Support** (Unity Hub > Installs > gear on 6000.0.85f1 > Add modules: Android Build Support, OpenJDK, Android SDK & NDK Tools). Close the editor while it installs.
+6. ~~**Install Android Build Support**~~ DONE. (Unity Hub > Installs > gear on 6000.0.85f1 > Add modules: Android Build Support, OpenJDK, Android SDK & NDK Tools). Close the editor while it installs.
 7. **Performance on a phone.** Likely cost: terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`. Test and lower the quality settings for the Android quality level if needed.
-8. **First device build.** Build an APK, install it on a phone (enable "install unknown apps"), then test controls, UI size and frame rate.
+8. (APK built and runs on an Android VM; still to do on a real phone.) **First device build.** Build an APK, install it on a phone (enable "install unknown apps"), then test controls, UI size and frame rate.
 9. **Sharing options.** APK only works for Android friends. A WebGL build on itch.io would be easier for friends with a PC (just a link), but has its own limits.
 10. **Optional later:** replace `<` `>` `GAS` `BRAKE` `USE` text labels with icons; haptic feedback; a pause/settings button.
 
@@ -100,4 +102,15 @@ Phase 1 is done (see above). Still to do:
 - Package manager shows `com.unity.ide.vscode` as deprecated; remove it (Visual Studio Editor package already supports VS Code).
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
 - No sell point, money or prices yet (Phase 3 above).
+
+## Phase 3 design decisions (economy)
+- **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
+- **Two existing buildings have no purpose yet** (`Assets/Prefabs`: `House`, `Garage EX`, plus `houseTop.fbx`). Candidates: one becomes the **sell point / market**; the other a **barn / storage** or a **shop** (buy fields, fertiliser). Decide when starting Phase 3.
+- **Map:** the old 2D map is not being copied. The 3D map is being laid out fresh, so sell point placement is open.
+- **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. Open question: which features did the 2D version have (prices, upgrades, vehicles, buying land)? Use it as the feature checklist.
+- **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
+
+## Repo housekeeping
+- The `apk/` build folder is ignored (`*.apk`), but two small files under `apk/FarmSim943D_BurstDebugInformation_DoNotShip/` are tracked. Untrack them and ignore the folder (`git rm -r --cached apk/FarmSim943D_BurstDebugInformation_DoNotShip` and add `apk/` plus `*_BurstDebugInformation_DoNotShip/` to `.gitignore`).
+- **The repo is about 2 GB**, mostly large textures in `AllSkyFree` (Cold Sunset 76 MB, Deep Dusk 48 MB) and `TerrainSampleAssets` normal maps (about 34 MB each, 5+ files). GitHub works but warns above 1 GB. Options later: Git LFS for `*.tif`, `*.png`, `*.exr`, `*.hdr` (this needs a history rewrite to shrink existing size), or delete unused sky/terrain textures. Not urgent.
 
