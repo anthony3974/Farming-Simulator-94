@@ -96,7 +96,6 @@ Phase 1 is done (see above). Still to do:
 ## Other things noticed (not yet scheduled)
 - `InputManager.Debug` hides `UnityEngine.Debug`; rename it.
 - `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
-- The field pop-up is visible at game start with placeholder text until the player first leaves a field. Hide it until needed.
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
 - Package manager shows `com.unity.ide.vscode` as deprecated; remove it (Visual Studio Editor package already supports VS Code).
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
