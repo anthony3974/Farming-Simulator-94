@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// One farm field. Press the interact key inside it to plant a random crop, wait while it
+/// grows through three stages, then press again to harvest.
+/// </summary>
 public class FieldController : MonoBehaviour
 {
     public InputManager inputManager;
@@ -13,153 +16,89 @@ public class FieldController : MonoBehaviour
     public string fieldName;
     public string ownerName;
 
-    private MeshRenderer meshRenderer;
-    private Material dirt;
-    private Material planted;
-    private Material wheat1;
-    private Material wheat2;
-    private Material wheat3;
-    private Material wheatReady;
-    private Material barley1;
-    private Material barley2;
-    private Material barley3;
-    private Material barleyReady;
-    private Material oat1;
-    private Material oat2;
-    private Material oat3;
-    private Material oatReady;
-    private Material fert1;
-    private Material fert2;
+    [Tooltip("Seconds each growth step takes (planted > stage 1 > stage 2 > stage 3 > ready).")]
+    [SerializeField] private float growTime = 7f;
 
-    private float size;
-    private float value;
+    [Tooltip("Field area is scale.x * scale.z divided by this number.")]
+    [SerializeField] private float sizeDivisor = 0.043029259f;
 
-    private enum Crops
+    private enum CropType { None, Wheat, Barley, Oat }
+
+    private enum Stage { Empty, Planted, Growing1, Growing2, Growing3, Ready }
+
+    // Colours for each crop's three growth stages and its ready state.
+    // Index with (CropType - 1) and then (Stage - Growing1).
+    private static readonly Color32[][] CropColors =
     {
-        Dirt,
-        Planted,
-        TypeWheat,
-        Wheat1,
-        Wheat2,
-        Wheat3,
-        WheatReady,
-        TypeBarley,
-        Barley1,
-        Barley2,
-        Barley3,
-        BarleyReady,
-        TypeOat,
-        Oat1,
-        Oat2,
-        Oat3,
-        OatReady,
-        Fert1,
-        Fert2,
-    }
+        // Wheat
+        new Color32[] { new(195, 215, 50, 255), new(215, 195, 50, 255), new(235, 200, 5, 255), new(255, 190, 0, 255) },
+        // Barley
+        new Color32[] { new(170, 180, 35, 255), new(210, 195, 30, 255), new(190, 140, 30, 255), new(150, 110, 25, 255) },
+        // Oat
+        new Color32[] { new(195, 200, 35, 255), new(200, 180, 25, 255), new(215, 160, 50, 255), new(230, 130, 40, 255) },
+    };
 
-    private Crops crop;
-    private Crops cropType;
-    private byte fertStage;
+    private static readonly Color32 DirtColor = new(130, 90, 60, 255);
+    private static readonly Color32 PlantedColor = new(50, 230, 30, 255);
 
-    private bool isPlayerInside;
+    // Materials are shared between fields (one per base material + colour) instead of being created per field.
+    private static readonly Dictionary<(Material, int), Material> materialCache = new();
 
     // Fields the player is currently standing in. The last one entered is the active one,
     // so overlapping fields no longer all react to a single key press.
     private static readonly List<FieldController> fieldsInside = new();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetStatics() => fieldsInside.Clear();
+    private static void ResetStatics()
+    {
+        fieldsInside.Clear();
+        materialCache.Clear();
+    }
 
-    System.Random rn = new();
-    private int lastRandom = -1;
+    private MeshRenderer meshRenderer;
+    private Material baseMaterial;
 
-    // Start is called before the first frame update
+    private float size;
+    private float value;
+
+    private Stage stage = Stage.Empty;
+    private CropType cropType = CropType.None;
+    private CropType lastCropType = CropType.None;
+    private byte fertStage;
+
+    private readonly System.Random rn = new();
+
     void Start()
     {
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        if (inputManager == null || playerValues == null || fieldView == null)
+        {
+            Debug.LogError($"Field '{name}' is missing a reference (inputManager, playerValues or fieldView).", this);
+            enabled = false;
+            return;
+        }
 
-        Material currMat = meshRenderer.material;
+        meshRenderer = GetComponent<MeshRenderer>();
+        baseMaterial = meshRenderer.sharedMaterial;
 
-        dirt = new Material(currMat)
-        {
-            color = new Color32(130, 90, 60, 255)
-        };
-        planted = new Material(currMat)
-        {
-            color = new Color32(50, 230, 30, 255)
-        };
-        wheat1 = new Material(currMat)
-        {
-            color = new Color32(195, 215, 50, 255)
-        };
-        wheat2 = new Material(currMat)
-        {
-            color = new Color32(215, 195, 50, 255)
-        };
-        wheat3 = new Material(currMat)
-        {
-            color = new Color32(235, 200, 5, 255)
-        };
-        wheatReady = new Material(currMat)
-        {
-            color = new Color32(255, 190, 0, 255)
-        };
-        barley1 = new Material(currMat)
-        {
-            color = new Color32(170, 180, 35, 255)
-        };
-        barley2 = new Material(currMat)
-        {
-            color = new Color32(210, 195, 30, 255)
-        };
-        barley3 = new Material(currMat)
-        {
-            color = new Color32(190, 140, 30, 255)
-        };
-        barleyReady = new Material(currMat)
-        {
-            color = new Color32(150, 110, 25, 255)
-        };
-        oat1 = new Material(currMat)
-        {
-            color = new Color32(195, 200, 35, 255)
-        };
-        oat2 = new Material(currMat)
-        {
-            color = new Color32(200, 180, 25, 255)
-        };
-        oat3 = new Material(currMat)
-        {
-            color = new Color32(215, 160, 50, 255)
-        };
-        oatReady = new Material(currMat)
-        {
-            color = new Color32(230, 130, 40, 255)
-        };
-        fert1 = new Material(currMat)
-        {
-            color = new Color32(100, 185, 235, 255)
-        };
-        fert2 = new Material(currMat)
-        {
-            color = new Color32(80, 155, 235, 255)
-        };
-
-        size = gameObject.transform.localScale.x * gameObject.transform.localScale.z / 0.043029259f;
+        size = transform.localScale.x * transform.localScale.z / sizeDivisor;
         value = size * 0.5f;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        InputKey();
+        if (inputManager.Interact && IsActiveField())
+            Interact();
+    }
+
+    private bool IsActiveField()
+    {
+        return fieldsInside.Count > 0 && fieldsInside[^1] == this;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            isPlayerInside = true;
             fieldsInside.Remove(this);
             fieldsInside.Add(this);
             RefreshUI();
@@ -170,7 +109,6 @@ public class FieldController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            isPlayerInside = false;
             fieldsInside.Remove(this);
 
             if (fieldsInside.Count > 0) fieldsInside[^1].RefreshUI();
@@ -183,141 +121,106 @@ public class FieldController : MonoBehaviour
         fieldsInside.Remove(this);
     }
 
+    // ---- gameplay ----
+
+    private void Interact()
+    {
+        if (stage == Stage.Empty) Plant();
+        else if (stage == Stage.Ready) Harvest();
+        // otherwise the crop is still growing, nothing to do
+    }
+
+    private void Plant()
+    {
+        // pick a random crop, never the same one twice in a row on this field
+        CropType picked;
+        do picked = (CropType)(rn.Next(3) + 1);
+        while (picked == lastCropType);
+
+        cropType = picked;
+        lastCropType = picked;
+        stage = Stage.Planted;
+
+        StartCoroutine(Grow());
+        Changed();
+    }
+
+    private IEnumerator Grow()
+    {
+        yield return new WaitForSeconds(growTime);
+
+        stage++;
+        if (stage < Stage.Ready) StartCoroutine(Grow());
+        Changed();
+    }
+
+    private void Harvest()
+    {
+        int amount = Convert.ToInt32(size);
+
+        if (cropType == CropType.Wheat) playerValues.InWheat += amount;
+        else if (cropType == CropType.Barley) playerValues.InBarley += amount;
+        else if (cropType == CropType.Oat) playerValues.InOat += amount;
+
+        stage = Stage.Empty;
+        cropType = CropType.None;
+        Changed();
+    }
+
+    // ---- visuals ----
+
+    private void Changed()
+    {
+        meshRenderer.sharedMaterial = GetMaterial(CurrentColor());
+
+        // keep the pop-up in sync while the player is standing in the field
+        if (IsActiveField()) RefreshUI();
+    }
+
+    private Color32 CurrentColor()
+    {
+        if (stage == Stage.Empty) return DirtColor;
+        if (stage == Stage.Planted) return PlantedColor;
+        return CropColors[(int)cropType - 1][stage - Stage.Growing1];
+    }
+
+    private Material GetMaterial(Color32 color)
+    {
+        int key = (color.r << 16) | (color.g << 8) | color.b;
+
+        if (!materialCache.TryGetValue((baseMaterial, key), out Material mat) || mat == null)
+        {
+            mat = new Material(baseMaterial) { color = color };
+            materialCache[(baseMaterial, key)] = mat;
+        }
+        return mat;
+    }
+
+    // ---- pop-up text ----
+
     private void RefreshUI()
     {
         fieldView.UpdateUI(true, fieldName, ownerName, value.ToString("N0"), size.ToString("N0"), CropName(), StatusName(), FertilizerName());
     }
 
-    // Readable text for the pop-up (the enum names contain "Type", "Wheat1", ...)
     private string CropName()
     {
-        switch (cropType)
-        {
-            case Crops.TypeWheat: return "Wheat";
-            case Crops.TypeBarley: return "Barley";
-            case Crops.TypeOat: return "Oat";
-            default: return "None";
-        }
+        return cropType == CropType.None ? "None" : cropType.ToString();
     }
 
     private string StatusName()
     {
-        switch (crop)
+        switch (stage)
         {
-            case Crops.Dirt: return "Empty";
-            case Crops.Planted: return "Planted";
-            case Crops.Wheat1:
-            case Crops.Barley1:
-            case Crops.Oat1: return "Growing 1/3";
-            case Crops.Wheat2:
-            case Crops.Barley2:
-            case Crops.Oat2: return "Growing 2/3";
-            case Crops.Wheat3:
-            case Crops.Barley3:
-            case Crops.Oat3: return "Growing 3/3";
-            case Crops.WheatReady:
-            case Crops.BarleyReady:
-            case Crops.OatReady: return "Ready!";
-            default: return crop.ToString();
+            case Stage.Empty: return "Empty";
+            case Stage.Planted: return "Planted";
+            case Stage.Ready: return "Ready!";
+            default: return $"Growing {stage - Stage.Planted}/3";
         }
     }
 
     private string FertilizerName()
     {
         return fertStage == 0 ? "No" : $"Stage {fertStage}";
-    }
-
-    private void InputKey()
-    {
-        if (inputManager.Interact && fieldsInside.Count > 0 && fieldsInside[^1] == this)
-            FieldStageChanger();
-    }
-
-    private IEnumerator Grow(int time)
-    {
-        yield return new WaitForSeconds(time);
-        FieldStageChanger(true);
-    }
-
-    private void FieldStageChanger(bool isStageDone = false)
-    {
-        if (crop == Crops.Dirt)
-        {
-            crop = Crops.Planted;
-
-            int cropTypeRandom = rn.Next(3);
-            while (cropTypeRandom == lastRandom) cropTypeRandom = rn.Next(3);
-            lastRandom = cropTypeRandom;
-
-            if (cropTypeRandom == 0) cropType = Crops.TypeWheat;
-            else if (cropTypeRandom == 1) cropType = Crops.TypeBarley;
-            else if (cropTypeRandom == 2) cropType = Crops.TypeOat;
-
-            StartCoroutine(Grow(7));
-        }
-        else if (crop == Crops.Planted && isStageDone)
-        {
-            if (cropType == Crops.TypeWheat) crop = Crops.Wheat1;
-            else if (cropType == Crops.TypeBarley) crop = Crops.Barley1;
-            else if (cropType == Crops.TypeOat) crop = Crops.Oat1;
-            StartCoroutine(Grow(7));
-        }
-        else if ((crop == Crops.Wheat1 || crop == Crops.Barley1 || crop == Crops.Oat1) && isStageDone)
-        {
-            if (cropType == Crops.TypeWheat) crop = Crops.Wheat2;
-            else if (cropType == Crops.TypeBarley) crop = Crops.Barley2;
-            else if (cropType == Crops.TypeOat) crop = Crops.Oat2;
-            StartCoroutine(Grow(7));
-        }
-        else if ((crop == Crops.Wheat2 || crop == Crops.Barley2 || crop == Crops.Oat2) && isStageDone)
-        {
-            if (cropType == Crops.TypeWheat) crop = Crops.Wheat3;
-            else if (cropType == Crops.TypeBarley) crop = Crops.Barley3;
-            else if (cropType == Crops.TypeOat) crop = Crops.Oat3;
-            StartCoroutine(Grow(7));
-        }
-        else if ((crop == Crops.Wheat3 || crop == Crops.Barley3 || crop == Crops.Oat3) && isStageDone)
-        {
-            if (cropType == Crops.TypeWheat) crop = Crops.WheatReady;
-            else if (cropType == Crops.TypeBarley) crop = Crops.BarleyReady;
-            else if (cropType == Crops.TypeOat) crop = Crops.OatReady;
-        }
-        else if ((crop == Crops.WheatReady || crop == Crops.BarleyReady || crop == Crops.OatReady) && isStageDone == false)
-        {
-            crop = Crops.Dirt;
-            HarvestField();
-        }
-
-        SetColor(crop);
-
-        // keep the pop-up in sync while the player is standing in the field
-        if (fieldsInside.Count > 0 && fieldsInside[^1] == this) RefreshUI();
-    }
-
-    private void SetColor(Crops mats)
-    {
-        if (mats == Crops.Dirt) meshRenderer.material = dirt;
-        else if (mats == Crops.Planted) meshRenderer.material = planted;
-        else if (mats == Crops.Wheat1) meshRenderer.material = wheat1;
-        else if (mats == Crops.Wheat2) meshRenderer.material = wheat2;
-        else if (mats == Crops.Wheat3) meshRenderer.material = wheat3;
-        else if (mats == Crops.WheatReady) meshRenderer.material = wheatReady;
-        else if (mats == Crops.Barley1) meshRenderer.material = barley1;
-        else if (mats == Crops.Barley2) meshRenderer.material = barley2;
-        else if (mats == Crops.Barley3) meshRenderer.material = barley3;
-        else if (mats == Crops.BarleyReady) meshRenderer.material = barleyReady;
-        else if (mats == Crops.Oat1) meshRenderer.material = oat1;
-        else if (mats == Crops.Oat2) meshRenderer.material = oat2;
-        else if (mats == Crops.Oat3) meshRenderer.material = oat3;
-        else if (mats == Crops.OatReady) meshRenderer.material = oatReady;
-        else if (mats == Crops.Fert1) meshRenderer.material = fert1;
-        else if (mats == Crops.Fert2) meshRenderer.material = fert2;
-    }
-
-    private void HarvestField()
-    {
-        if (cropType == Crops.TypeWheat) playerValues.InWheat += Convert.ToInt32(size);
-        else if (cropType == Crops.TypeBarley) playerValues.InBarley += Convert.ToInt32(size);
-        else if (cropType == Crops.TypeOat) playerValues.InOat += Convert.ToInt32(size);
     }
 }
