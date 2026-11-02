@@ -40,10 +40,13 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 ## Roadmap
 The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, and buying and selling fields, and seeds with a seed shop. Planned, in order:
 
-1. Fuel and a gas station
-2. Fertilizer
-3. Dealer (van, harvester) and paint shop
-4. Save / load
+1. Seed shop improvements
+2. Map border
+3. Car dealer (van, harvester)
+4. Fuel and a gas station
+5. Fertilizer
+6. Paint shop
+7. Save / load
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 

@@ -1,12 +1,13 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Fuel and the Gas Station <<<
+> ## >>> NEXT UP: Seed Shop, then Map Border, then Car Dealer <<<
 >
-> **When asked "what's next?", the answer is this task** (the next step of Phase 3). Seeds and the seed shop are done and working (owner confirmed 2026-11-02); the owner is reviewing the economy numbers as they play.
+> **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, 2026-11-02):
+> 1. **Seed shop.** The `Seed Buying` station already works (E buys 10,000 seeds for about $5,000). The owner wants more done here, but the details are not written down yet. **Ask the owner what is wanted** (for example a proper building or model, a new spot, or different prices) before starting.
+> 2. **Map border.** Keep the player inside the map. Details not decided yet; ask the owner (invisible walls, a fence or hedge, or something else).
+> 3. **Car dealer.** The dealer building and buying vehicles. 2D reference (Case Dealer): van and harvester cost 5,000 each, tractor is the starting vehicle, keys 1 / 2 / 3 switch vehicle, the van is faster, the harvester adds 60% yield, four colours each. In 3D this needs more than one drivable vehicle, so see the `GameCharacter` / `GameCharacterCar` note under "Other things noticed" (split into a base controller plus a vehicle controller, add enter/exit).
 >
-> **2D values to start from** (keep them as Inspector fields): diesel tank of 100, moving uses 1 unit about every 200 movement ticks, at 0 it was game over, diesel costs 2 dollars per unit at Jerrys Gas Station. A `Building` of type Gas already exists in the enum. Decide what happens at 0 fuel in 3D (game over like 2D, or just stop the vehicle).
->
-> **Other options if you want something else first:** fertiliser and compost, dealer and paint shop (see Phase 3 below), or the dial/touch polish.
+> **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
 
@@ -60,7 +61,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
 - ~~Field buying and selling~~ DONE.
 - ~~Seeds and seed shop~~ DONE.
-- Next: fuel and gas station, fertiliser, dealer and paint shop (see the 2D checklist below).
+- Next (owner's order, 2026-11-02): seed shop work, map border, then the car dealer. After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
@@ -114,6 +115,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] **Counters layout:** Wheat / Barley / Oat are in a centred bar along the top of the screen, and the right-hand panel (`Canvas > Statistics`) shows Money, Seeds and Fertilizer (fertilizer shows 0 until fertiliser exists). Built with a one-off editor menu script that is kept only in the git history (`4b30c1c`).
 - [x] Seeds and seed shop: planting costs seeds, `Seed Buying` station sells them (E), start with $5,000 and 25,000 seeds; economy rebalanced (see Economy balance). Seeds are finished for now. The one-off setup tool (`AddSeedShop`) is kept only in the git history (`9cff3cd`)
 - [x] The player's field starts planted with wheat; growth time raised 35% (9.45 s per stage)
+- [x] Fields recreated and resized to a standard starting size by the owner (the scene now has 7 random fields). AI fields now total 11 of the 12 available names, so only one more fits before names run out (see "Field names run out").
 - [x] Help menu phase 1: controls list pop-up, H key and a touch HELP button (untested)
 - [x] Truck: the front tires turn with the steering button (visual only, `maxSteerAngle` 30 and `steerAnglePerSecond` 120 on `GameCharacter`; untested)
 - [x] Field layout: the home field (Tony) is split into four (2 x 2, even gaps). The two facing the house are the player's and the one nearest the house starts planted; the back two are AI. Six random AI fields were added on free ground (owner checked and saved the scene, 2026-11-02). The layout tool is kept only in git history (`bc4629e`).
@@ -187,7 +189,7 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - Ask before shrinking anything.
 
 ## Next up
-- **Fuel and the gas station** (see NEXT UP at the top).
+- **Seed shop, then the map border, then the car dealer** (see NEXT UP at the top). After those: fuel and the gas station, fertiliser, paint shop.
 - **2D version analysis:** done, see the section below.
 
 ## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
@@ -222,7 +224,7 @@ There is **no collision**; the README says so ("there is no collision yet"). The
 - **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop.
 - **Still not in the 3D game:** compost, diesel, vehicle switching, painting, dealer, save/load, AI owners planting fields.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
-- **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
+- **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; the owner now wants the dealer (7) before fuel (5) and fertilizer (6).
 
 ### Assets in the 2D repo that could be reused
 - `backround.png` (3500x3000), the full map. A layout reference only; the 3D map is built fresh.
