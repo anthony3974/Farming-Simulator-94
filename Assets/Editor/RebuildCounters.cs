@@ -92,6 +92,25 @@ public static class RebuildCounters
         Debug.Log("Counters rebuilt. Save the scene (Ctrl+S).");
     }
 
+    /// <summary>Gives the Seeds and Fertilizer labels the same gold as the other labels.</summary>
+    [MenuItem("Tools/Color Statistics Labels")]
+    public static void ColorLabels()
+    {
+        var labels = GameObject.Find("Statistics")?.transform.Find("Text");
+        if (labels == null) { Debug.LogError("Statistics > Text not found."); return; }
+
+        foreach (string name in new[] { "Seeds", "Fertilizer" })
+        {
+            var t = labels.Find(name)?.GetComponent<TMP_Text>();
+            if (t == null) continue;
+            Undo.RecordObject(t, "Color labels");
+            t.text = $"<color=#FFC933>{name}:</color>";
+            EditorUtility.SetDirty(t);
+            EditorSceneManager.MarkSceneDirty(t.gameObject.scene);
+        }
+        Debug.Log("Labels coloured. Save the scene (Ctrl+S).");
+    }
+
     private static void Move(Transform t, Transform newParent, float minWidth)
     {
         t.SetParent(newParent, false);
@@ -109,6 +128,7 @@ public static class RebuildCounters
     private static TMP_Text AddRow(Transform labels, Transform values, Transform labelSrc, Transform valueSrc,
         string name, string labelText, string valueText, int row)
     {
+        labelText = $"<color=#FFC933>{labelText}</color>"; // the existing labels get their gold from rich text
         var l = Object.Instantiate(labelSrc.gameObject, labels); l.name = name;
         var v = Object.Instantiate(valueSrc.gameObject, values); v.name = name;
         Undo.RegisterCreatedObjectUndo(l, "Rebuild counters");
