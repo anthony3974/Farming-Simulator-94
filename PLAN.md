@@ -153,9 +153,17 @@ Phase 1 is done (see above). Still to do:
 - [x] Android build output is no longer tracked (committed and pushed); `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
 - [x] **UserSettings stays tracked**, and `UserSettings/Layouts/` (the window layouts) is now tracked too, so the editor layout follows the repo.
 - [x] **`AllSkyFree` trimmed** from 321 MB to 37 MB (commit `ee878d3`). Kept 5 skyboxes, each with only its material and six face images: `Epic_BlueSunset` (the one in use), `Day_BlueSky_Nothing` (in the `Cartoon Base BlueSky` folder), `Cold Sunset`, `Cartoon Base NightSky` and `Epic_GloriousPink`. Still to decide: keep the pink sky or just use the regular blue one.
-- **Terrain textures are in use, so the terrain is on hold.** The terrain data (`Assets/Terrain/New Terrain.asset`, binary) uses `Grass_B_TerrainLayer`, which needs three textures in `Assets/TerrainSampleAssets/Textures/Terrain/`: `Grass_B_BaseColor.tif`, `Grass_B_Normal.tif` and `Grass_B_MaskMap.tif`. (An earlier version of this plan said nothing used the terrain textures. That was wrong.) The owner is happy with the terrain and road layout. A dirt texture may be added later, so **do not clean up `TerrainSampleAssets` yet**. The owner will pick the dirt layer first, then the rest can be trimmed to the layers in use.
-- **Repo size is still about 1.9 GB** (tracked files), nearly all of it the unused part of `Assets/TerrainSampleAssets/Textures` (1.93 GB: 1.3 GB terrain layer textures, 0.56 GB heightmaps, 0.05 GB detail textures).
-  - Removing files only helps future clones if the history is rewritten too (`git filter-repo` plus a force push). Decide before doing anything. Git LFS only makes sense for large files we keep.
+- [x] **Terrain texture cleanup (done in the working tree, commits `3d7c62f`, `061efda`, `3883848`).** Removed the sample heightmaps and detail textures and the layers Snow, Sand, Rock, Tidal_Pools, Soil_Rocks, Muddy, Heather, Grass_Dry, Black_Sand and Pebbles_A. `Assets/TerrainSampleAssets/Textures` went from 1.9 GB to 505 MB. Kept layers: `Grass_B` (in use on the terrain), `Grass_A`, `Grass_Moss` (possible extra grass), `Grass_Soil` (dirt path contender), `Pebbles_B` (dirt path contender) and `Pebbles_C` (likely gravel). Still to decide: which of these to keep for good, then trim the rest. The terrain data (`Assets/Terrain/New Terrain.asset`, binary) was checked for each removed layer before deleting.
+- **Git history cleanup (to do, later).** The files above are gone from the working folder, but the **`.git` folder is still about 2 GB**, because the old versions stay in the history. A fresh clone downloads all of it. Shrinking it means rewriting history, which is the risky part:
+  1. Finish choosing the terrain layers and skyboxes first, so the cleanup is done once.
+  2. Make a backup copy of the whole repo folder (or a `git clone --mirror`) before anything else.
+  3. Install `git-filter-repo` (not installed yet) and run it to drop the deleted paths from all commits: `Assets/TerrainSampleAssets/Textures/Heightmaps` and `Details`, the removed terrain layers, the removed `AllSkyFree` folders, and the old Android build output if it is still in the history.
+  4. Re-add the `origin` remote (`filter-repo` removes it) and **force push**. Every commit hash changes, so the commit numbers in this plan become out of date.
+  5. The tag `baseline-2022.3.55` must be re-created or re-pushed, because it points at an old commit.
+  6. Any other copy or clone of the repo (a laptop, a friend's copy) must be deleted and cloned again. GitHub may keep the old data for a while; contacting GitHub support removes it for sure.
+  7. Open the project in Unity afterwards and check that nothing is missing.
+  - Difficulty: moderate. It is a few commands, but it cannot be undone after the force push, so the backup matters. Not needed to keep working. Only worth it if clone size matters.
+  - Git LFS only makes sense for large files we keep.
 - Ask before shrinking anything.
 
 ## Next up
