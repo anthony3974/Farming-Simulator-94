@@ -147,10 +147,9 @@ Phase 1 is done (see above). Still to do:
 ## Repo housekeeping
 - [x] Android build output is no longer tracked (committed and pushed); `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
 - [x] **UserSettings stays tracked**, and `UserSettings/Layouts/` (the window layouts) is now tracked too, so the editor layout follows the repo.
-- **`AllSkyFree` is left alone** (320 MB, to be dealt with later by the owner).
-- **Repo size is about 2.2 GB** (tracked files), nearly all of it unused texture packs:
-  - `Assets/TerrainSampleAssets/Textures` is 1.93 GB (1.3 GB terrain layer textures, 0.56 GB heightmaps, 0.05 GB detail textures) and **nothing in `GameScene` or the terrain data uses it** (the terrain has no terrain layers; the sky is the default skybox).
-  - `Assets/AllSkyFree` is 320 MB, also not used by the scene.
+- [x] **`AllSkyFree` trimmed** from 321 MB to 37 MB (commit `ee878d3`). Kept 5 skyboxes, each with only its material and six face images: `Epic_BlueSunset` (the one in use), `Day_BlueSky_Nothing` (in the `Cartoon Base BlueSky` folder), `Cold Sunset`, `Cartoon Base NightSky` and `Epic_GloriousPink`. Still to decide: keep the pink sky or just use the regular blue one.
+- **Terrain textures are in use, so the terrain is on hold.** The terrain data (`Assets/Terrain/New Terrain.asset`, binary) uses `Grass_B_TerrainLayer`, which needs three textures in `Assets/TerrainSampleAssets/Textures/Terrain/`: `Grass_B_BaseColor.tif`, `Grass_B_Normal.tif` and `Grass_B_MaskMap.tif`. (An earlier version of this plan said nothing used the terrain textures. That was wrong.) The owner is happy with the terrain and road layout. A dirt texture may be added later, so **do not clean up `TerrainSampleAssets` yet**. The owner will pick the dirt layer first, then the rest can be trimmed to the layers in use.
+- **Repo size is still about 1.9 GB** (tracked files), nearly all of it the unused part of `Assets/TerrainSampleAssets/Textures` (1.93 GB: 1.3 GB terrain layer textures, 0.56 GB heightmaps, 0.05 GB detail textures).
   - Removing files only helps future clones if the history is rewritten too (`git filter-repo` plus a force push). Decide before doing anything. Git LFS only makes sense for large files we keep.
 - Ask before shrinking anything.
 
