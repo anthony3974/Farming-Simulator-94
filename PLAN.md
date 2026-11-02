@@ -43,13 +43,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 16. ~~**Selling and money.**~~ **DONE** (sell stations for wheat, barley and oat, money in the counters panel, field `value` is the buy price).
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
-19. **Help menu with the controls list.** A pop-up (opened with a key such as H or F1, plus a touch button) listing the controls:
-    - W / A / S / D or the arrow keys: drive
-    - E (USE on touch): plant, harvest, sell at a station
-    - B (BUY/SELL on touch): buy or sell the field you are in, press twice to confirm
-    - C (CROP on touch): choose the crop to plant
-    - Esc: release the mouse
-    - F1: debug toggle (currently does nothing)
+19. **Help menu with the controls list.** **Phase 1 DONE (code written, not yet tested in Unity):** `HelpMenu` is a pop-up with a controls table (action, keyboard, touch button) and nothing else (no tips). H opens and closes it; on touch a HELP button sits top-left and tapping the pop-up closes it. Keyboard-only controls (mouse look, Esc, F1) are hidden on phones. Check the HELP button position on a real phone. Phase 2 (if wanted): icons instead of text, a controller or gamepad layout.
 
 ## Initial plan (in order)
 
@@ -84,7 +78,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - **Sky:** keep the pink sky (`Epic_GloriousPink`) or just use the regular blue one. Kept now: `Epic_BlueSunset` (in use), `Day_BlueSky_Nothing`, `Cold Sunset`, `Epic_GloriousPink`.
 - **Terrain layers:** which of `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B` and `Pebbles_C` to keep for good (`Grass_B` is in use). Then trim the rest, then decide about the git history cleanup (see Repo housekeeping).
 - **Camera:** `staticCamera` is still ticked on `GameCharacter` for testing. Untick it to restore mouse look.
-- **Touch layout:** needs a pass (steering buttons overlap the speedometer; BUY/SELL and CROP buttons are in temporary spots). Test on Android again.
+- **Touch layout:** fixed from a phone screenshot (2026-11-02): steering arrows moved right of the speedometer, right-hand buttons shrunk to 130 px so CROP no longer covers the Money/Seeds/Fertilizer panel. Needs a re-check on the phone (not yet seen after the change).
 
 ## Open questions
 - What was in the original plan from the earlier chats?
@@ -120,6 +114,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] **Counters layout:** Wheat / Barley / Oat are in a centred bar along the top of the screen, and the right-hand panel (`Canvas > Statistics`) shows Money, Seeds and Fertilizer (fertilizer shows 0 until fertiliser exists). Built with a one-off editor menu script that is kept only in the git history (`4b30c1c`).
 - [x] Seeds and seed shop: planting costs seeds, `Seed Buying` station sells them (E), start with $5,000 and 25,000 seeds; economy rebalanced (see Economy balance). Seeds are finished for now. The one-off setup tool (`AddSeedShop`) is kept only in the git history (`9cff3cd`)
 - [x] The player's field starts planted with wheat; growth time raised 35% (9.45 s per stage)
+- [x] Help menu phase 1: controls list pop-up, H key and a touch HELP button (untested)
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
@@ -145,7 +140,7 @@ Phase 1 is done (see above). Still to do:
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
 - Fields are not planted or harvested by the AI owners (they only get a name and owner); decide later if they should.
-- The touch layout needs a pass: the steering buttons now overlap the speedometer, and the BUY/SELL and CROP buttons are in temporary spots. Test on Android again.
+- Touch layout: overlaps fixed (see Waiting on the owner), re-check on the phone. BUY/SELL and CROP positions are still not final.
 
 ## Economy balance (set 2026-11-02, owner may revise)
 In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not the 2D size of 1 to 3.5, so the 2D prices per size could not be used directly (planting the 23,300 field wanted 11 million seeds). All prices are now per unit of harvest, keeping the 2D ratios:
