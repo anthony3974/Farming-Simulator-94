@@ -1,11 +1,12 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Seed Shop, then Map Border, then Car Dealer <<<
+> ## >>> NEXT UP: Seed Shop, then Map Border, then Car Dealer, then Home Menu <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, 2026-11-02):
 > 1. **Seed shop.** The `Seed Buying` station already works (E buys 10,000 seeds for about $5,000). The owner wants more done here, but the details are not written down yet. **Ask the owner what is wanted** (for example a proper building or model, a new spot, or different prices) before starting.
 > 2. **Map border.** Keep the player inside the map. Details not decided yet; ask the owner (invisible walls, a fence or hedge, or something else).
 > 3. **Car dealer.** The dealer building and buying vehicles. 2D reference (Case Dealer): van and harvester cost 5,000 each, tractor is the starting vehicle, keys 1 / 2 / 3 switch vehicle, the van is faster, the harvester adds 60% yield, four colours each. In 3D this needs more than one drivable vehicle, so see the `GameCharacter` / `GameCharacterCar` note under "Other things noticed" (split into a base controller plus a vehicle controller, add enter/exit).
+> 4. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
@@ -61,7 +62,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
 - ~~Field buying and selling~~ DONE.
 - ~~Seeds and seed shop~~ DONE.
-- Next (owner's order, 2026-11-02): seed shop work, map border, then the car dealer. After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
+- Next (owner's order, 2026-11-02): seed shop work, map border, the car dealer, then the home menu (with a version number). After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
@@ -189,7 +190,7 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - Ask before shrinking anything.
 
 ## Next up
-- **Seed shop, then the map border, then the car dealer** (see NEXT UP at the top). After those: fuel and the gas station, fertiliser, paint shop.
+- **Seed shop, then the map border, then the car dealer, then the home menu with a version number** (see NEXT UP at the top). After those: fuel and the gas station, fertiliser, paint shop.
 - **2D version analysis:** done, see the section below.
 
 ## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
