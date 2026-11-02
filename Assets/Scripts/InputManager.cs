@@ -103,5 +103,5 @@ public class InputManager : MonoBehaviour
     public bool Right { get => right; set => right = value; }
     public bool Down { get => down; set => down = value; }
     public bool Left { get => left; set => left = value; }
-    public bool Debug { get => debug; set => debug = value; }
+    public bool DebugMode { get => debug; set => debug = value; }
 }
