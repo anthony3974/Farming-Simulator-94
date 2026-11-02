@@ -8,6 +8,16 @@ public partial class GameCharacter
     public float accelerationMultiplier = 10;
     public float steeringMultiplier = 10;
 
+    [Header("Front wheel steering (visual)")]
+    [Tooltip("How far the front tires turn at full steering, in degrees.")]
+    public float maxSteerAngle = 30f;
+    [Tooltip("How fast the tires turn, in degrees per second.")]
+    public float steerAnglePerSecond = 120f;
+
+    // each front tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
+    private readonly System.Collections.Generic.List<Transform> frontWheelPivots = new();
+    private float steerAngle;
+
     private float acceleration = 0;
     private const float accAmt = 0.02f;
     private const float speedConverter = 0.06f;
@@ -31,6 +41,62 @@ public partial class GameCharacter
         else
             Debug.Log(direction.ToString() + "MESSAGE: " + mess);
     }
+    /// <summary>
+    /// Finds the two front tires (the FlTire / FrTire objects furthest forward on the truck) and puts each
+    /// on a pivot at its centre. Looks at positions, not parent names, because the scene renames the axles.
+    /// </summary>
+    private void SetupFrontWheels()
+    {
+        var tires = new System.Collections.Generic.List<Transform>();
+        foreach (var t in characterLocation.GetComponentsInChildren<Transform>(true))
+            if (t.name == "FlTire" || t.name == "FrTire") tires.Add(t);
+
+        if (tires.Count == 0)
+        {
+            Debug.LogWarning("No FlTire / FrTire found under the truck, front wheels will not steer.", this);
+            return;
+        }
+
+        // forward is +Z in the truck's own space, so the front tires have the largest local Z
+        float frontZ = float.MinValue;
+        foreach (var t in tires) frontZ = Mathf.Max(frontZ, characterLocation.InverseTransformPoint(t.position).z);
+
+        foreach (var tire in tires)
+        {
+            if (characterLocation.InverseTransformPoint(tire.position).z < frontZ - 0.5f) continue;
+
+            Vector3 worldPos = tire.position;
+            Quaternion worldRot = tire.rotation;
+            Vector3 worldScale = tire.lossyScale;
+
+            var pivot = new GameObject(tire.name + " Pivot").transform;
+            pivot.SetParent(characterLocation, false);
+            pivot.position = worldPos;
+            pivot.rotation = characterLocation.rotation;
+
+            tire.SetParent(pivot, false);
+            tire.position = worldPos;
+            tire.rotation = worldRot;
+            var ps = pivot.lossyScale;
+            tire.localScale = new Vector3(worldScale.x / ps.x, worldScale.y / ps.y, worldScale.z / ps.z);
+
+            frontWheelPivots.Add(pivot);
+        }
+    }
+
+    /// <summary>Turns the front tires toward the steering button (A / D, arrows or the on-screen buttons).</summary>
+    private void SteerFrontWheels(Direction direction)
+    {
+        if (frontWheelPivots.Count == 0) return;
+
+        float target = ((direction.Right ? 1f : 0f) - (direction.Left ? 1f : 0f)) * maxSteerAngle;
+        steerAngle = Mathf.MoveTowards(steerAngle, target, steerAnglePerSecond * Time.deltaTime);
+
+        // positive Y turns right, the same direction SteeringManager rotates the truck for Right
+        var rot = Quaternion.Euler(0f, steerAngle, 0f);
+        foreach (var pivot in frontWheelPivots) pivot.localRotation = rot;
+    }
+
     private void Accelerate()
     {
         acceleration += accAmt * accelerationMultiplier * Time.deltaTime;
@@ -110,6 +176,7 @@ public partial class GameCharacter
         AccelerationManager(direction);
         // handles the steering of the vehicle
         SteeringManager(direction);
+        SteerFrontWheels(direction);
 
         // applies the movement
         Vector3 move = acceleration * speed * characterLocation.transform.forward;
