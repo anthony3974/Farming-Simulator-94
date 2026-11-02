@@ -36,8 +36,7 @@ public class Building : MonoBehaviour
 
     private static readonly List<Building> buildingsInside = new();
     private static ScreenPrompt prompt;
-    private string flashText;
-    private float flashUntil;
+    private string promptText; // built once per visit, not every frame
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics() { buildingsInside.Clear(); prompt = null; }
@@ -65,7 +64,12 @@ public class Building : MonoBehaviour
     private void UpdatePrompt()
     {
         if (prompt == null || buildingsInside.Count == 0 || buildingsInside[^1] != this) return;
-        prompt.Show(Time.time < flashUntil ? flashText : PromptText());
+
+        // a message (from here or from a field) is on screen: leave it alone until it ends
+        if (prompt.IsFlashing) return;
+
+        promptText ??= PromptText();
+        if (!prompt.Visible || prompt.CurrentText != promptText) prompt.Show(promptText);
     }
 
     private string PromptText()
@@ -84,20 +88,26 @@ public class Building : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         buildingsInside.Remove(this);
         buildingsInside.Add(this);
-        flashUntil = 0;
+        promptText = null;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
         buildingsInside.Remove(this);
-        if (buildingsInside.Count == 0 && prompt != null) prompt.Hide();
+        HideIfLast();
     }
 
     private void OnDisable()
     {
         buildingsInside.Remove(this);
-        if (buildingsInside.Count == 0 && prompt != null) prompt.Hide();
+        HideIfLast();
+    }
+
+    // leaving the last zone hides the box, but never cuts off a message that is still showing
+    private void HideIfLast()
+    {
+        if (buildingsInside.Count == 0 && prompt != null && !prompt.IsFlashing) prompt.Hide();
     }
 
     private void Interact()
@@ -148,8 +158,7 @@ public class Building : MonoBehaviour
     private void ShowMessage(string text)
     {
         Debug.Log(text);
-        flashText = text;
-        flashUntil = Time.time + messageSeconds;
+        if (prompt != null) prompt.Flash(text, messageSeconds);
         if (messageText == null) return;
         StopAllCoroutines();
         StartCoroutine(MessageRoutine(text));
@@ -177,6 +186,12 @@ public class ScreenPrompt : MonoBehaviour
     {
         get { if (instance == null) instance = Create(); return instance; }
     }
+
+    /// <summary>True while a timed message from <see cref="Flash"/> is showing.</summary>
+    public bool IsFlashing => flashUntil > 0;
+
+    public bool Visible => panel.activeSelf;
+    public string CurrentText => label.text;
 
     /// <summary>Show a message for a few seconds, then hide.</summary>
     public void Flash(string text, float seconds)

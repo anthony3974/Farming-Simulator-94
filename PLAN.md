@@ -154,6 +154,14 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 - **Time:** growth was 4 x 7 s = 28 s; the 2D game took 160 to 205 s. It is now 4 x 9.45 s (7 s + 35%) = 37.8 s per crop, set by `secondsPerStage` on `FieldController` (renamed from `growTime`, so the old 7 saved in the scene no longer applies). Still about 4.5x the 2D pace, so raise it further if it feels too fast.
 - **Starting field:** the player's own field ("Tony") starts the game planted with wheat, in the Planted stage (`startCrop` on `FieldController`; None = empty). The owner had to sell it to afford the first planting, so it now starts growing for free.
 
+## Code review notes (`/code-review high Assets/Scripts`, 2026-11-02)
+Fixed (untested): stale B-key confirmation, building prompt overwriting other messages and rebuilding every frame, speedometer text rebuilt every frame, seed price rerolled on every E press, touch button null checks. Left for later (minor, nothing triggers them today):
+- One E press can act on a field and a building if their trigger zones overlap (each keeps its own "last entered" list).
+- `GameCharacter.Move()` (walking mode, `drive` off) strafes along `transform.right` instead of `characterLocation.transform.right`.
+- `PlayerValues` has no null checks on the wheat, barley and oat labels.
+- A field's growth coroutine stops if the field is ever disabled and nothing restarts it.
+- A scene-set field name that is also in the AI name list is not reserved, so an AI field could get the same name.
+
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
 - **Sell point: the `Wheat Selling Station`** (object `Wheat Selling` in the scene; decided). The other unused buildings (`House`, `Garage EX`) can become the seed shop, fertilizer shop, dealer or paint shop later.

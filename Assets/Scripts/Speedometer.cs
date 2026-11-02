@@ -37,6 +37,7 @@ public class Speedometer : MonoBehaviour
     private RectTransform needle;
     private Vector3 lastPos;
     private float smoothed;
+    private int lastShown = -1;
 
     void Start()
     {
@@ -56,7 +57,13 @@ public class Speedometer : MonoBehaviour
         float kmh = delta.magnitude / Time.deltaTime / maxWorldSpeed * maxDisplayKmh;
         smoothed = Mathf.Lerp(smoothed, kmh, 10f * Time.deltaTime);
 
-        numberLabel.text = $"{smoothed:0}\n<size=40%><color=#FFC933>km/h</color></size>";
+        // only rebuild the text when the shown number changes (it rebuilds the TextMeshPro mesh)
+        int shown = Mathf.RoundToInt(smoothed);
+        if (shown != lastShown)
+        {
+            lastShown = shown;
+            numberLabel.text = $"{shown}\n<size=40%><color=#FFC933>km/h</color></size>";
+        }
 
         float t = Mathf.Clamp01(smoothed / dialMaxKmh);
         needle.localRotation = Quaternion.Euler(0, 0, SweepDegrees / 2f - t * SweepDegrees);

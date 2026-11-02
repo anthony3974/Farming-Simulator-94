@@ -141,8 +141,9 @@ public class TouchControls : MonoBehaviour
 
         private void Set(bool pressed)
         {
-            input.SetTouch(button, pressed);
-            fill.color = pressed ? FillPressed : Fill;
+            // both can already be destroyed when the scene shuts down
+            if (input != null) input.SetTouch(button, pressed);
+            if (fill != null) fill.color = pressed ? FillPressed : Fill;
         }
     }
 }

@@ -139,14 +139,15 @@ public class FieldController : MonoBehaviour
     {
         if (!IsActiveField()) return;
 
+        // drop an old "press B again" before reading the key, so a stale confirmation can never be used
+        if (confirmTrade && Time.time > confirmUntil)
+            confirmTrade = false;
+
         if (inputManager.Interact && IsPlayerField)
             Interact();
 
         if (inputManager.Trade)
             Trade();
-
-        if (confirmTrade && Time.time > confirmUntil)
-            confirmTrade = false;
     }
 
     [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
@@ -155,6 +156,7 @@ public class FieldController : MonoBehaviour
     private bool IsPlayerField => ownerName == playerName;
 
     // B key: first press asks, second press (within a few seconds) confirms.
+    private int seedQuote;
     private bool confirmTrade;
     private float confirmUntil;
     private const float ConfirmSeconds = 4f;
@@ -223,6 +225,7 @@ public class FieldController : MonoBehaviour
         {
             fieldsInside.Remove(this);
             confirmTrade = false;
+            seedQuote = 0;
 
             if (fieldsInside.Count > 0) fieldsInside[^1].RefreshUI();
             else fieldView.UpdateUI(false);
@@ -245,13 +248,17 @@ public class FieldController : MonoBehaviour
 
     private void Plant()
     {
-        int seedCost = Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield));
-        if (playerValues.Seeds < seedCost)
+        // the price is rolled once and kept until you plant or leave the field, so a failed attempt
+        // shows the same number every time (and a tiny field can never plant for free)
+        if (seedQuote <= 0)
+            seedQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield)));
+        if (playerValues.Seeds < seedQuote)
         {
-            ScreenPrompt.Instance.Flash($"Not enough seeds. Planting {fieldName} needs {seedCost:N0}, you have {playerValues.Seeds:N0}", 3f);
+            ScreenPrompt.Instance.Flash($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}, you have {playerValues.Seeds:N0}", 3f);
             return;
         }
-        playerValues.Seeds -= seedCost;
+        playerValues.Seeds -= seedQuote;
+        seedQuote = 0;
 
         // plant whatever the player picked with the C key
         cropType = playerValues.SelectedCrop;
