@@ -9,6 +9,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 - Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
 - Sell stations for each crop; you have to drive there to sell
 - Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
+- Truck front wheels turn with the steering buttons
 - Help menu with the controls list (H, or the HELP button on touch)
 - Planting costs seeds, and a seed shop sells more. Your own field starts planted with wheat
 - Android support with on-screen touch controls (APK builds and runs on an Android VM)
