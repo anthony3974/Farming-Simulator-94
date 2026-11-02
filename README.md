@@ -1,12 +1,15 @@
 # Farming Simulator 94
 
-A small first-person farming game built in Unity. Walk or drive around the map, plant crops in fields, wait for them to grow, and harvest them. It is a 3D remake of my finished 2D game, [Sim94](https://github.com/anthony3974/Sim94).
+A small first-person farming game built in Unity. Walk or drive around the map, buy fields, plant crops, wait for them to grow, harvest them, and sell the harvest for money. It is a 3D remake of my finished 2D game, [Sim94](https://github.com/anthony3974/Sim94).
 
 ## Features
 - First-person character movement and a drivable vehicle
-- Fields you can plant and harvest with one button
+- Fields you can plant and harvest with one button; you pick the crop to plant
 - Three crops (wheat, barley, oat), each with growth stages shown by colour
-- Field details pop-up (name, owner, value, size, crop, status) and harvest counters
+- Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
+- Sell stations for each crop; you have to drive there to sell
+- Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
+- Planting costs seeds, and a seed shop sells more (in progress, see the roadmap)
 - Android support with on-screen touch controls (APK builds and runs on an Android VM)
 
 ## Requirements
@@ -25,25 +28,25 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 | --- | --- |
 | W / A / S / D or arrow keys | Move / drive |
 | Mouse | Look around (click to lock the cursor, Esc to release) |
-| E | Plant or harvest the field you are standing in |
-| F1 | Toggle debug |
-| On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (plant / harvest) |
+| E | Plant or harvest your field, sell at a sell station, buy seeds at the seed shop |
+| B | Buy or sell the field you are standing in (press twice to confirm) |
+| C | Choose the crop to plant |
+| F1 | Toggle debug (does nothing yet) |
+| On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C) |
 
 ## Roadmap
-The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing and harvesting. Planned, in order:
+The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, and buying and selling fields. Planned, in order:
 
-1. Money and a sell point (the Wheat Selling Station is next)
-2. Seeds and a seed shop
-3. Buying and selling fields
-4. Fuel and a gas station
-5. Fertilizer
-6. Dealer (van, harvester) and paint shop
-7. Save / load
+1. Seeds and a seed shop (planting cost and the shop code are written; still to place the shop in the scene and test)
+2. Fuel and a gas station
+3. Fertilizer
+4. Dealer (van, harvester) and paint shop
+5. Save / load
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
 ## Project layout
-- `Assets/Scripts`: game code (`FieldController`, `PlayerValues`, `GameCharacter`, `InputManager`, `TouchControls`, `FieldView`)
+- `Assets/Scripts`: game code (`FieldController`, `Building`, `PlayerValues`, `GameCharacter`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`)
 - `Assets/Scenes`: game scene
 - `Assets/Prefabs`: houses, garage, truck
 - `PLAN.md`: roadmap, 2D game analysis and notes

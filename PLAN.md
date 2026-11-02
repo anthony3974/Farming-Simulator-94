@@ -5,10 +5,10 @@
 > **When asked "what's next?", the answer is this task** (the next step of Phase 3). The selling side is finished, so planting is still free; the 2D game made planting cost seeds.
 >
 > **Plan for this task**
-> 1. *(Claude)* The `Seeds` value and its line in the Statistics panel already exist (they show 0). Make planting use seeds (2D game: size x 450 to 550 per planting; start with 2,000).
-> 2. *(Claude)* Seed shop: a `Building` of type Buy (the `Building` script already has the type). Press E inside the trigger to buy 1,000 seeds for 450 to 550 dollars (2D values, keep them as Inspector fields). Candidate building: `House` or `Garage EX` (the owner decides where it goes).
-> 3. *(Claude)* Show "Not enough seeds" when planting with too few, with the existing centre message box.
-> 4. *(Both)* Test: buy seeds, plant, check the count and the money.
+> 1. ~~*(Claude)* Planting uses seeds~~ **DONE in code** (planting costs size x 0.75 to 0.9 seeds; start 25,000 seeds and $5,000; all Inspector fields; see "Economy balance" below).
+> 2. ~~*(Claude)* Seed shop code~~ **DONE in code** (`Building` type Buy: E buys 10,000 seeds for 4,500 to 5,500 dollars, Inspector fields). The owner cloned the Wheat Selling station as `Seed Buying`. **Scene step left:** run **Tools > Set Up Seed Buying** (it sets the cloned Building to type Buy), move the station to where the shop should be, then Ctrl+S. (Delete `Assets/Editor/AddSeedShop.cs` afterwards.)
+> 3. ~~*(Claude)* "Not enough seeds" message~~ **DONE** (centre message box; also "Not enough money" at the shop).
+> 4. *(Both)* **Test:** buy seeds, plant, check the seed count and the money. Not tested yet (the code was written but not run in Unity).
 >
 > **Other options if you want something else first:** fuel and the gas station, fertiliser and compost, dealer and paint shop (see Phase 3 below), or the dial/touch polish.
 >
@@ -147,6 +147,15 @@ Phase 1 is done (see above). Still to do:
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
 - Fields are not planted or harvested by the AI owners (they only get a name and owner); decide later if they should.
 - The touch layout needs a pass: the steering buttons now overlap the speedometer, and the BUY/SELL and CROP buttons are in temporary spots. Test on Android again.
+
+## Economy balance (set 2026-11-02, owner may revise)
+In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not the 2D size of 1 to 3.5, so the 2D prices per size could not be used directly (planting the 23,300 field wanted 11 million seeds). All prices are now per unit of harvest, keeping the 2D ratios:
+- Seeds per planting: 0.75 to 0.9 x harvest (2D: 500 per 600). Starter field "Tony" (23,300) needs about 17,500 to 21,000 seeds.
+- Seed shop: 10,000 seeds for 4,500 to 5,500 dollars (same 0.5 dollars per seed as 2D; 1,000 would mean 20 trips).
+- Selling: 0.65 to 0.75 dollars per unit (unchanged, same as 2D). Tony pays about 16,000 per harvest, so about 6,000 profit after buying the seeds.
+- Land: 2.1 dollars per unit of harvest (2D: 1,250 per 600), so Tony is about 49,000 (was 11,650) and the smallest field about 10,000. Selling back pays 80%.
+- Start: 5,000 dollars (money used to start at 0) and 25,000 seeds.
+- **Remaining lever: time.** A crop takes 4 x 7 s = 28 s here; the 2D game took 160 to 205 s. At 28 s per crop, income is about 6x the 2D pace, so a field pays for itself in a few minutes. Raise `growTime` on the fields (it is saved in the scene as 7) if it feels too fast.
 
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
