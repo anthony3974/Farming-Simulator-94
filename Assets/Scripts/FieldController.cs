@@ -38,6 +38,17 @@ public class FieldController : MonoBehaviour
     [Tooltip("Field area is scale.x * scale.z divided by this number.")]
     [SerializeField] private float sizeDivisor = 0.043029259f;
 
+    // Economy, in units of one harvest (the Size shown in the pop-up is also the harvest amount).
+    // 2D game ratios: planting 450 to 550 seeds per size and harvest 550 to 650 per size, so about 0.83 seeds
+    // per harvested unit. Land cost 1,250 per size, so about 2.1 dollars per harvested unit.
+    [Header("Economy")]
+    [Tooltip("Planting costs this many seeds per unit of harvest (random between the two values, 2D ratio about 0.83).")]
+    [SerializeField] private float minSeedsPerYield = 0.75f;
+    [SerializeField] private float maxSeedsPerYield = 0.9f;
+
+    [Tooltip("Buy price of the field = size x this (2D ratio about 2.1). Selling it back pays Sell Back Fraction of this.")]
+    [SerializeField] private float landPricePerYield = 2.1f;
+
     private enum Stage { Empty, Planted, Growing1, Growing2, Growing3, Ready }
 
     // Colours for each crop's three growth stages and its ready state.
@@ -107,7 +118,7 @@ public class FieldController : MonoBehaviour
         baseMaterial = meshRenderer.sharedMaterial;
 
         size = transform.localScale.x * transform.localScale.z / sizeDivisor;
-        value = size * 0.5f;
+        value = size * landPricePerYield;
     }
 
     void Update()
@@ -220,6 +231,14 @@ public class FieldController : MonoBehaviour
 
     private void Plant()
     {
+        int seedCost = Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield));
+        if (playerValues.Seeds < seedCost)
+        {
+            ScreenPrompt.Instance.Flash($"Not enough seeds. Planting {fieldName} needs {seedCost:N0}, you have {playerValues.Seeds:N0}", 3f);
+            return;
+        }
+        playerValues.Seeds -= seedCost;
+
         // plant whatever the player picked with the C key
         cropType = playerValues.SelectedCrop;
         stage = Stage.Planted;

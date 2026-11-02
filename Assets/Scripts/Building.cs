@@ -23,6 +23,13 @@ public class Building : MonoBehaviour
     public float minPrice = 0.65f;
     public float maxPrice = 0.75f;
 
+    [Header("Seed shop (Buy type only)")]
+    [Tooltip("Seeds you get per purchase. The 2D game sold 1,000 for 450 to 550 dollars (about 0.5 dollars per seed); fields are much bigger in 3D, so a purchase is 10,000.")]
+    public int seedsPerPurchase = 10000;
+    [Tooltip("Cost of one purchase is random between these two values (about 0.5 dollars per seed).")]
+    public float minSeedCost = 4500f;
+    public float maxSeedCost = 5500f;
+
     [Tooltip("Optional. Text object used for the short sale message.")]
     public TMP_Text messageText;
     public float messageSeconds = 3f;
@@ -64,7 +71,12 @@ public class Building : MonoBehaviour
     private string PromptText()
     {
         string key = inputManager.TouchControlsActive ? "USE" : "E";
-        return type == BuildingType.Sell ? $"Press {key} to sell {crop}" : $"{type} (coming soon)";
+        switch (type)
+        {
+            case BuildingType.Sell: return $"Press {key} to sell {crop}";
+            case BuildingType.Buy: return $"Press {key} to buy {seedsPerPurchase:N0} seeds (about $ {(minSeedCost + maxSeedCost) / 2f:N0})";
+            default: return $"{type} (coming soon)";
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -93,6 +105,7 @@ public class Building : MonoBehaviour
         switch (type)
         {
             case BuildingType.Sell: Sell(); break;
+            case BuildingType.Buy: BuySeeds(); break;
             default: Debug.Log($"{type} building is not implemented yet."); break;
         }
     }
@@ -116,6 +129,20 @@ public class Building : MonoBehaviour
         float profit = amount * Random.Range(minPrice, maxPrice);
         playerValues.Money += profit;
         ShowMessage($"{crop} Sold, Profit ({profit:N0}$)");
+    }
+
+    private void BuySeeds()
+    {
+        int cost = Mathf.RoundToInt(Random.Range(minSeedCost, maxSeedCost));
+        if (playerValues.Money < cost)
+        {
+            ShowMessage($"Not enough money. {seedsPerPurchase:N0} seeds cost $ {cost:N0}");
+            return;
+        }
+
+        playerValues.Money -= cost;
+        playerValues.Seeds += seedsPerPurchase;
+        ShowMessage($"Bought {seedsPerPurchase:N0} seeds for $ {cost:N0}");
     }
 
     private void ShowMessage(string text)

@@ -16,6 +16,10 @@ public class PlayerValues : MonoBehaviour
     public TMP_Text txMoney;
 
     private int seeds;
+    [Tooltip("Seeds you start the game with. Planting the 23,000-size starter field costs about 17,000 to 21,000.")]
+    [SerializeField] private int startSeeds = 25000;
+    [Tooltip("Money you start the game with (2D game: 5,000).")]
+    [SerializeField] private float startMoney = 5000f;
     [Tooltip("Optional. Shows the seeds in the Statistics panel.")]
     public TMP_Text txSeeds;
     private int fertilizer;
@@ -31,6 +35,8 @@ public class PlayerValues : MonoBehaviour
     {
         inputManager = GetComponent<InputManager>();
         if (inputManager == null) inputManager = FindFirstObjectByType<InputManager>();
+        seeds = startSeeds;
+        money = startMoney;
         UpdateUI();
     }
 
