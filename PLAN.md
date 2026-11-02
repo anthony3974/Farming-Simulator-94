@@ -76,7 +76,12 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - Fertiliser: apply during growth to speed up growth or increase yield.
 
 **Phase 5: Polish**
-- Save/load (18), camera clamp (14), input cleanup (13).
+- Save/load (18). (Camera clamp (14) and input cleanup (13) are already done.)
+
+**Phase 6: Vehicle mirrors**
+- Add mirrors to the vehicle (left and right side mirrors, maybe a rear-view mirror).
+- Likely approach: a small extra camera per mirror drawing into a `RenderTexture`, shown on a quad on the mirror, or a small on-screen panel. Keep the cost low on phones (small texture, lower frame rate or resolution for mirror cameras, off when not needed).
+- Decide: real mirrors on the model, or a screen overlay. Check the Android frame rate after adding them.
 
 ## Open questions
 - What was in the original plan from the earlier chats?
