@@ -16,6 +16,16 @@ public class FieldView : MonoBehaviour
     // colour of the labels ("Size:", "Owner:", ...); the values stay white
     private const string LabelColor = "#FFC933";
 
+    void Awake()
+    {
+        // long field names shrink to fit instead of running into the next column
+        txtName.enableWordWrapping = false;
+        txtName.overflowMode = TextOverflowModes.Ellipsis;
+        txtName.enableAutoSizing = true;
+        txtName.fontSizeMax = txtName.fontSize;
+        txtName.fontSizeMin = 12;
+    }
+
     private static string Line(string label, string value)
     {
         return $"<color={LabelColor}>{label}:</color> {value}";

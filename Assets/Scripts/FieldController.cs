@@ -16,6 +16,12 @@ public class FieldController : MonoBehaviour
     public string fieldName;
     public string ownerName;
 
+    [Tooltip("Fields owned by this name belong to the player and can be used. All other fields get a random AI owner.")]
+    [SerializeField] private string playerName = "Anthony";
+
+    // Short list for now, add more names later.
+    private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
+
     [Tooltip("Seconds each growth step takes (planted > stage 1 > stage 2 > stage 3 > ready).")]
     [SerializeField] private float growTime = 7f;
 
@@ -77,6 +83,9 @@ public class FieldController : MonoBehaviour
             return;
         }
 
+        if (ownerName != playerName)
+            ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
+
         meshRenderer = GetComponent<MeshRenderer>();
         baseMaterial = meshRenderer.sharedMaterial;
 
@@ -86,7 +95,7 @@ public class FieldController : MonoBehaviour
 
     void Update()
     {
-        if (inputManager.Interact && IsActiveField())
+        if (inputManager.Interact && IsActiveField() && ownerName == playerName)
             Interact();
     }
 
