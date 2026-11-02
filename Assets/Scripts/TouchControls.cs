@@ -24,18 +24,22 @@ public class TouchControls : MonoBehaviour
         EnsureEventSystem();
         Canvas canvas = CreateCanvas();
 
-        // steering, bottom-left
-        CreateButton(canvas, TouchButton.Left, "<", bottomRight: false, x: 60, y: 60, size: 150);
-        CreateButton(canvas, TouchButton.Right, ">", bottomRight: false, x: 240, y: 60, size: 150);
+        // steering, bottom-left, to the right of the 260 px speedometer dial (it fills x 20 to 280)
+        CreateButton(canvas, TouchButton.Left, "<", bottomRight: false, x: 310, y: 60, size: 150);
+        CreateButton(canvas, TouchButton.Right, ">", bottomRight: false, x: 490, y: 60, size: 150);
 
-        // driving + use, right side, kept above the field pop-up (bottom-right, 260 px tall)
-        // and below the crop counters (top-right)
-        CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: 60, y: 310, size: 150);
-        CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: 240, y: 310, size: 150);
-        CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: 60, y: 490, size: 150);
-        // buy/sell field (B) and next crop (C); positions are temporary, rearrange later
-        CreateButton(canvas, TouchButton.Trade, "BUY/SELL", bottomRight: true, x: 240, y: 490, size: 150);
-        CreateButton(canvas, TouchButton.CycleCrop, "CROP", bottomRight: true, x: 60, y: 670, size: 150);
+        // right side: 130 px buttons in two columns and three rows. The bottom row sits above the field
+        // pop-up (bottom-right, about 260 px tall + 20 px margin) and the top row stays below the
+        // Money/Seeds/Fertilizer panel (top-right, about 195 px) even on very wide phones.
+        const float col1 = 60, col2 = 200, row1 = 295, row2 = 435, row3 = 575, btn = 130;
+        CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: col1, y: row1, size: btn);
+        CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: col2, y: row1, size: btn);
+        CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: col1, y: row2, size: btn);
+        CreateButton(canvas, TouchButton.Trade, "BUY/SELL", bottomRight: true, x: col2, y: row2, size: btn);
+        CreateButton(canvas, TouchButton.CycleCrop, "CROP", bottomRight: true, x: col1, y: row3, size: btn);
+
+        // help menu, top-left corner
+        CreateButton(canvas, TouchButton.Help, "HELP", bottomRight: false, x: 40, y: 40, size: 110, top: true);
     }
 
     private static void EnsureEventSystem()
@@ -66,17 +70,17 @@ public class TouchControls : MonoBehaviour
         return canvas;
     }
 
-    private void CreateButton(Canvas canvas, TouchButton button, string label, bool bottomRight, float x, float y, float size)
+    private void CreateButton(Canvas canvas, TouchButton button, string label, bool bottomRight, float x, float y, float size, bool top = false)
     {
         // yellow border (this object receives the touches)
         var go = new GameObject(button + "Button", typeof(RectTransform), typeof(Image));
         go.transform.SetParent(canvas.transform, false);
 
         var rt = (RectTransform)go.transform;
-        Vector2 anchor = bottomRight ? new Vector2(1, 0) : new Vector2(0, 0);
+        Vector2 anchor = new Vector2(bottomRight ? 1 : 0, top ? 1 : 0);
         rt.anchorMin = rt.anchorMax = rt.pivot = anchor;
         rt.sizeDelta = new Vector2(size, size);
-        rt.anchoredPosition = new Vector2(bottomRight ? -x : x, y);
+        rt.anchoredPosition = new Vector2(bottomRight ? -x : x, top ? -y : y);
 
         var border = go.GetComponent<Image>();
         border.color = Yellow;

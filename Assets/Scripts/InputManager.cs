@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>The on-screen buttons shown on touch devices.</summary>
-public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop }
+public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help }
 
 /// <summary>
 /// Single place the game reads input from. Keyboard/mouse always work; on Android (or when
@@ -22,6 +22,7 @@ public class InputManager : MonoBehaviour
     private bool interact;
     private bool trade;
     private bool cycleCrop;
+    private bool help;
     private bool up;
     private bool right;
     private bool down;
@@ -35,6 +36,7 @@ public class InputManager : MonoBehaviour
     private bool touchInteractQueued;
     private bool touchTradeQueued;
     private bool touchCropQueued;
+    private bool touchHelpQueued;
 
     /// <summary>True when the on-screen buttons are active.</summary>
     public bool TouchControlsActive { get; private set; }
@@ -46,6 +48,8 @@ public class InputManager : MonoBehaviour
             TouchControlsActive = true;
             gameObject.AddComponent<TouchControls>();
         }
+
+        gameObject.AddComponent<HelpMenu>();
     }
 
     /// <summary>Called by the on-screen buttons.</summary>
@@ -60,6 +64,7 @@ public class InputManager : MonoBehaviour
             case TouchButton.Interact: if (pressed) touchInteractQueued = true; break;
             case TouchButton.Trade: if (pressed) touchTradeQueued = true; break;
             case TouchButton.CycleCrop: if (pressed) touchCropQueued = true; break;
+            case TouchButton.Help: if (pressed) touchHelpQueued = true; break;
         }
     }
 
@@ -88,6 +93,8 @@ public class InputManager : MonoBehaviour
         touchTradeQueued = false;
         cycleCrop = Input.GetKeyDown(KeyCode.C) || touchCropQueued;
         touchCropQueued = false;
+        help = Input.GetKeyDown(KeyCode.H) || touchHelpQueued;
+        touchHelpQueued = false;
     }
 
     public float Horizontal { get => horizontal; set => horizontal = value; }
@@ -99,6 +106,8 @@ public class InputManager : MonoBehaviour
     public bool Trade { get => trade; set => trade = value; }
     /// <summary>C key: pick the next crop to plant.</summary>
     public bool CycleCrop { get => cycleCrop; set => cycleCrop = value; }
+    /// <summary>H key: open or close the help menu.</summary>
+    public bool Help { get => help; set => help = value; }
     public bool Up { get => up; set => up = value; }
     public bool Right { get => right; set => right = value; }
     public bool Down { get => down; set => down = value; }
