@@ -83,11 +83,17 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - Likely approach: a small extra camera per mirror drawing into a `RenderTexture`, shown on a quad on the mirror, or a small on-screen panel. Keep the cost low on phones (small texture, lower frame rate or resolution for mirror cameras, off when not needed).
 - Decide: real mirrors on the model, or a screen overlay. Check the Android frame rate after adding them.
 
+## Waiting on the owner (decisions)
+- **Sky:** keep the pink sky (`Epic_GloriousPink`) or just use the regular blue one. Kept now: `Epic_BlueSunset` (in use), `Day_BlueSky_Nothing`, `Cold Sunset`, `Epic_GloriousPink`.
+- **Terrain layers:** which of `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B` and `Pebbles_C` to keep for good (`Grass_B` is in use). Then trim the rest, then decide about the git history cleanup (see Repo housekeeping).
+- **Camera:** `staticCamera` is still ticked on `GameCharacter` for testing. Untick it to restore mouse look.
+- **Touch layout:** needs a pass (steering buttons overlap the speedometer; BUY/SELL and CROP buttons are in temporary spots). Test on Android again.
+
 ## Open questions
 - What was in the original plan from the earlier chats?
 - Is multiplayer or an AI helper planned, or is this single-player only?
 
-## Noted from play-testing (to do, not yet started)
+## Noted from play-testing (all done, see Progress below)
 - **Crop type shows "TypeOat" / "TypeWheat".** `FieldController` sends `cropType.ToString()`, which is the enum name. Show "Oat" / "Wheat" / "Barley" instead (and a friendly status such as "Growing 2/3", "Ready to harvest").
 - **Field pop-up redesign.** Currently one semi-transparent white panel with 7 plain text objects and no labels. Wanted: dark-gray background, yellow border, coloured labels with white values (for example `Size:` label coloured, value white), possibly a split layout.
 - **Camera looks up and gets stuck after leaving and re-entering the Game window.** Causes found in `GameCharacter.RotateY`:
@@ -114,7 +120,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] Field ownership: only fields owned by the player respond to E; other fields get random AI owners and names from the 2D game
 - [x] Dial speedometer (bottom-left, 0 to 100 km/h, truck top speed reads 50)
 - [x] Touch buttons added for BUY/SELL and CROP (positions temporary)
-- [ ] **Counters layout (script written, still to run and test):** Wheat / Barley / Oat move into a centred bar along the top of the screen, and the right-hand panel (`Canvas > Crops`) is renamed **Statistics** with Money, Seeds and Fertilizer (seeds and fertilizer show 0 for now). It is done by the editor menu item `Tools > Rebuild Counters`, which is deleted after it has been run.
+- [x] **Counters layout:** Wheat / Barley / Oat are in a centred bar along the top of the screen, and the right-hand panel (`Canvas > Statistics`) shows Money, Seeds and Fertilizer (seeds and fertilizer show 0 until the seed shop and fertiliser exist). Built with a one-off editor menu script that is kept only in the git history (`4b30c1c`).
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
