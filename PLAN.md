@@ -1,19 +1,16 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Wheat Selling Station (the first sell point) <<<
+> ## >>> NEXT UP: Seeds and a Seed Shop <<<
 >
-> **When asked "what's next?", the answer is this task.** It is the first step of Phase 3 (economy).
->
-> **The building:** the **Wheat Selling Station**. In `GameScene` it is the object `Wheat Selling` (Hierarchy: Terrain > Buildings > Wheat Selling, position about 923, 13, 63). It already has a *solid* `BoxCollider` (not a trigger), so vehicles collide with it. **It has no trigger zone yet. The owner will create that trigger/collision area themselves.**
+> **When asked "what's next?", the answer is this task** (the next step of Phase 3). The selling side is finished, so planting is still free; the 2D game made planting cost seeds.
 >
 > **Plan for this task**
-> 1. *(Owner)* Add the trigger zone: a child object of the building with a `BoxCollider` ticked **Is Trigger**, placed and sized where the truck should stand to sell (in front of the building).
-> 2. *(Claude)* Add a `Building` script with a type (Sell, Buy, Paint, Dealer, Gas) and a trigger. It copies the pattern in `FieldController` (the `fieldsInside` list, so only the building the player is in reacts, and the E key / USE button run its action). The Wheat Selling Station is type Sell, crop Wheat.
-> 3. *(Claude)* Add money to `PlayerValues` and show it in the counters panel (same style as the other lines).
-> 4. *(Claude)* Sell action: pressing E / USE inside the trigger sells **all stored wheat** for money and empties the wheat counter. Price starts at the 2D game's value, **0.65 to 0.75 dollars per unit** (random each sale), exposed as Inspector fields. Show a short message like "Wheat Sold, Profit (xxx$)" (the 2D game showed one).
-> 5. *(Both)* Test: harvest wheat, drive to the station, press USE, check the money.
+> 1. *(Claude)* The `Seeds` value and its line in the Statistics panel already exist (they show 0). Make planting use seeds (2D game: size x 450 to 550 per planting; start with 2,000).
+> 2. *(Claude)* Seed shop: a `Building` of type Buy (the `Building` script already has the type). Press E inside the trigger to buy 1,000 seeds for 450 to 550 dollars (2D values, keep them as Inspector fields). Candidate building: `House` or `Garage EX` (the owner decides where it goes).
+> 3. *(Claude)* Show "Not enough seeds" when planting with too few, with the existing centre message box.
+> 4. *(Both)* Test: buy seeds, plant, check the count and the money.
 >
-> **Open choice:** the 2D game had one station per crop (Wheat, Barley, Oat). For now only the Wheat Selling Station exists, so only wheat sells there. Barley and oats need their own stations (or one station that buys everything) later.
+> **Other options if you want something else first:** fuel and the gas station, fertiliser and compost, dealer and paint shop (see Phase 3 below), or the dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
 
@@ -24,32 +21,39 @@ This is an initial plan from reading the code. It is not the plan from the earli
 ## Improvements needed
 
 ### Bugs and risks
-1. **Overlapping fields.** Pressing E triggers every field the player is inside. Only the nearest or most recently entered field should respond.
-2. **Cleanup of `isPlayerInside`.** `InputKey` checks `inputManager.Interact` in every field's `Update`. Move the check to the field the player is in.
-3. **`FieldView.cs` has stray `using` lines** (`System.Drawing`, `UnityEngine.Rendering.DebugUI`, `GridLayoutGroup`). These can cause ambiguous-type errors or build problems. Remove them.
-4. **`FieldController` imports `Unity.VisualScripting`** without using it. Remove it.
-5. **Pop-up goes stale.** The field details pop-up only refreshes when the player enters the field. The crop stage doesn't update while the player stands inside, so call `UpdateUI` after every stage change.
-6. **Harvest order.** In `FieldStageChanger`, `crop` becomes `Dirt` before `HarvestField()` runs. This works now, but it is fragile.
-7. **`ReadyCrop` starts a growth timer** (`StartCoroutine(Grow(7))` after reaching Ready) that does nothing useful. Remove it.
-8. **Local package edits** (`Packages/manifest.json`, `packages-lock.json`) are uncommitted. Check them before committing.
+1. ~~**Overlapping fields.** Pressing E triggers every field the player is inside. Only the nearest or most recently entered field should respond.~~ **DONE**
+2. ~~**Cleanup of `isPlayerInside`.** `InputKey` checks `inputManager.Interact` in every field's `Update`. Move the check to the field the player is in.~~ **DONE (only the active field reacts)**
+3. ~~**`FieldView.cs` has stray `using` lines** (`System.Drawing`, `UnityEngine.Rendering.DebugUI`, `GridLayoutGroup`). These can cause ambiguous-type errors or build problems. Remove them.~~ **DONE**
+4. ~~**`FieldController` imports `Unity.VisualScripting`** without using it. Remove it.~~ **DONE**
+5. ~~**Pop-up goes stale.** The field details pop-up only refreshes when the player enters the field. The crop stage doesn't update while the player stands inside, so call `UpdateUI` after every stage change.~~ **DONE**
+6. ~~**Harvest order.** In `FieldStageChanger`, `crop` becomes `Dirt` before `HarvestField()` runs. This works now, but it is fragile.~~ **DONE (the crop is read before the field is reset)**
+7. ~~**`ReadyCrop` starts a growth timer** (`StartCoroutine(Grow(7))` after reaching Ready) that does nothing useful. Remove it.~~ **DONE**
+8. ~~**Local package edits** (`Packages/manifest.json`, `packages-lock.json`) are uncommitted. Check them before committing.~~ **DONE (committed; the deprecated VS Code package was removed)**
 
 ### Current bugs*
 (*Not a real bug yet, a limit we will hit once there are enough fields. Not numbered so the item numbers below and the references to them stay valid.)
 - **Field names run out.** Non-player fields get a random unused name from a list of 12 names taken from the 2D game (`FieldNames` in `FieldController`). Once all 12 are taken, the next field keeps whatever name is typed in the Inspector, which can be blank or a duplicate. Fix: when the list is empty, build a unique name (for example "Dahl Ranch 2"), or add more names. Not urgent: there are only 3 fields now and the number of fields in the final map is not decided.
 
 ### Code quality
-9. **Replace the long if/else chains** in `FieldStageChanger` and `SetColor` with a crop-type enum plus a stage index (0 to 5), and one colour table (`Color32[,]`).
-10. **Create 16 materials per field.** Share them across fields, or use a `MaterialPropertyBlock` or colour property instead.
-11. **Make settings tunable.** The growth time (7 s) and the size divisor (`0.043029259f`) are hard-coded. Expose them as `[SerializeField]` fields.
-12. **Rename the enum values.** `Crops` mixes crop types (`TypeWheat`) with growth states, so split it into `CropType` and `GrowthStage`.
-13. **`InputManager`.** Update the `Debug` property name (it shadows `UnityEngine.Debug`) and remove unused stored fields.
-14. **`GameCharacter` camera clamp** uses Euler angle tricks and a "MIGHT BE A ISSUE LATER" comment. Track pitch as a float and clamp it.
+9. ~~**Replace the long if/else chains** in `FieldStageChanger` and `SetColor` with a crop-type enum plus a stage index (0 to 5), and one colour table (`Color32[,]`).~~ **DONE**
+10. ~~**Create 16 materials per field.** Share them across fields, or use a `MaterialPropertyBlock` or colour property instead.~~ **DONE**
+11. ~~**Make settings tunable.** The growth time (7 s) and the size divisor (`0.043029259f`) are hard-coded. Expose them as `[SerializeField]` fields.~~ **DONE**
+12. ~~**Rename the enum values.** `Crops` mixes crop types (`TypeWheat`) with growth states, so split it into `CropType` and `GrowthStage`.~~ **DONE**
+13. ~~**`InputManager`.** Update the `Debug` property name (it shadows `UnityEngine.Debug`) and remove unused stored fields.~~ **DONE** (property renamed to `DebugMode`; every other stored field is used, so none were removed. The F1 toggle still has nothing listening to it).
+14. ~~**`GameCharacter` camera clamp** uses Euler angle tricks and a "MIGHT BE A ISSUE LATER" comment. Track pitch as a float and clamp it.~~ **DONE**
 
 ### Unfinished features
 15. **Fertiliser** (`Fert1`, `Fert2`, `fertStage`): states and colours exist, nothing uses them.
-16. **Selling and money.** Crops only accumulate as counters, and field `value` is never used.
-17. **Field ownership and buying.** `ownerName` and `value` are displayed but there is no way to buy a field.
+16. ~~**Selling and money.**~~ **DONE** (sell stations for wheat, barley and oat, money in the counters panel, field `value` is the buy price).
+17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
+19. **Help menu with the controls list.** A pop-up (opened with a key such as H or F1, plus a touch button) listing the controls:
+    - W / A / S / D or the arrow keys: drive
+    - E (USE on touch): plant, harvest, sell at a station
+    - B (BUY/SELL on touch): buy or sell the field you are in, press twice to confirm
+    - C (CROP on touch): choose the crop to plant
+    - Esc: release the mouse
+    - F1: debug toggle (currently does nothing)
 
 ## Initial plan (in order)
 
@@ -63,12 +67,12 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - Verify behaviour is unchanged: plant, grow through 4 stages, harvest, stock count goes up.
 
 **Phase 3: Economy**
-- Add a money value to `PlayerValues`, plus sell prices per crop.
-- Add a sell point (for example a building or barn trigger).
-- Show money in the UI.
+- ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
+- ~~Field buying and selling~~ DONE.
+- Next: seeds and seed shop, fuel and gas station, fertiliser, dealer and paint shop (see the 2D checklist below).
 
 **Phase 4: Fields and fertiliser**
-- Buying fields (uses `ownerName` and `value`).
+- ~~Buying fields~~ DONE (moved into Phase 3).
 - Fertiliser: apply during growth to speed up growth or increase yield.
 
 **Phase 5: Polish**
@@ -98,6 +102,14 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] Android controls phase 1: `InputManager` takes touch input, `TouchControls` builds on-screen buttons at runtime
 - [x] Touch buttons tested in the editor, resized and re-laid out; main Canvas now *Scale With Screen Size* (1920x1080, match 0.5)
 - [x] Android Player Settings configured, first APK built and running (tested on an Android VM; not yet on a real phone)
+- [x] Phase 3 economy, part 1: money, `Building` script (type + trigger + prompt), sell stations for Wheat, Barley and Oat
+- [x] Centre message box (gold border, grows with its text), used for prompts and confirmations
+- [x] Crop selection with the C key (plant what you picked; no more random crop)
+- [x] Field buying and selling with the B key (confirm on the second press); selling pays 80% and the crop stays on the field
+- [x] Field ownership: only fields owned by the player respond to E; other fields get random AI owners and names from the 2D game
+- [x] Dial speedometer (bottom-left, 0 to 100 km/h, truck top speed reads 50)
+- [x] Touch buttons added for BUY/SELL and CROP (positions temporary)
+- [ ] **Counters layout (script written, still to run and test):** Wheat / Barley / Oat move into a centred bar along the top of the screen, and the right-hand panel (`Canvas > Crops`) is renamed **Statistics** with Money, Seeds and Fertilizer (seeds and fertilizer show 0 for now). It is done by the editor menu item `Tools > Rebuild Counters`, which is deleted after it has been run.
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
@@ -118,12 +130,12 @@ Phase 1 is done (see above). Still to do:
 10. **Optional later:** replace `<` `>` `GAS` `BRAKE` `USE` text labels with icons; haptic feedback; a pause/settings button.
 
 ## Other things noticed (not yet scheduled)
-- `InputManager.Debug` hides `UnityEngine.Debug`; rename it.
+- `InputManager.Debug` hides `UnityEngine.Debug`; rename it (item 13, still open).
 - `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
-- Package manager shows `com.unity.ide.vscode` as deprecated; remove it (Visual Studio Editor package already supports VS Code).
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
-- No sell point, money or prices yet (Phase 3 above).
+- Fields are not planted or harvested by the AI owners (they only get a name and owner); decide later if they should.
+- The touch layout needs a pass: the steering buttons now overlap the speedometer, and the BUY/SELL and CROP buttons are in temporary spots. Test on Android again.
 
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
@@ -143,8 +155,8 @@ Phase 1 is done (see above). Still to do:
 - Ask before shrinking anything.
 
 ## Next up
-- **2D version analysis:** the finished 2D game is on GitHub. Clone it into a separate folder (outside this project) and read it to build the feature checklist for the 3D version (what is sold, prices, upgrades, vehicles, buying land).
-- **Selling point:** the `Wheat Selling Station` (see NEXT UP at the top). The owner creates the trigger zone; Claude writes the `Building` script and the money/sell logic.
+- **Seeds and a seed shop** (see NEXT UP at the top).
+- **2D version analysis:** done, see the section below.
 
 ## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
 Source: `anthony3974/Sim94`. Everything below was read from the code, not played.
@@ -175,9 +187,10 @@ There is **no collision**; the README says so ("there is no collision yet"). The
 - The 3D fields already work the same way: a trigger collider plus `fieldsInside`. **Buildings should use the same pattern**: a `Building` component with a trigger collider and a type enum (Sell, Buy, Paint, Dealer, Gas). The `USE` button and E key then do what the building says.
 - **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
 - **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
-- **Not in the 3D game yet:** money, seeds, compost, diesel, field ownership, buying and selling fields, vehicle switching, painting, dealer, save/load, AI owners planting fields.
+- **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields.
+- **Still not in the 3D game:** seeds, compost, diesel, vehicle switching, painting, dealer, save/load, AI owners planting fields.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
-- **Suggested order for Phase 3:** (1) money in `PlayerValues` and the counters panel, (2) a `Building` trigger with a sell action on the chosen building, (3) seeds and a seed shop, (4) field buying, (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
+- **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
 
 ### Assets in the 2D repo that could be reused
 - `backround.png` (3500x3000), the full map. A layout reference only; the 3D map is built fresh.
