@@ -192,7 +192,8 @@ public class ScreenPrompt : MonoBehaviour
         var outer = p.panel.GetComponent<UnityEngine.UI.VerticalLayoutGroup>();
         outer.padding = new RectOffset(4, 4, 4, 4);
         outer.childControlWidth = outer.childControlHeight = true;
-        outer.childForceExpandWidth = outer.childForceExpandHeight = false;
+        outer.childForceExpandWidth = true;   // inner panel fills the border's full width
+        outer.childForceExpandHeight = false;
         p.panel.GetComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
 
         var inner = new GameObject("Panel", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.VerticalLayoutGroup));
@@ -201,7 +202,8 @@ public class ScreenPrompt : MonoBehaviour
         var lg = inner.GetComponent<UnityEngine.UI.VerticalLayoutGroup>();
         lg.padding = new RectOffset(24, 24, 14, 14);
         lg.childControlWidth = lg.childControlHeight = true;
-        lg.childForceExpandWidth = lg.childForceExpandHeight = false;
+        lg.childForceExpandWidth = true;
+        lg.childForceExpandHeight = false;
 
         var textGo = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
         textGo.transform.SetParent(inner.transform, false);
