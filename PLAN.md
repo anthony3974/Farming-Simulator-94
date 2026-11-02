@@ -1,16 +1,12 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Seeds and a Seed Shop <<<
+> ## >>> NEXT UP: Fuel and the Gas Station <<<
 >
-> **When asked "what's next?", the answer is this task** (the next step of Phase 3). The selling side is finished, so planting is still free; the 2D game made planting cost seeds.
+> **When asked "what's next?", the answer is this task** (the next step of Phase 3). Seeds and the seed shop are done and working (owner confirmed 2026-11-02); the owner is reviewing the economy numbers as they play.
 >
-> **Plan for this task**
-> 1. ~~*(Claude)* Planting uses seeds~~ **DONE in code** (planting costs size x 0.75 to 0.9 seeds; start 25,000 seeds and $5,000; all Inspector fields; see "Economy balance" below).
-> 2. ~~*(Claude)* Seed shop code~~ **DONE in code** (`Building` type Buy: E buys 10,000 seeds for 4,500 to 5,500 dollars, Inspector fields). The owner cloned the Wheat Selling station as `Seed Buying`. **Scene step left:** run **Tools > Set Up Seed Buying** (it sets the cloned Building to type Buy), move the station to where the shop should be, then Ctrl+S. (Delete `Assets/Editor/AddSeedShop.cs` afterwards.)
-> 3. ~~*(Claude)* "Not enough seeds" message~~ **DONE** (centre message box; also "Not enough money" at the shop).
-> 4. *(Both)* **Test:** buy seeds, plant, check the seed count and the money. Not tested yet (the code was written but not run in Unity).
+> **2D values to start from** (keep them as Inspector fields): diesel tank of 100, moving uses 1 unit about every 200 movement ticks, at 0 it was game over, diesel costs 2 dollars per unit at Jerrys Gas Station. A `Building` of type Gas already exists in the enum. Decide what happens at 0 fuel in 3D (game over like 2D, or just stop the vehicle).
 >
-> **Other options if you want something else first:** fuel and the gas station, fertiliser and compost, dealer and paint shop (see Phase 3 below), or the dial/touch polish.
+> **Other options if you want something else first:** fertiliser and compost, dealer and paint shop (see Phase 3 below), or the dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
 
@@ -69,7 +65,8 @@ This is an initial plan from reading the code. It is not the plan from the earli
 **Phase 3: Economy**
 - ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
 - ~~Field buying and selling~~ DONE.
-- Next: seeds and seed shop, fuel and gas station, fertiliser, dealer and paint shop (see the 2D checklist below).
+- ~~Seeds and seed shop~~ DONE.
+- Next: fuel and gas station, fertiliser, dealer and paint shop (see the 2D checklist below).
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
@@ -109,7 +106,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] "TypeOat" text bug fixed (pop-up now shows Wheat / Barley / Oat / None and "Growing n/3", "Ready!")
 - [x] Field pop-up redesign and matching crop-counter panel (dark background, yellow border, gold labels, white values)
 - [x] Camera fix: `pitch` float with clamp, cursor lock (Esc releases), mouse ignored on focus change
-- [x] `FieldController` refactor: enums + colour table, shared materials, editable `growTime` and `sizeDivisor`, missing-reference check
+- [x] `FieldController` refactor: enums + colour table, shared materials, editable `growTime` (now `secondsPerStage`) and `sizeDivisor`, missing-reference check
 - [x] Android controls phase 1: `InputManager` takes touch input, `TouchControls` builds on-screen buttons at runtime
 - [x] Touch buttons tested in the editor, resized and re-laid out; main Canvas now *Scale With Screen Size* (1920x1080, match 0.5)
 - [x] Android Player Settings configured, first APK built and running (tested on an Android VM; not yet on a real phone)
@@ -120,7 +117,9 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] Field ownership: only fields owned by the player respond to E; other fields get random AI owners and names from the 2D game
 - [x] Dial speedometer (bottom-left, 0 to 100 km/h, truck top speed reads 50)
 - [x] Touch buttons added for BUY/SELL and CROP (positions temporary)
-- [x] **Counters layout:** Wheat / Barley / Oat are in a centred bar along the top of the screen, and the right-hand panel (`Canvas > Statistics`) shows Money, Seeds and Fertilizer (seeds and fertilizer show 0 until the seed shop and fertiliser exist). Built with a one-off editor menu script that is kept only in the git history (`4b30c1c`).
+- [x] **Counters layout:** Wheat / Barley / Oat are in a centred bar along the top of the screen, and the right-hand panel (`Canvas > Statistics`) shows Money, Seeds and Fertilizer (fertilizer shows 0 until fertiliser exists). Built with a one-off editor menu script that is kept only in the git history (`4b30c1c`).
+- [x] Seeds and seed shop: planting costs seeds, `Seed Buying` station sells them (E), start with $5,000 and 25,000 seeds; economy rebalanced (see Economy balance). Seeds are finished for now. The one-off setup tool (`AddSeedShop`) is kept only in the git history (`9cff3cd`)
+- [x] The player's field starts planted with wheat; growth time raised 35% (9.45 s per stage)
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
@@ -155,7 +154,8 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 - Selling: 0.65 to 0.75 dollars per unit (unchanged, same as 2D). Tony pays about 16,000 per harvest, so about 6,000 profit after buying the seeds.
 - Land: 2.1 dollars per unit of harvest (2D: 1,250 per 600), so Tony is about 49,000 (was 11,650) and the smallest field about 10,000. Selling back pays 80%.
 - Start: 5,000 dollars (money used to start at 0) and 25,000 seeds.
-- **Remaining lever: time.** A crop takes 4 x 7 s = 28 s here; the 2D game took 160 to 205 s. At 28 s per crop, income is about 6x the 2D pace, so a field pays for itself in a few minutes. Raise `growTime` on the fields (it is saved in the scene as 7) if it feels too fast.
+- **Time:** growth was 4 x 7 s = 28 s; the 2D game took 160 to 205 s. It is now 4 x 9.45 s (7 s + 35%) = 37.8 s per crop, set by `secondsPerStage` on `FieldController` (renamed from `growTime`, so the old 7 saved in the scene no longer applies). Still about 4.5x the 2D pace, so raise it further if it feels too fast.
+- **Starting field:** the player's own field ("Tony") starts the game planted with wheat, in the Planted stage (`startCrop` on `FieldController`; None = empty). The owner had to sell it to afford the first planting, so it now starts growing for free.
 
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
@@ -182,7 +182,7 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 - Ask before shrinking anything.
 
 ## Next up
-- **Seeds and a seed shop** (see NEXT UP at the top).
+- **Fuel and the gas station** (see NEXT UP at the top).
 - **2D version analysis:** done, see the section below.
 
 ## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
@@ -214,10 +214,10 @@ There is **no collision**; the README says so ("there is no collision yet"). The
 - The 3D fields already work the same way: a trigger collider plus `fieldsInside`. **Buildings should use the same pattern**: a `Building` component with a trigger collider and a type enum (Sell, Buy, Paint, Dealer, Gas). The `USE` button and E key then do what the building says.
 - **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
 - **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
-- **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields.
-- **Still not in the 3D game:** seeds, compost, diesel, vehicle switching, painting, dealer, save/load, AI owners planting fields.
+- **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop.
+- **Still not in the 3D game:** compost, diesel, vehicle switching, painting, dealer, save/load, AI owners planting fields.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
-- **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
+- **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; (5) fuel and the gas station, (6) fertilizer and compost, (7) the dealer and paint shop.
 
 ### Assets in the 2D repo that could be reused
 - `backround.png` (3500x3000), the full map. A layout reference only; the 3D map is built fresh.

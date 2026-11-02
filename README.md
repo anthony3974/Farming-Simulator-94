@@ -9,7 +9,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 - Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
 - Sell stations for each crop; you have to drive there to sell
 - Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
-- Planting costs seeds, and a seed shop sells more (in progress, see the roadmap)
+- Planting costs seeds, and a seed shop sells more. Your own field starts planted with wheat
 - Android support with on-screen touch controls (APK builds and runs on an Android VM)
 
 ## Requirements
@@ -35,13 +35,12 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 | On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C) |
 
 ## Roadmap
-The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, and buying and selling fields. Planned, in order:
+The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, and buying and selling fields, and seeds with a seed shop. Planned, in order:
 
-1. Seeds and a seed shop (planting cost and the shop code are written; still to place the shop in the scene and test)
-2. Fuel and a gas station
-3. Fertilizer
-4. Dealer (van, harvester) and paint shop
-5. Save / load
+1. Fuel and a gas station
+2. Fertilizer
+3. Dealer (van, harvester) and paint shop
+4. Save / load
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
