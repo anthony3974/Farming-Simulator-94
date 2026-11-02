@@ -151,7 +151,7 @@ public class FieldController : MonoBehaviour
             confirmTrade = true;
             confirmUntil = Time.time + ConfirmSeconds;
             string question = IsPlayerField
-                ? $"Sell {fieldName} for $ {price}?" + (stage != Stage.Empty ? " (the crop is lost)" : "")
+                ? $"Sell {fieldName} for $ {price}?" + (stage != Stage.Empty ? " (the crop stays on the field)" : "")
                 : $"Buy {fieldName} from {ownerName} for $ {price}?";
             box.Flash($"{question}\nPress B again to confirm", ConfirmSeconds);
             return;
@@ -162,11 +162,9 @@ public class FieldController : MonoBehaviour
         if (IsPlayerField)
         {
             playerValues.Money += sellPrice;
-            StopAllCoroutines();
-            stage = Stage.Empty;
-            cropType = CropType.None;
+            // the crop keeps growing, so you can buy the field back and harvest it
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
-            Changed();
+            RefreshUI();
             box.Flash($"Sold {fieldName} for $ {price}", 3f);
         }
         else
