@@ -33,6 +33,10 @@ This is an initial plan from reading the code. It is not the plan from the earli
 7. **`ReadyCrop` starts a growth timer** (`StartCoroutine(Grow(7))` after reaching Ready) that does nothing useful. Remove it.
 8. **Local package edits** (`Packages/manifest.json`, `packages-lock.json`) are uncommitted. Check them before committing.
 
+### Current bugs*
+(*Not a real bug yet, a limit we will hit once there are enough fields. Not numbered so the item numbers below and the references to them stay valid.)
+- **Field names run out.** Non-player fields get a random unused name from a list of 12 names taken from the 2D game (`FieldNames` in `FieldController`). Once all 12 are taken, the next field keeps whatever name is typed in the Inspector, which can be blank or a duplicate. Fix: when the list is empty, build a unique name (for example "Dahl Ranch 2"), or add more names. Not urgent: there are only 3 fields now and the number of fields in the final map is not decided.
+
 ### Code quality
 9. **Replace the long if/else chains** in `FieldStageChanger` and `SetColor` with a crop-type enum plus a stage index (0 to 5), and one colour table (`Color32[,]`).
 10. **Create 16 materials per field.** Share them across fields, or use a `MaterialPropertyBlock` or colour property instead.
