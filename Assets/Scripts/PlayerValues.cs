@@ -15,6 +15,13 @@ public class PlayerValues : MonoBehaviour
     [Tooltip("Optional. Shows the money in the counters panel.")]
     public TMP_Text txMoney;
 
+    private int seeds;
+    [Tooltip("Optional. Shows the seeds in the Statistics panel.")]
+    public TMP_Text txSeeds;
+    private int fertilizer;
+    [Tooltip("Optional. Shows the fertilizer in the Statistics panel.")]
+    public TMP_Text txFertilizer;
+
     private InputManager inputManager;
 
     /// <summary>The crop planted in your fields. Change it with the C key.</summary>
@@ -41,11 +48,14 @@ public class PlayerValues : MonoBehaviour
         txBarley.text = $"{inBarley:N0}";
         txOat.text = $"{inOat:N0}";
         if (txMoney != null) txMoney.text = $"$ {money:N2}";
-
+        if (txSeeds != null) txSeeds.text = $"{seeds:N0}";
+        if (txFertilizer != null) txFertilizer.text = $"{fertilizer:N0}";
     }
 
     public int InWheat { get => inWheat; set { inWheat = value; UpdateUI(); } }
     public int InBarley { get => inBarley; set { inBarley = value; UpdateUI(); } }
     public float Money { get => money; set { money = value; UpdateUI(); } }
+    public int Seeds { get => seeds; set { seeds = value; UpdateUI(); } }
+    public int Fertilizer { get => fertilizer; set { fertilizer = value; UpdateUI(); } }
     public int InOat { get => inOat; set { inOat = value; UpdateUI(); } }
 }
