@@ -44,7 +44,7 @@ public class Building : MonoBehaviour
             return;
         }
         if (messageText != null) messageText.text = "";
-        if (prompt == null) prompt = ScreenPrompt.Create();
+        if (prompt == null) prompt = ScreenPrompt.Instance;
     }
 
     void Update()
@@ -141,6 +141,30 @@ public class ScreenPrompt : MonoBehaviour
 {
     private GameObject panel;
     private TMP_Text label;
+    private float flashUntil;
+
+    private static ScreenPrompt instance;
+
+    /// <summary>The shared on-screen box (created on first use).</summary>
+    public static ScreenPrompt Instance
+    {
+        get { if (instance == null) instance = Create(); return instance; }
+    }
+
+    /// <summary>Show a message for a few seconds, then hide.</summary>
+    public void Flash(string text, float seconds)
+    {
+        Show(text);
+        flashUntil = Time.time + seconds;
+    }
+
+    void Update()
+    {
+        if (flashUntil > 0 && Time.time >= flashUntil) { flashUntil = 0; Hide(); }
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics() => instance = null;
 
     public static ScreenPrompt Create()
     {
@@ -155,20 +179,32 @@ public class ScreenPrompt : MonoBehaviour
 
         var p = canvasGo.AddComponent<ScreenPrompt>();
 
-        p.panel = new GameObject("Panel", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+        // gold border (outer) that grows with the text, dark panel inside it
+        p.panel = new GameObject("Border", typeof(RectTransform), typeof(UnityEngine.UI.Image),
+            typeof(UnityEngine.UI.VerticalLayoutGroup), typeof(UnityEngine.UI.ContentSizeFitter));
         p.panel.transform.SetParent(canvasGo.transform, false);
         var rt = (RectTransform)p.panel.transform;
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = Vector2.zero;
-        rt.sizeDelta = new Vector2(520, 70);
-        p.panel.GetComponent<UnityEngine.UI.Image>().color = new Color32(60, 45, 20, 220);
+        rt.sizeDelta = new Vector2(760, 0);
+        p.panel.GetComponent<UnityEngine.UI.Image>().color = new Color(1f, 0.8f, 0f, 1f);
+        var outer = p.panel.GetComponent<UnityEngine.UI.VerticalLayoutGroup>();
+        outer.padding = new RectOffset(4, 4, 4, 4);
+        outer.childControlWidth = outer.childControlHeight = true;
+        outer.childForceExpandWidth = outer.childForceExpandHeight = false;
+        p.panel.GetComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+
+        var inner = new GameObject("Panel", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.VerticalLayoutGroup));
+        inner.transform.SetParent(p.panel.transform, false);
+        inner.GetComponent<UnityEngine.UI.Image>().color = new Color32(60, 45, 20, 255);
+        var lg = inner.GetComponent<UnityEngine.UI.VerticalLayoutGroup>();
+        lg.padding = new RectOffset(24, 24, 14, 14);
+        lg.childControlWidth = lg.childControlHeight = true;
+        lg.childForceExpandWidth = lg.childForceExpandHeight = false;
 
         var textGo = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
-        textGo.transform.SetParent(p.panel.transform, false);
-        var trt = (RectTransform)textGo.transform;
-        trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
-        trt.offsetMin = trt.offsetMax = Vector2.zero;
+        textGo.transform.SetParent(inner.transform, false);
         p.label = textGo.GetComponent<TextMeshProUGUI>();
         p.label.alignment = TextAlignmentOptions.Center;
         p.label.fontSize = 30;

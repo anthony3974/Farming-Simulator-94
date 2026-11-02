@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CropType { None, Wheat, Barley, Oat }
+
 /// <summary>
-/// One farm field. Press the interact key inside it to plant a random crop, wait while it
+/// One farm field. Press the interact key inside it to plant the selected crop, wait while it
 /// grows through three stages, then press again to harvest.
 /// </summary>
 public class FieldController : MonoBehaviour
@@ -19,6 +21,14 @@ public class FieldController : MonoBehaviour
     [Tooltip("Fields owned by this name belong to the player and can be used. All other fields get a random AI owner.")]
     [SerializeField] private string playerName = "Anthony";
 
+    // Field names taken from the 2D game. Fields not owned by the player get a random unused one.
+    private static readonly string[] FieldNames =
+    {
+        "Dahl Ranch", "Alpine Farming", "John Deer", "Erlengrat", "Welker Farms", "Goldcrest Valley",
+        "Lone Oak", "Estancia Lapacho", "Felsbrunn", "Minibrunn", "No Man's Land", "Ravenport",
+    };
+    private static readonly List<string> usedNames = new();
+
     // Short list for now, add more names later.
     private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
 
@@ -27,8 +37,6 @@ public class FieldController : MonoBehaviour
 
     [Tooltip("Field area is scale.x * scale.z divided by this number.")]
     [SerializeField] private float sizeDivisor = 0.043029259f;
-
-    private enum CropType { None, Wheat, Barley, Oat }
 
     private enum Stage { Empty, Planted, Growing1, Growing2, Growing3, Ready }
 
@@ -58,6 +66,7 @@ public class FieldController : MonoBehaviour
     private static void ResetStatics()
     {
         fieldsInside.Clear();
+        usedNames.Clear();
         materialCache.Clear();
     }
 
@@ -69,10 +78,7 @@ public class FieldController : MonoBehaviour
 
     private Stage stage = Stage.Empty;
     private CropType cropType = CropType.None;
-    private CropType lastCropType = CropType.None;
     private byte fertStage;
-
-    private readonly System.Random rn = new();
 
     void Start()
     {
@@ -83,7 +89,18 @@ public class FieldController : MonoBehaviour
             return;
         }
 
-        if (ownerName != playerName)
+        if (!IsPlayerField)
+        {
+            var free = new List<string>(FieldNames);
+            free.RemoveAll(usedNames.Contains);
+            if (free.Count > 0)
+            {
+                fieldName = free[UnityEngine.Random.Range(0, free.Count)];
+                usedNames.Add(fieldName);
+            }
+        }
+
+        if (!IsPlayerField)
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
 
         meshRenderer = GetComponent<MeshRenderer>();
@@ -95,8 +112,71 @@ public class FieldController : MonoBehaviour
 
     void Update()
     {
-        if (inputManager.Interact && IsActiveField() && ownerName == playerName)
+        if (!IsActiveField()) return;
+
+        if (inputManager.Interact && IsPlayerField)
             Interact();
+
+        if (inputManager.Trade)
+            Trade();
+
+        if (confirmTrade && Time.time > confirmUntil)
+            confirmTrade = false;
+    }
+
+    [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
+    [SerializeField, Range(0f, 1f)] private float sellBackFraction = 0.8f;
+
+    private bool IsPlayerField => ownerName == playerName;
+
+    // B key: first press asks, second press (within a few seconds) confirms.
+    private bool confirmTrade;
+    private float confirmUntil;
+    private const float ConfirmSeconds = 4f;
+
+    private void Trade()
+    {
+        var box = ScreenPrompt.Instance;
+        float sellPrice = value * sellBackFraction;
+        string price = (IsPlayerField ? sellPrice : value).ToString("N0");
+
+        if (!confirmTrade)
+        {
+            if (!IsPlayerField && playerValues.Money < value)
+            {
+                box.Flash($"Not enough money. {fieldName} costs $ {price}", 3f);
+                return;
+            }
+
+            confirmTrade = true;
+            confirmUntil = Time.time + ConfirmSeconds;
+            string question = IsPlayerField
+                ? $"Sell {fieldName} for $ {price}?" + (stage != Stage.Empty ? " (the crop is lost)" : "")
+                : $"Buy {fieldName} from {ownerName} for $ {price}?";
+            box.Flash($"{question}\nPress B again to confirm", ConfirmSeconds);
+            return;
+        }
+
+        confirmTrade = false;
+
+        if (IsPlayerField)
+        {
+            playerValues.Money += sellPrice;
+            StopAllCoroutines();
+            stage = Stage.Empty;
+            cropType = CropType.None;
+            ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
+            Changed();
+            box.Flash($"Sold {fieldName} for $ {price}", 3f);
+        }
+        else
+        {
+            if (playerValues.Money < value) { box.Flash("Not enough money", 3f); return; }
+            playerValues.Money -= value;
+            ownerName = playerName;
+            RefreshUI();
+            box.Flash($"Bought {fieldName} for $ {price}", 3f);
+        }
     }
 
     private bool IsActiveField()
@@ -119,6 +199,7 @@ public class FieldController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             fieldsInside.Remove(this);
+            confirmTrade = false;
 
             if (fieldsInside.Count > 0) fieldsInside[^1].RefreshUI();
             else fieldView.UpdateUI(false);
@@ -141,13 +222,8 @@ public class FieldController : MonoBehaviour
 
     private void Plant()
     {
-        // pick a random crop, never the same one twice in a row on this field
-        CropType picked;
-        do picked = (CropType)(rn.Next(3) + 1);
-        while (picked == lastCropType);
-
-        cropType = picked;
-        lastCropType = picked;
+        // plant whatever the player picked with the C key
+        cropType = playerValues.SelectedCrop;
         stage = Stage.Planted;
 
         StartCoroutine(Grow());

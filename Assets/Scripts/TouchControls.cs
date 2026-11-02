@@ -33,6 +33,9 @@ public class TouchControls : MonoBehaviour
         CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: 60, y: 310, size: 150);
         CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: 240, y: 310, size: 150);
         CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: 60, y: 490, size: 150);
+        // buy/sell field (B) and next crop (C); positions are temporary, rearrange later
+        CreateButton(canvas, TouchButton.Trade, "BUY/SELL", bottomRight: true, x: 240, y: 490, size: 150);
+        CreateButton(canvas, TouchButton.CycleCrop, "CROP", bottomRight: true, x: 60, y: 670, size: 150);
     }
 
     private static void EnsureEventSystem()

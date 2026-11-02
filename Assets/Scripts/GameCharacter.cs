@@ -29,6 +29,9 @@ public partial class GameCharacter : MonoBehaviour
 
     void Start()
     {
+        var speedo = gameObject.AddComponent<Speedometer>();
+        speedo.target = characterLocation;
+        speedo.maxWorldSpeed = topSpeed * speedConverter * speed; // 50 km/h shown at top speed
         // start from the camera's current pitch (-180..180) instead of Euler 0..360
         pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, characterCam.localEulerAngles.x), minPitch, maxPitch);
         // with on-screen touch buttons the cursor must stay free so they can be clicked

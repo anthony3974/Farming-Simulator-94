@@ -15,9 +15,25 @@ public class PlayerValues : MonoBehaviour
     [Tooltip("Optional. Shows the money in the counters panel.")]
     public TMP_Text txMoney;
 
+    private InputManager inputManager;
+
+    /// <summary>The crop planted in your fields. Change it with the C key.</summary>
+    public CropType SelectedCrop { get; private set; } = CropType.Wheat;
+
     public void Start()
     {
+        inputManager = GetComponent<InputManager>();
+        if (inputManager == null) inputManager = FindFirstObjectByType<InputManager>();
         UpdateUI();
+    }
+
+    void Update()
+    {
+        if (inputManager != null && inputManager.CycleCrop)
+        {
+            SelectedCrop = SelectedCrop == CropType.Oat ? CropType.Wheat : SelectedCrop + 1;
+            ScreenPrompt.Instance.Flash($"Selected crop: {SelectedCrop}", 2f);
+        }
     }
     private void UpdateUI()
     {
