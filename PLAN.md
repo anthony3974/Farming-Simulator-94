@@ -59,8 +59,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - Decide: real mirrors on the model, or a screen overlay. Check the Android frame rate after adding them.
 
 ## Waiting on the owner (decisions)
-- **Sky:** keep the pink sky (`Epic_GloriousPink`) or just use the regular blue one. Kept now: `Epic_BlueSunset` (in use), `Day_BlueSky_Nothing`, `Cold Sunset`, `Epic_GloriousPink`.
-- **Terrain layers:** which of `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B` and `Pebbles_C` to keep for good (`Grass_B` is in use). Then trim the rest, then decide about the git history cleanup (see Repo housekeeping).
+- **Sky and terrain layers: decided (owner, 2026-11-03).** The current set is final for now (the owner may delete one or two later). See Repo housekeeping.
 - **Camera:** `staticCamera` is still ticked on `GameCharacter` for testing. Untick it to restore mouse look.
 - **Touch layout:** fixed from a phone screenshot (2026-11-02): steering arrows moved right of the speedometer, right-hand buttons shrunk to 130 px so CROP no longer covers the Money/Seeds/Fertilizer panel. Needs a re-check on the phone (not yet seen after the change).
 
@@ -187,18 +186,21 @@ Today harvesting is instant: press E / USE on a Ready field and the whole field'
 
 ## Repo housekeeping
 - [x] Android build output is no longer tracked (committed and pushed); `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
-- [x] **UserSettings stays tracked**, and `UserSettings/Layouts/` (the window layouts) is now tracked too, so the editor layout follows the repo.
-- [x] **`AllSkyFree` trimmed** from 321 MB to 37 MB (commit `ee878d3`). Kept 5 skyboxes, each with only its material and six face images: `Epic_BlueSunset` (the one in use), `Day_BlueSky_Nothing` (in the `Cartoon Base BlueSky` folder), `Cold Sunset`, `Cartoon Base NightSky` and `Epic_GloriousPink`. Still to decide: keep the pink sky or just use the regular blue one.
-- [x] **Terrain texture cleanup (done in the working tree, commits `3d7c62f`, `061efda`, `3883848`).** Removed the sample heightmaps and detail textures and the layers Snow, Sand, Rock, Tidal_Pools, Soil_Rocks, Muddy, Heather, Grass_Dry, Black_Sand and Pebbles_A. `Assets/TerrainSampleAssets/Textures` went from 1.9 GB to 505 MB. Kept layers: `Grass_B` (in use on the terrain), `Grass_A`, `Grass_Moss` (possible extra grass), `Grass_Soil` (dirt path contender), `Pebbles_B` (dirt path contender) and `Pebbles_C` (likely gravel). Still to decide: which of these to keep for good, then trim the rest. The terrain data (`Assets/Terrain/New Terrain.asset`, binary) was checked for each removed layer before deleting.
-- **Git history cleanup (READY to start, owner 2026-11-03; back up first).** The files above are gone from the working folder, but the **`.git` folder is still about 2 GB**, because the old versions stay in the history. A fresh clone downloads all of it. Shrinking it means rewriting history, which is the risky part:
-  1. Finish choosing the terrain layers and skyboxes first, so the cleanup is done once.
-  2. Make a backup copy of the whole repo folder (or a `git clone --mirror`) before anything else.
-  3. Install `git-filter-repo` (not installed yet) and run it to drop the deleted paths from all commits: `Assets/TerrainSampleAssets/Textures/Heightmaps` and `Details`, the removed terrain layers, the removed `AllSkyFree` folders, and the old Android build output if it is still in the history.
-  4. Re-add the `origin` remote (`filter-repo` removes it) and **force push**. Every commit hash changes, so the commit numbers in this plan become out of date.
-  5. The tag `baseline-2022.3.55` must be re-created or re-pushed, because it points at an old commit.
-  6. Any other copy or clone of the repo (a laptop, a friend's copy) must be deleted and cloned again. GitHub may keep the old data for a while; contacting GitHub support removes it for sure.
-  7. Open the project in Unity afterwards and check that nothing is missing.
-  - Difficulty: moderate. It is a few commands, but it cannot be undone after the force push, so the backup matters. Not needed to keep working. Only worth it if clone size matters.
+- [x] **`UserSettings/` and `.utmp/` are no longer tracked** (2026-11-03). Both change on their own (editor layout and state, Android build cache), so they are in `.gitignore`. The files stay on disk and Unity recreates them. This replaces the earlier decision to track the editor layouts.
+- [x] **`AllSkyFree` trimmed** from 321 MB to 35 MB (commit `ee878d3`, later one more sky removed). **Final set: 4 skyboxes**, each with only its material and six face images: `Epic_BlueSunset` (the one in use), `Day_BlueSky_Nothing` (in the `Cartoon Base BlueSky` folder), `Cold Sunset` and `Epic_GloriousPink`. `Cartoon Base NightSky` was removed. Decided by the owner on 2026-11-03; one or two may be deleted later.
+- [x] **Terrain texture cleanup (commits `3d7c62f`, `061efda`, `3883848`).** Removed the sample heightmaps and detail textures and the layers Snow, Sand, Rock, Tidal_Pools, Soil_Rocks, Muddy, Heather, Grass_Dry, Black_Sand and Pebbles_A. `Assets/TerrainSampleAssets/Textures` went from 1.9 GB to 505 MB. **Final kept layers:** `Grass_B` (in use on the terrain), `Grass_A`, `Grass_Moss` (possible extra grass), `Grass_Soil` (dirt path contender), `Pebbles_B` (dirt path contender) and `Pebbles_C` (likely gravel). Decided by the owner on 2026-11-03; one or two may be deleted later. The terrain data (`Assets/Terrain/New Terrain.asset`, binary) was checked for each removed layer before deleting.
+- [x] **Old branches deleted** (2026-11-03): `unity-upgrade`, `claude/local-commit-sycf2r`, `claude/advanced-crop-harvesting-avgvmn` and `ccr-7bfcb41e-sg21oy`. Every commit on them was already in `main`, so nothing was lost. Only `main` remains. The advanced harvesting design is in this file ("Advanced crop harvesting").
+- **Git history cleanup (approved by the owner 2026-11-03; the owner tests locally before any push).** The deleted files are gone from the working folder, but the **`.git` folder is still about 2 GB**, because the old versions stay in the history, and a fresh clone downloads all of it. Shrinking it means rewriting history, which is the risky part. The owner does not need the old Unity 2022 history, so the plan is to cut it. Agreed plan:
+  1. Done: terrain layers and skies are final, old branches deleted, `.utmp/` and `UserSettings/` untracked (see above). `git-filter-repo` is installed.
+  2. Back up first with `git clone --mirror` to a folder outside the project.
+  3. Run `git-filter-repo` once, doing two things: (a) remove from every commit all paths that were deleted during the project's life (old terrain textures, heightmaps, detail textures, removed skies, old Android build output) plus `.utmp/` and `UserSettings/`; (b) cut the history so the **first commit is the Unity 6 upgrade (`464a5ee`, 2026-10-31)**, with its message reworded to "Unity 6 upgrade (earlier history removed)". The 32 earlier commits (the Unity 2022.3 era, Feb 2025 to the upgrade) are dropped, and 69 are kept. The big files were added in the very first commit, so the cut alone would not shrink the repo; both passes are needed.
+  4. Try it on a copy first (a dry run) and check the new commit count and `.git` size before touching the real repo.
+  5. Translate the old commit hashes quoted in this file to the new ones with filter-repo's commit map (hashes of dropped commits cannot be translated).
+  6. Re-add the `origin` remote (`filter-repo` removes it). The tag `baseline-2022.3.55` is **not** recreated: it is deleted locally and on GitHub (a tag left on GitHub would keep the old history reachable).
+  7. **The owner opens the project in Unity, builds and plays it before anything is pushed.** Nothing is pushed until the owner says so.
+  8. Force push (`--force-with-lease`). Every commit hash changes. No one else may push to `origin` at the same time.
+  9. Any other clone of the repo must be deleted and cloned again (the owner already removed the old laptop copy). GitHub may keep the old data for a while; contacting GitHub support removes it for sure.
+  - It cannot be undone after the force push, so the mirror backup matters.
   - Git LFS only makes sense for large files we keep.
 - Ask before shrinking anything.
 

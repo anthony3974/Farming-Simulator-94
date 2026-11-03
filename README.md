@@ -54,6 +54,9 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - `Assets/Scripts`: game code (`FieldController`, `Building`, `PlayerValues`, `HelpMenu`, `GameCharacter`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`)
 - `Assets/Scenes`: game scene
 - `Assets/Prefabs`: houses, garage, truck
+- `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
+- `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
+- `Assets/Editor`: editor tools (the Map Border Builder)
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
 ## Status
