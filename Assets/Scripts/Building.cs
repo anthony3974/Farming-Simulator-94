@@ -5,7 +5,8 @@ using UnityEngine;
 
 /// <summary>
 /// A building with a trigger zone. Press the interact key (E / USE) inside the zone to run
-/// the building's action. Same pattern as FieldController: only the last zone entered reacts.
+/// the building's action. Same pattern as FieldController: only the last zone the driven vehicle
+/// entered reacts.
 /// </summary>
 public class Building : MonoBehaviour
 {
@@ -30,16 +31,22 @@ public class Building : MonoBehaviour
     public float minSeedCost = 4500f;
     public float maxSeedCost = 5500f;
 
+    [Header("Dealer (Dealer type only)")]
+    [Tooltip("The dealer that opens its shop menu here. Empty = the Dealer on this object or a parent.")]
+    public Dealer dealer;
+
     [Tooltip("Optional. Text object used for the short sale message.")]
     public TMP_Text messageText;
     public float messageSeconds = 3f;
 
-    private static readonly List<Building> buildingsInside = new();
     private static ScreenPrompt prompt;
     private string promptText; // built once per visit, not every frame
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetStatics() { buildingsInside.Clear(); prompt = null; }
+    private static void ResetStatics() { prompt = null; }
+
+    // the driven vehicle is in this zone, and it is the last building zone it entered
+    private bool IsCurrent => Vehicle.Active != null && Vehicle.Active.CurrentZone<Building>() == this;
 
     void Start()
     {
@@ -55,7 +62,7 @@ public class Building : MonoBehaviour
 
     void Update()
     {
-        if (inputManager.Interact && buildingsInside.Count > 0 && buildingsInside[^1] == this)
+        if (inputManager.Interact && IsCurrent)
             Interact();
 
         UpdatePrompt();
@@ -63,7 +70,7 @@ public class Building : MonoBehaviour
 
     private void UpdatePrompt()
     {
-        if (prompt == null || buildingsInside.Count == 0 || buildingsInside[^1] != this) return;
+        if (prompt == null || !IsCurrent) return;
 
         // a message (from here or from a field) is on screen: leave it alone until it ends
         if (prompt.IsFlashing) return;
@@ -79,35 +86,44 @@ public class Building : MonoBehaviour
         {
             case BuildingType.Sell: return $"Press {key} to sell {crop}";
             case BuildingType.Buy: return $"Press {key} to buy {seedsPerPurchase:N0} seeds (about $ {(minSeedCost + maxSeedCost) / 2f:N0})";
+            case BuildingType.Dealer: return $"Press {key} to buy vehicles";
             default: return $"{type} (coming soon)";
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-        buildingsInside.Remove(this);
-        buildingsInside.Add(this);
+        if (!Vehicle.TryGet(other, out var vehicle)) return;
+        vehicle.EnterZone(this);
         promptText = null;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-        buildingsInside.Remove(this);
-        HideIfLast();
+        if (!Vehicle.TryGet(other, out var vehicle)) return;
+        vehicle.ExitZone(this);
+        HideIfNone();
     }
+
+    private void OnEnable() => Vehicle.ActiveChanged += OnVehicleSwitched;
 
     private void OnDisable()
     {
-        buildingsInside.Remove(this);
-        HideIfLast();
+        Vehicle.ActiveChanged -= OnVehicleSwitched;
+        HideIfNone();
     }
 
-    // leaving the last zone hides the box, but never cuts off a message that is still showing
-    private void HideIfLast()
+    private void OnVehicleSwitched()
     {
-        if (buildingsInside.Count == 0 && prompt != null && !prompt.IsFlashing) prompt.Hide();
+        promptText = null;
+        HideIfNone();
+    }
+
+    // the driven vehicle is in no building zone: hide the box, but never cut off a message that is still showing
+    private void HideIfNone()
+    {
+        bool inside = Vehicle.Active != null && Vehicle.Active.CurrentZone<Building>() != null;
+        if (!inside && prompt != null && !prompt.IsFlashing) prompt.Hide();
     }
 
     private void Interact()
@@ -116,8 +132,16 @@ public class Building : MonoBehaviour
         {
             case BuildingType.Sell: Sell(); break;
             case BuildingType.Buy: BuySeeds(); break;
+            case BuildingType.Dealer: OpenDealer(); break;
             default: Debug.Log($"{type} building is not implemented yet."); break;
         }
+    }
+
+    private void OpenDealer()
+    {
+        if (dealer == null) dealer = GetComponentInParent<Dealer>();
+        if (dealer != null) dealer.OpenMenu();
+        else Debug.LogWarning($"Dealer building '{name}' has no Dealer to open.", this);
     }
 
     private void Sell()

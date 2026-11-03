@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>The on-screen buttons shown on touch devices.</summary>
-public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help }
+public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help, Vehicle }
 
 /// <summary>
 /// Single place the game reads input from. Keyboard/mouse always work; on Android (or when
@@ -23,6 +23,7 @@ public class InputManager : MonoBehaviour
     private bool trade;
     private bool cycleCrop;
     private bool help;
+    private int switchVehicle;
     private bool up;
     private bool right;
     private bool down;
@@ -37,9 +38,16 @@ public class InputManager : MonoBehaviour
     private bool touchTradeQueued;
     private bool touchCropQueued;
     private bool touchHelpQueued;
+    private bool touchVehicleQueued;
 
     /// <summary>True when the on-screen buttons are active.</summary>
     public bool TouchControlsActive { get; private set; }
+
+    /// <summary>
+    /// Set by a menu that needs the mouse (the dealer). While true, driving and the game keys are ignored
+    /// and a click does not grab the mouse.
+    /// </summary>
+    public bool MenuOpen { get; set; }
 
     void Awake()
     {
@@ -65,6 +73,7 @@ public class InputManager : MonoBehaviour
             case TouchButton.Trade: if (pressed) touchTradeQueued = true; break;
             case TouchButton.CycleCrop: if (pressed) touchCropQueued = true; break;
             case TouchButton.Help: if (pressed) touchHelpQueued = true; break;
+            case TouchButton.Vehicle: if (pressed) touchVehicleQueued = true; break;
         }
     }
 
@@ -95,6 +104,22 @@ public class InputManager : MonoBehaviour
         touchCropQueued = false;
         help = Input.GetKeyDown(KeyCode.H) || touchHelpQueued;
         touchHelpQueued = false;
+
+        switchVehicle = 0;
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) switchVehicle = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) switchVehicle = 2;
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) switchVehicle = 3;
+        else if (touchVehicleQueued) switchVehicle = -1;
+        touchVehicleQueued = false;
+
+        // a menu is open: the vehicle stops taking input (it rolls to a stop) and the game keys do nothing
+        if (MenuOpen)
+        {
+            horizontal = vertical = 0f;
+            up = down = left = right = false;
+            interact = trade = cycleCrop = false;
+            switchVehicle = 0;
+        }
     }
 
     public float Horizontal { get => horizontal; set => horizontal = value; }
@@ -108,6 +133,8 @@ public class InputManager : MonoBehaviour
     public bool CycleCrop { get => cycleCrop; set => cycleCrop = value; }
     /// <summary>H key: open or close the help menu.</summary>
     public bool Help { get => help; set => help = value; }
+    /// <summary>1 / 2 / 3 keys: drive the truck, van or harvester (1 to 3). CAR touch button: -1 = next vehicle. 0 = no request.</summary>
+    public int SwitchVehicle => switchVehicle;
     public bool Up { get => up; set => up = value; }
     public bool Right { get => right; set => right = value; }
     public bool Down { get => down; set => down = value; }

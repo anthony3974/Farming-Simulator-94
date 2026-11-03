@@ -74,14 +74,12 @@ public class FieldController : MonoBehaviour
     // Materials are shared between fields (one per base material + colour) instead of being created per field.
     private static readonly Dictionary<(Material, int), Material> materialCache = new();
 
-    // Fields the player is currently standing in. The last one entered is the active one,
-    // so overlapping fields no longer all react to a single key press.
-    private static readonly List<FieldController> fieldsInside = new();
+    // Each vehicle remembers the fields it is in (Vehicle.CurrentZone). The last one the driven vehicle
+    // entered is the active one, so overlapping fields do not all react to a single key press.
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
     {
-        fieldsInside.Clear();
         usedNames.Clear();
         materialCache.Clear();
     }
@@ -206,35 +204,44 @@ public class FieldController : MonoBehaviour
 
     private bool IsActiveField()
     {
-        return fieldsInside.Count > 0 && fieldsInside[^1] == this;
+        return Vehicle.Active != null && Vehicle.Active.CurrentZone<FieldController>() == this;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            fieldsInside.Remove(this);
-            fieldsInside.Add(this);
-            RefreshUI();
-        }
+        if (!Vehicle.TryGet(other, out var vehicle)) return;
+        vehicle.EnterZone(this);
+        if (vehicle.IsActive) RefreshUI();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            fieldsInside.Remove(this);
-            confirmTrade = false;
-            seedQuote = 0;
-
-            if (fieldsInside.Count > 0) fieldsInside[^1].RefreshUI();
-            else fieldView.UpdateUI(false);
-        }
+        if (!Vehicle.TryGet(other, out var vehicle)) return;
+        vehicle.ExitZone(this);
+        if (vehicle.IsActive) Left();
     }
 
-    private void OnDisable()
+    private void OnEnable() => Vehicle.ActiveChanged += OnVehicleSwitched;
+    private void OnDisable() => Vehicle.ActiveChanged -= OnVehicleSwitched;
+
+    // the player switched vehicles: show the pop-up for the field the new vehicle is parked in, or hide it
+    private void OnVehicleSwitched()
     {
-        fieldsInside.Remove(this);
+        confirmTrade = false;
+        seedQuote = 0;
+        if (IsActiveField()) RefreshUI();
+        else if (Vehicle.Active == null || Vehicle.Active.CurrentZone<FieldController>() == null) fieldView.UpdateUI(false);
+    }
+
+    // the driven vehicle left this field: show the field it is still in (overlap), or hide the pop-up
+    private void Left()
+    {
+        confirmTrade = false;
+        seedQuote = 0;
+
+        var current = Vehicle.Active.CurrentZone<FieldController>();
+        if (current != null) current.RefreshUI();
+        else fieldView.UpdateUI(false);
     }
 
     // ---- gameplay ----
@@ -279,7 +286,12 @@ public class FieldController : MonoBehaviour
 
     private void Harvest()
     {
-        int amount = Convert.ToInt32(size);
+        // the harvester brings in more (2D game: +60%)
+        var vehicle = Vehicle.Active;
+        float bonus = vehicle != null ? vehicle.harvestBonus : 0f;
+        int amount = Convert.ToInt32(size * (1f + bonus));
+        if (bonus > 0f)
+            ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType} (+{bonus * 100f:0}% with the {vehicle.displayName})", 3f);
 
         if (cropType == CropType.Wheat) playerValues.InWheat += amount;
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;

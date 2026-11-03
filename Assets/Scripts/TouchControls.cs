@@ -37,6 +37,7 @@ public class TouchControls : MonoBehaviour
         CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: col1, y: row2, size: btn);
         CreateButton(canvas, TouchButton.Trade, "BUY/SELL", bottomRight: true, x: col2, y: row2, size: btn);
         CreateButton(canvas, TouchButton.CycleCrop, "CROP", bottomRight: true, x: col1, y: row3, size: btn);
+        CreateButton(canvas, TouchButton.Vehicle, "CAR", bottomRight: true, x: col2, y: row3, size: btn);
 
         // help menu, top-left corner
         CreateButton(canvas, TouchButton.Help, "HELP", bottomRight: false, x: 40, y: 40, size: 110, top: true);

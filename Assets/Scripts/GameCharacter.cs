@@ -1,20 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public partial class GameCharacter : MonoBehaviour
+/// <summary>
+/// The player: reads input, drives the active <see cref="Vehicle"/>, moves the follow camera and switches
+/// between the vehicles you own (1 / 2 / 3, or CAR on touch). Sits on the starting truck, which is the
+/// first vehicle you own; vehicles bought at the dealer are added with <see cref="AddVehicle"/>.
+/// </summary>
+public class GameCharacter : MonoBehaviour
 {
     // input manager
     public InputManager inputManager;
 
     public bool cameraY = true;
-    public bool gravity = true;
-    public bool drive = true;
-
-    public CharacterController characterController;
-    public Transform characterLocation;
     public Transform characterCam;
 
     public float mouseSensitivity = 5.0f;
-    public float speed = 10;
 
     // Camera look limits in degrees: negative = looking up, positive = looking down
     public float minPitch = -10f;
@@ -27,12 +27,27 @@ public partial class GameCharacter : MonoBehaviour
     private bool mouseLook;
     private int ignoreMouseFrames;
 
+    private readonly Dictionary<VehicleKind, Vehicle> owned = new();
+    private Speedometer speedo;
+
     void Start()
     {
-        var speedo = gameObject.AddComponent<Speedometer>();
-        speedo.target = characterLocation;
-        speedo.maxWorldSpeed = topSpeed * speedConverter * speed; // 50 km/h shown at top speed
-        SetupFrontWheels();
+        // the truck this script sits on is the starting vehicle (the Dealer Builder tool adds its Vehicle,
+        // this is a fallback with the truck's default values)
+        var truck = GetComponent<Vehicle>();
+        if (truck == null) truck = gameObject.AddComponent<Vehicle>();
+        if (truck.cameraOffset == Vector3.zero && characterCam.parent == truck.transform)
+            truck.cameraOffset = characterCam.localPosition;
+        AddVehicle(truck);
+
+        // the speedometer is calibrated on the truck (its top speed shows as its topSpeed km/h), so faster vehicles show more
+        speedo = gameObject.AddComponent<Speedometer>();
+        speedo.target = truck.transform;
+        speedo.maxWorldSpeed = truck.WorldTopSpeed;
+        speedo.maxDisplayKmh = truck.topSpeed;
+
+        DriveVehicle(truck);
+
         // start from the camera's current pitch (-180..180) instead of Euler 0..360
         pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, characterCam.localEulerAngles.x), minPitch, maxPitch);
         // with on-screen touch buttons the cursor must stay free so they can be clicked
@@ -45,7 +60,7 @@ public partial class GameCharacter : MonoBehaviour
         if (hasFocus) ignoreMouseFrames = 2;
     }
 
-    private void SetCursorLocked(bool locked)
+    public void SetCursorLocked(bool locked)
     {
         Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !locked;
@@ -55,7 +70,8 @@ public partial class GameCharacter : MonoBehaviour
     private void HandleCursor()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) SetCursorLocked(false);
-        else if (!inputManager.TouchControlsActive && Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
+        // a click on an open menu (the dealer) is for its buttons, not for grabbing the mouse
+        else if (!inputManager.TouchControlsActive && !inputManager.MenuOpen && Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
 
         mouseLook = !staticCamera && Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
         if (ignoreMouseFrames > 0) ignoreMouseFrames--;
@@ -65,39 +81,11 @@ public partial class GameCharacter : MonoBehaviour
     void Update()
     {
         HandleCursor();
-        if (gravity) ApplyGravity();
-        if (drive)
-        {
-            Drive();
-        }
-        else
-        {
-            Move();
-            Rotate();
-        }
+        HandleSwitching();
+        if (Vehicle.Active != null) Vehicle.Active.Drive(inputManager);
         if (cameraY) RotateY();
     }
-    private void ApplyGravity()
-    {
-        Vector3 move = -20f * Time.deltaTime * characterLocation.transform.up;
 
-        characterController.Move(move);
-    }
-    private void Move()
-    {
-        float horz = inputManager.Horizontal;
-        float vert = inputManager.Vertical;
-
-        Vector3 move = characterLocation.transform.forward * vert + transform.right * horz;
-        
-        characterController.Move(speed * Time.deltaTime * move);
-    }
-    private void Rotate()
-    {
-        if (!mouseLook) return;
-        float horz = inputManager.MouseX;
-        characterLocation.transform.Rotate(0, horz * mouseSensitivity, 0); // good for rotate X
-    }
     private void RotateY()
     {
         if (!mouseLook) return;
@@ -107,4 +95,55 @@ public partial class GameCharacter : MonoBehaviour
         characterCam.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
+    // ---- vehicles ----
+
+    public bool Owns(VehicleKind kind) => owned.TryGetValue(kind, out var v) && v != null;
+
+    /// <summary>Adds a vehicle you now own (it stays parked until you switch to it).</summary>
+    public void AddVehicle(Vehicle vehicle)
+    {
+        owned[vehicle.kind] = vehicle;
+    }
+
+    private void HandleSwitching()
+    {
+        int request = inputManager.SwitchVehicle;
+        if (request == 0) return;
+
+        if (request < 0)
+        {
+            // CAR button: the next vehicle you own, in the order truck, van, harvester
+            var current = Vehicle.Active != null ? Vehicle.Active.kind : VehicleKind.Truck;
+            int count = System.Enum.GetValues(typeof(VehicleKind)).Length;
+            for (int i = 1; i < count; i++)
+            {
+                var next = (VehicleKind)(((int)current + i) % count);
+                if (Owns(next)) { SwitchTo(next); return; }
+            }
+            ScreenPrompt.Instance.Flash("You only own the truck. Buy more vehicles at the dealer.", 3f);
+            return;
+        }
+
+        var kind = (VehicleKind)(request - 1);
+        if (!System.Enum.IsDefined(typeof(VehicleKind), kind)) return;
+        if (Owns(kind)) SwitchTo(kind);
+        else ScreenPrompt.Instance.Flash($"You don't own a {VehicleCatalog.Get(kind).name} yet. Buy one at the dealer.", 3f);
+    }
+
+    private void SwitchTo(VehicleKind kind)
+    {
+        var vehicle = owned[kind];
+        if (vehicle == Vehicle.Active) return;
+        DriveVehicle(vehicle);
+        ScreenPrompt.Instance.Flash($"Driving the {vehicle.displayName}", 2f);
+    }
+
+    private void DriveVehicle(Vehicle vehicle)
+    {
+        // the camera moves to the vehicle, keeping its tilt
+        characterCam.SetParent(vehicle.transform, false);
+        if (vehicle.cameraOffset != Vector3.zero) characterCam.localPosition = vehicle.cameraOffset;
+        if (speedo != null) speedo.SetTarget(vehicle.transform);
+        Vehicle.SetActiveVehicle(vehicle);
+    }
 }

@@ -3,11 +3,17 @@
 > ## >>> NEXT UP: Car Dealer, then Home Menu <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-03). The seed shop is finished (the owner may revise the economy later).
-> 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder; the tool is kept so the wall can be rebuilt or resized). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab can be dropped into the tool later. Walk or drive into the wall in Play mode once to confirm the truck cannot pass.
-> 1. **Car dealer.** The dealer building and buying vehicles. 2D reference (Case Dealer): van and harvester cost 5,000 each, tractor is the starting vehicle, keys 1 / 2 / 3 switch vehicle, the van is faster, the harvester adds 60% yield, four colours each. This is only a reference, not a rule (see "Direction"). In 3D this needs more than one drivable vehicle, so see the `GameCharacter` / `GameCharacterCar` note under "Other things noticed" (split into a base controller plus a vehicle controller, add enter/exit).
+> 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder; the tool is kept so the wall can be rebuilt or resized). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab can be dropped into the tool later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
+> 1. **Car dealer.** **Code written (2026-11-03), not yet tested in Unity.** Run **Tools > Dealer Builder > Build dealer** once with GameScene open, then save the scene. Owner's decisions (2026-11-03): the dealer is its **own new building**, a red L-shaped building on a grey concrete lot in the **top-left corner of the map**, the same place as in the 2D game (not the `House` or `Garage EX`). The **harvester is its own vehicle.** There are no vehicle models, so the van and the harvester are placeholders built from boxes. What was built:
+>    - `Vehicle` (was `GameCharacterCar`): one per vehicle, holds the driving code and stats (top speed, harvest bonus, camera position, paint parts) and remembers which fields and buildings it is parked in. `GameCharacter` is now the player only: input, camera, and the vehicles you own. The unused walking mode (`drive` off) was removed; there is no getting out on foot.
+>    - Keys **1 / 2 / 3** drive the truck / van / harvester (if owned), touch button **CAR** picks the next one. The camera and speedometer move to that vehicle; the others stay parked where you left them.
+>    - `Dealer` + `Building` type Dealer: press E / USE anywhere on the lot to open the shop menu (van and harvester, $5,000 each, pick one of four colours: red, yellow, blue, green). A bought vehicle is parked in the lot (5 spots).
+>    - Van: top speed 62 km/h (truck 50). Harvester: 38 km/h and **+60% harvest** (2D speed ratios 8 / 10 / 6).
+>    - `Assets/Editor/DealerBuilder.cs` builds the dealer from the 2D map rectangles (the 3D terrain is the 2D map turned on its side: 2D up = +X, 2D right = -Z) and adds a `Vehicle` to the truck. Running it again rebuilds the dealer.
+>    - To check in Play mode: drive to the dealer (the far end of the top road), buy both vehicles, switch with 1 / 2 / 3, harvest with the harvester, and check the shop menu on a phone.
 > 2. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
 >
-> **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing), and fix the field sell confirmation text on phones (see item 20). Ask the owner when these should be done.
+> **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
@@ -20,7 +26,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 ## Improvements needed
 
 ### Known bugs
-- **Reverse steering is the wrong direction.** When the truck reverses, the steering turns the wrong way (reported by the owner, 2026-11-03). Not investigated yet. Look at the steering and reverse handling in `GameCharacter` / `GameCharacterCar` and fix it for keyboard and touch (`<` `>`) input. Also check that the visual front-tire turning still matches.
+- ~~**Reverse steering is the wrong direction.**~~ **FIXED (2026-11-03, `b8749e9`).** In reverse the truck now turns the other way, like a real car; the front tires still point toward the steering button.
 
 ### Current bugs*
 (*Not a real bug yet, a limit we will hit once there are enough fields. Not numbered so the item numbers below and the references to them stay valid.)
@@ -33,7 +39,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
 19. **Help menu with the controls list.** **Phase 1 DONE (code written, not yet tested in Unity):** `HelpMenu` is a pop-up with a controls table (action, keyboard, touch button) and nothing else (no tips). H opens and closes it; on touch a HELP button sits top-left and tapping the pop-up closes it. Keyboard-only controls (mouse look, Esc, F1) are hidden on phones. Check the HELP button position on a real phone. Phase 2 (if wanted): icons instead of text, a controller or gamepad layout.
-20. **Touch controls rework.** The owner ran the phone build (2026-11-03) and it works, but the buttons are a little confusing and need reworking. Also: when selling a field the message says "press B to confirm", but a phone has no B key. Idea: show "press again to confirm" (or the key on desktop and the BUY/SELL button name on touch). Applies to every message that names a key.
+20. **Touch controls rework.** The owner ran the phone build (2026-11-03) and it works, but the buttons are a little confusing and need reworking. ~~Also: when selling a field the message says "press B to confirm", but a phone has no B key.~~ **Fixed (2026-11-03, `a92f85d`):** it now says "Press again to confirm". Other messages that name a key already show the touch name on phones (E / USE, 2 / CAR).
 
 ## Direction
 The owner is no longer cloning the 2D game one for one. The 3D game is its own new game and is built as it goes. The 2D analysis below is a reference and an idea source, not a checklist.
@@ -100,6 +106,8 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - [x] Help menu phase 1: controls list pop-up, H key and a touch HELP button (untested)
 - [x] Truck: the front tires turn with the steering button (visual only, `maxSteerAngle` 30 and `steerAnglePerSecond` 120 on `GameCharacter`; untested)
 - [x] Field layout: the home field (Tony) is split into four (2 x 2, even gaps). The two facing the house are the player's and the one nearest the house starts planted; the back two are AI. Six random AI fields were added on free ground (owner checked and saved the scene, 2026-11-02). The layout tool is kept only in git history (`d5b10c0`).
+- [x] Reverse steering fixed, field confirm message says "Press again to confirm" (2026-11-03)
+- [ ] Car dealer, `Vehicle` split and vehicle switching: code written, waiting for Tools > Dealer Builder and a Play-mode test (2026-11-03)
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)
@@ -122,7 +130,8 @@ Phase 1 is done (see above). Still to do:
 ## Other things noticed (not yet scheduled)
 - `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
-- `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
+- ~~`GameCharacter` and `GameCharacterCar` are two halves of one partial class.~~ Split into `GameCharacter` (player) and `Vehicle` with the car dealer (2026-11-03). Getting out on foot (enter/exit) is not built; ask the owner if it is wanted.
+- Vehicles are not saved yet: bought vehicles are lost when the game restarts (part of save/load, item 18).
 - Fields are not planted or harvested by the AI owners (they only get a name and owner); decide later if they should.
 - Touch layout: overlaps fixed (see Waiting on the owner), re-check on the phone. BUY/SELL and CROP positions are still not final.
 
@@ -139,15 +148,15 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 
 ## Code review notes (`/code-review high Assets/Scripts`, 2026-11-02)
 Fixed (untested): stale B-key confirmation, building prompt overwriting other messages and rebuilding every frame, speedometer text rebuilt every frame, seed price rerolled on every E press, touch button null checks. Left for later (minor, nothing triggers them today):
-- One E press can act on a field and a building if their trigger zones overlap (each keeps its own "last entered" list).
-- `GameCharacter.Move()` (walking mode, `drive` off) strafes along `transform.right` instead of `characterLocation.transform.right`.
+- One E press can act on a field and a building if their trigger zones overlap (each keeps its own "last entered" list, now per vehicle).
+- ~~`GameCharacter.Move()` (walking mode) strafes along the wrong axis.~~ Walking mode removed (2026-11-03).
 - `PlayerValues` has no null checks on the wheat, barley and oat labels.
 - A field's growth coroutine stops if the field is ever disabled and nothing restarts it.
 - A scene-set field name that is also in the AI name list is not reserved, so an AI field could get the same name.
 
 ## Phase 3 design decisions (economy)
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
-- **Sell point: the `Wheat Selling Station`** (object `Wheat Selling` in the scene; decided). The other unused buildings (`House`, `Garage EX`) can become the seed shop, fertilizer shop, dealer or paint shop later.
+- **Sell point: the `Wheat Selling Station`** (object `Wheat Selling` in the scene; decided). The other unused buildings (`House`, `Garage EX`) can become the fertilizer shop or paint shop later. The dealer is its own building (owner, 2026-11-03).
 - **Map:** the old 2D map is not being copied. The 3D map is being laid out fresh, so sell point placement is open.
 - **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. The 2D version is a reference only (see "Direction").
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
@@ -180,7 +189,7 @@ Today harvesting is instant: press E / USE on a Ready field and the whole field'
 - Cut cells should change the ground under them (swap to the `Dirt` colour for that cell, or place a stubble quad). The field currently uses one colour for the whole field via shared materials, so per-cell visuals need either a texture mask or small quads per cell. Start with disabled-cell-only (no visual) and add the cut look afterwards.
 
 **Open questions**
-- Is the harvester a separate vehicle (needs a model, enter/exit and vehicle switching) or a mode on the existing truck? The plan notes say the harvester model does not exist yet; the first version can use the existing vehicle with harvesting mode.
+- ~~Is the harvester a separate vehicle or a mode on the truck?~~ **Its own vehicle** (owner, 2026-11-03). It is bought at the dealer and gives +60% harvest; the model is a placeholder.
 - Should harvesting use fuel (the 2D game's diesel) per cell?
 - Grid cell size vs. performance: test on the Android build before picking a default.
 - Does the yield stay `size`-based (2D: size x 550 to 650) or keep the current `size` number?
@@ -233,11 +242,11 @@ Source: `anthony3974/Sim94`. Everything below was read from the code, not played
 There is **no collision**; the README says so ("there is no collision yet"). The only "hitbox" is a rectangle for each field and building. Each frame, the game checks whether the player's centre point is inside one of the rectangles and sets `isIn`. Then the key press (interact, fertilize, harvest, buy, sell) does what that place's type says. Buildings have a `Business` type: Selling, Buying, Painting, Dealing, Gas.
 
 ### What this means for the 3D version
-- The 3D fields already work the same way: a trigger collider plus `fieldsInside`. **Buildings should use the same pattern**: a `Building` component with a trigger collider and a type enum (Sell, Buy, Paint, Dealer, Gas). The `USE` button and E key then do what the building says.
+- The 3D fields already work the same way: a trigger collider plus a "last entered" list (now kept per vehicle). **Buildings should use the same pattern**: a `Building` component with a trigger collider and a type enum (Sell, Buy, Paint, Dealer, Gas). The `USE` button and E key then do what the building says.
 - **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
 - **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
-- **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop.
-- **Still not in the 3D game:** compost, diesel, vehicle switching, painting, dealer, save/load, AI owners planting fields.
+- **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop, the dealer and vehicle switching (untested).
+- **Still not in the 3D game:** compost, diesel, painting, save/load, AI owners planting fields.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
 - **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; the owner now wants the dealer (7) before fuel (5) and fertilizer (6).
 

@@ -10,7 +10,7 @@ public class Speedometer : MonoBehaviour
 {
     public Transform target;
 
-    [Tooltip("The vehicle's fastest speed in world units per second (set by GameCharacter).")]
+    [Tooltip("The truck's top speed in world units per second (set by GameCharacter). Other vehicles use the same scale.")]
     public float maxWorldSpeed = 30f;
 
     [Tooltip("What the speedometer shows at maxWorldSpeed (the current truck's top speed).")]
@@ -44,6 +44,13 @@ public class Speedometer : MonoBehaviour
         if (target == null) target = transform;
         lastPos = target.position;
         BuildUI();
+    }
+
+    /// <summary>Follow another vehicle (after switching). Starts from its position, so the needle does not jump.</summary>
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+        if (target != null) lastPos = target.position;
     }
 
     void LateUpdate()
