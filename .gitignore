@@ -67,3 +67,7 @@ crashlytics-build.properties
 # Android build output
 apk/
 *_BurstDebugInformation_DoNotShip/
+
+# Unity editor state and Android build cache (change on their own, not worth tracking)
+/.utmp/
+/UserSettings/
