@@ -7948,6 +7948,9 @@ MonoBehaviour:
   seedsPerPurchase: 1000
   minSeedCost: 450
   maxSeedCost: 550
+  fertilizerPerPurchase: 10000
+  minFertilizerCost: 4000
+  maxFertilizerCost: 5000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -13777,6 +13780,11 @@ MeshFilter:
 --- !u!4 &412775659 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 903487634559765248, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
+  m_PrefabInstance: {fileID: 4921772025119912336}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &412931954 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1236216289376100531, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
   m_PrefabInstance: {fileID: 4921772025119912336}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &419478979
@@ -28063,6 +28071,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813043739}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &817154210 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4552899217744609263, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
+  m_PrefabInstance: {fileID: 4921772025119912336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &820253033
 GameObject:
   m_ObjectHideFlags: 0
@@ -28874,6 +28887,9 @@ MonoBehaviour:
   seedsPerPurchase: 1000
   minSeedCost: 450
   maxSeedCost: 550
+  fertilizerPerPurchase: 10000
+  minFertilizerCost: 4000
+  maxFertilizerCost: 5000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -30238,6 +30254,9 @@ MonoBehaviour:
   seedsPerPurchase: 1000
   minSeedCost: 450
   maxSeedCost: 550
+  fertilizerPerPurchase: 10000
+  minFertilizerCost: 4000
+  maxFertilizerCost: 5000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -41131,6 +41150,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!23 &1210038066 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4524390629723993565, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
+  m_PrefabInstance: {fileID: 4921772025119912336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1223840103
 GameObject:
   m_ObjectHideFlags: 0
@@ -48184,7 +48208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kind: 0
-  displayName: Truck
+  displayName: Tractor
   harvestBonus: 0
   topSpeed: 50
   reverseSpeed: -10
@@ -48192,10 +48216,15 @@ MonoBehaviour:
   steeringMultiplier: 6
   speed: 10
   gravity: 20
-  maxSteerAngle: 30
+  maxSteerAngle: 20
   steerAnglePerSecond: 120
   cameraOffset: {x: 0, y: 5.36, z: -6.53}
-  paintRenderers: []
+  paintRenderers:
+  - {fileID: 1210038066}
+  - {fileID: 1928118404}
+  - {fileID: 412931954}
+  - {fileID: 1568161806}
+  - {fileID: 817154210}
 --- !u!1 &1473014794
 GameObject:
   m_ObjectHideFlags: 0
@@ -50329,6 +50358,9 @@ MonoBehaviour:
   seedsPerPurchase: 1000
   minSeedCost: 450
   maxSeedCost: 550
+  fertilizerPerPurchase: 10000
+  minFertilizerCost: 4000
+  maxFertilizerCost: 5000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -52089,6 +52121,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1560247609}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1568161806 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6298842035151922, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
+  m_PrefabInstance: {fileID: 4921772025119912336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1568259460
 GameObject:
   m_ObjectHideFlags: 0
@@ -63494,6 +63531,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925252776}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1928118404 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4795694782166330536, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
+  m_PrefabInstance: {fileID: 4921772025119912336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1928336606
 GameObject:
   m_ObjectHideFlags: 0
@@ -69335,6 +69377,9 @@ MonoBehaviour:
   seedsPerPurchase: 10000
   minSeedCost: 4500
   maxSeedCost: 5500
+  fertilizerPerPurchase: 10000
+  minFertilizerCost: 4000
+  maxFertilizerCost: 5000
   dealer: {fileID: 1234911827}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -71345,10 +71390,6 @@ PrefabInstance:
       propertyPath: m_TagString
       value: MainCamera
       objectReference: {fileID: 0}
-    - target: {fileID: 2597199166467344655, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
-      propertyPath: m_Name
-      value: FRod
-      objectReference: {fileID: 0}
     - target: {fileID: 3567717286976783090, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
       propertyPath: m_Height
       value: 1
@@ -71371,7 +71412,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3574232681947501847, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
       propertyPath: m_Name
-      value: Truck
+      value: Tractor
       objectReference: {fileID: 0}
     - target: {fileID: 3574232681947501847, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
       propertyPath: m_TagString
@@ -71416,10 +71457,6 @@ PrefabInstance:
     - target: {fileID: 4288707820623499040, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8363959865726968078, guid: 2429610e059e2604e9ee4ecc2dac6f18, type: 3}
-      propertyPath: m_Name
-      value: RRod
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
