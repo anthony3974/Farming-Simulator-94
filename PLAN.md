@@ -1,12 +1,13 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Seed Shop, then Map Border, then Car Dealer, then Home Menu <<<
+> ## >>> NEXT UP: Map Border, then Car Dealer, then Home Menu <<<
 >
-> **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, 2026-11-02):
-> 1. **Seed shop.** The `Seed Buying` station already works (E buys 10,000 seeds for about $5,000). The owner wants more done here, but the details are not written down yet. **Ask the owner what is wanted** (for example a proper building or model, a new spot, or different prices) before starting.
-> 2. **Map border.** Keep the player inside the map. Details not decided yet; ask the owner (invisible walls, a fence or hedge, or something else).
-> 3. **Car dealer.** The dealer building and buying vehicles. 2D reference (Case Dealer): van and harvester cost 5,000 each, tractor is the starting vehicle, keys 1 / 2 / 3 switch vehicle, the van is faster, the harvester adds 60% yield, four colours each. In 3D this needs more than one drivable vehicle, so see the `GameCharacter` / `GameCharacterCar` note under "Other things noticed" (split into a base controller plus a vehicle controller, add enter/exit).
-> 4. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
+> **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-03). The seed shop is finished (the owner may revise the economy later).
+> 1. **Map border.** A concrete barrier around the edge of the map: place many road dividers (jersey barriers) in a row along the edge so the player cannot leave. No invisible walls or hedges. Ask the owner only about the model to use if none is chosen.
+> 2. **Car dealer.** The dealer building and buying vehicles. 2D reference (Case Dealer): van and harvester cost 5,000 each, tractor is the starting vehicle, keys 1 / 2 / 3 switch vehicle, the van is faster, the harvester adds 60% yield, four colours each. This is only a reference, not a rule (see "Direction"). In 3D this needs more than one drivable vehicle, so see the `GameCharacter` / `GameCharacterCar` note under "Other things noticed" (split into a base controller plus a vehicle controller, add enter/exit).
+> 3. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
+>
+> **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing), and fix the field sell confirmation text on phones (see item 20). Ask the owner when these should be done.
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
@@ -36,8 +37,6 @@ This is an initial plan from reading the code. It is not the plan from the earli
 9. ~~**Replace the long if/else chains** in `FieldStageChanger` and `SetColor` with a crop-type enum plus a stage index (0 to 5), and one colour table (`Color32[,]`).~~ **DONE**
 10. ~~**Create 16 materials per field.** Share them across fields, or use a `MaterialPropertyBlock` or colour property instead.~~ **DONE**
 11. ~~**Make settings tunable.** The growth time (7 s) and the size divisor (`0.043029259f`) are hard-coded. Expose them as `[SerializeField]` fields.~~ **DONE**
-12. ~~**Rename the enum values.** `Crops` mixes crop types (`TypeWheat`) with growth states, so split it into `CropType` and `GrowthStage`.~~ **DONE**
-13. ~~**`InputManager`.** Update the `Debug` property name (it shadows `UnityEngine.Debug`) and remove unused stored fields.~~ **DONE** (property renamed to `DebugMode`; every other stored field is used, so none were removed. The F1 toggle still has nothing listening to it).
 14. ~~**`GameCharacter` camera clamp** uses Euler angle tricks and a "MIGHT BE A ISSUE LATER" comment. Track pitch as a float and clamp it.~~ **DONE**
 
 ### Unfinished features
@@ -46,23 +45,20 @@ This is an initial plan from reading the code. It is not the plan from the earli
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
 19. **Help menu with the controls list.** **Phase 1 DONE (code written, not yet tested in Unity):** `HelpMenu` is a pop-up with a controls table (action, keyboard, touch button) and nothing else (no tips). H opens and closes it; on touch a HELP button sits top-left and tapping the pop-up closes it. Keyboard-only controls (mouse look, Esc, F1) are hidden on phones. Check the HELP button position on a real phone. Phase 2 (if wanted): icons instead of text, a controller or gamepad layout.
+20. **Touch controls rework.** The owner ran the phone build (2026-11-03) and it works, but the buttons are a little confusing and need reworking. Also: when selling a field the message says "press B to confirm", but a phone has no B key. Idea: show "press again to confirm" (or the key on desktop and the BUY/SELL button name on touch). Applies to every message that names a key.
+
+## Direction
+The owner is no longer cloning the 2D game one for one. The 3D game is its own new game and is built as it goes. The 2D analysis below is a reference and an idea source, not a checklist.
 
 ## Initial plan (in order)
 
-**Phase 1: Stabilise (small, safe)**
-- Confirm the project opens and `GameScene` plays with no Console errors.
-- Fix items 3, 4, 7, 5 and 1.
-- Commit.
-
-**Phase 2: Refactor `FieldController`**
-- Items 9, 10, 11, 12.
-- Verify behaviour is unchanged: plant, grow through 4 stages, harvest, stock count goes up.
+**Phases 1 and 2 (stabilise, refactor `FieldController`): DONE.** See Progress below.
 
 **Phase 3: Economy**
 - ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
 - ~~Field buying and selling~~ DONE.
-- ~~Seeds and seed shop~~ DONE.
-- Next (owner's order, 2026-11-02): seed shop work, map border, the car dealer, then the home menu (with a version number). After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
+- ~~Seeds and seed shop~~ DONE (seed shop complete; the economy may be revised later).
+- Next (owner's order, 2026-11-03): map border, the car dealer, then the home menu (with a version number). After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
@@ -81,10 +77,6 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - **Terrain layers:** which of `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B` and `Pebbles_C` to keep for good (`Grass_B` is in use). Then trim the rest, then decide about the git history cleanup (see Repo housekeeping).
 - **Camera:** `staticCamera` is still ticked on `GameCharacter` for testing. Untick it to restore mouse look.
 - **Touch layout:** fixed from a phone screenshot (2026-11-02): steering arrows moved right of the speedometer, right-hand buttons shrunk to 130 px so CROP no longer covers the Money/Seeds/Fertilizer panel. Needs a re-check on the phone (not yet seen after the change).
-
-## Open questions
-- What was in the original plan from the earlier chats?
-- Is multiplayer or an AI helper planned, or is this single-player only?
 
 ## Noted from play-testing (all done, see Progress below)
 - **Crop type shows "TypeOat" / "TypeWheat".** `FieldController` sends `cropType.ToString()`, which is the enum name. Show "Oat" / "Wheat" / "Barley" instead (and a friendly status such as "Growing 2/3", "Ready to harvest").
@@ -105,7 +97,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 - [x] `FieldController` refactor: enums + colour table, shared materials, editable `growTime` (now `secondsPerStage`) and `sizeDivisor`, missing-reference check
 - [x] Android controls phase 1: `InputManager` takes touch input, `TouchControls` builds on-screen buttons at runtime
 - [x] Touch buttons tested in the editor, resized and re-laid out; main Canvas now *Scale With Screen Size* (1920x1080, match 0.5)
-- [x] Android Player Settings configured, first APK built and running (tested on an Android VM; not yet on a real phone)
+- [x] Android Player Settings configured, first APK built and running (Android VM, then a real phone; owner reports it works well, 2026-11-03)
 - [x] Phase 3 economy, part 1: money, `Building` script (type + trigger + prompt), sell stations for Wheat, Barley and Oat
 - [x] Centre message box (gold border, grows with its text), used for prompts and confirmations
 - [x] Crop selection with the C key (plant what you picked; no more random crop)
@@ -135,12 +127,11 @@ Phase 1 is done (see above). Still to do:
    - set a proper package name and app name (the default is a placeholder)
 6. ~~**Install Android Build Support**~~ DONE. (Unity Hub > Installs > gear on 6000.0.85f1 > Add modules: Android Build Support, OpenJDK, Android SDK & NDK Tools). Close the editor while it installs.
 7. **Performance on a phone.** Likely cost: terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`. Test and lower the quality settings for the Android quality level if needed.
-8. (APK built and runs on an Android VM; still to do on a real phone.) **First device build.** Build an APK, install it on a phone (enable "install unknown apps"), then test controls, UI size and frame rate.
+8. ~~**First device build.**~~ DONE (runs on a real phone). Frame rate and UI size still worth a note. Original task: Build an APK, install it on a phone (enable "install unknown apps"), then test controls, UI size and frame rate.
 9. **Sharing options.** APK only works for Android friends. A WebGL build on itch.io would be easier for friends with a PC (just a link), but has its own limits.
 10. **Optional later:** replace `<` `>` `GAS` `BRAKE` `USE` text labels with icons; haptic feedback; a pause/settings button.
 
 ## Other things noticed (not yet scheduled)
-- `InputManager.Debug` hides `UnityEngine.Debug`; rename it (item 13, still open).
 - `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
 - `GameCharacter` and `GameCharacterCar` are two halves of one partial class with walking and driving mixed together. When the harvester is added, consider splitting into a base controller plus a vehicle controller, and add enter/exit-vehicle.
@@ -154,6 +145,7 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 - Selling: 0.65 to 0.75 dollars per unit (unchanged, same as 2D). Tony pays about 16,000 per harvest, so about 6,000 profit after buying the seeds.
 - Land: 2.1 dollars per unit of harvest (2D: 1,250 per 600), so Tony is about 49,000 (was 11,650) and the smallest field about 10,000. Selling back pays 80%.
 - Start: 5,000 dollars (money used to start at 0) and 25,000 seeds.
+- Prices are intentional settings of the new game (for example selling a field pays 80%, where 2D paid back 100%), not mistakes.
 - **Time:** growth was 4 x 7 s = 28 s; the 2D game took 160 to 205 s. It is now 4 x 9.45 s (7 s + 35%) = 37.8 s per crop, set by `secondsPerStage` on `FieldController` (renamed from `growTime`, so the old 7 saved in the scene no longer applies). Still about 4.5x the 2D pace, so raise it further if it feels too fast.
 - **Starting field:** the player's own field ("Tony") starts the game planted with wheat, in the Planted stage (`startCrop` on `FieldController`; None = empty). The owner had to sell it to afford the first planting, so it now starts growing for free.
 
@@ -169,7 +161,7 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - **Selling needs a drive.** The player must drive to a sell point to sell crops (not instant selling). Interaction uses the USE button / E key, same as fields.
 - **Sell point: the `Wheat Selling Station`** (object `Wheat Selling` in the scene; decided). The other unused buildings (`House`, `Garage EX`) can become the seed shop, fertilizer shop, dealer or paint shop later.
 - **Map:** the old 2D map is not being copied. The 3D map is being laid out fresh, so sell point placement is open.
-- **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. Open question: which features did the 2D version have (prices, upgrades, vehicles, buying land)? Use it as the feature checklist (see the 2D analysis below).
+- **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. The 2D version is a reference only (see "Direction").
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
 
 ## Repo housekeeping
@@ -177,7 +169,7 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - [x] **UserSettings stays tracked**, and `UserSettings/Layouts/` (the window layouts) is now tracked too, so the editor layout follows the repo.
 - [x] **`AllSkyFree` trimmed** from 321 MB to 37 MB (commit `ee878d3`). Kept 5 skyboxes, each with only its material and six face images: `Epic_BlueSunset` (the one in use), `Day_BlueSky_Nothing` (in the `Cartoon Base BlueSky` folder), `Cold Sunset`, `Cartoon Base NightSky` and `Epic_GloriousPink`. Still to decide: keep the pink sky or just use the regular blue one.
 - [x] **Terrain texture cleanup (done in the working tree, commits `3d7c62f`, `061efda`, `3883848`).** Removed the sample heightmaps and detail textures and the layers Snow, Sand, Rock, Tidal_Pools, Soil_Rocks, Muddy, Heather, Grass_Dry, Black_Sand and Pebbles_A. `Assets/TerrainSampleAssets/Textures` went from 1.9 GB to 505 MB. Kept layers: `Grass_B` (in use on the terrain), `Grass_A`, `Grass_Moss` (possible extra grass), `Grass_Soil` (dirt path contender), `Pebbles_B` (dirt path contender) and `Pebbles_C` (likely gravel). Still to decide: which of these to keep for good, then trim the rest. The terrain data (`Assets/Terrain/New Terrain.asset`, binary) was checked for each removed layer before deleting.
-- **Git history cleanup (to do, later).** The files above are gone from the working folder, but the **`.git` folder is still about 2 GB**, because the old versions stay in the history. A fresh clone downloads all of it. Shrinking it means rewriting history, which is the risky part:
+- **Git history cleanup (READY to start, owner 2026-11-03; back up first).** The files above are gone from the working folder, but the **`.git` folder is still about 2 GB**, because the old versions stay in the history. A fresh clone downloads all of it. Shrinking it means rewriting history, which is the risky part:
   1. Finish choosing the terrain layers and skyboxes first, so the cleanup is done once.
   2. Make a backup copy of the whole repo folder (or a `git clone --mirror`) before anything else.
   3. Install `git-filter-repo` (not installed yet) and run it to drop the deleted paths from all commits: `Assets/TerrainSampleAssets/Textures/Heightmaps` and `Details`, the removed terrain layers, the removed `AllSkyFree` folders, and the old Android build output if it is still in the history.
@@ -188,10 +180,6 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
   - Difficulty: moderate. It is a few commands, but it cannot be undone after the force push, so the backup matters. Not needed to keep working. Only worth it if clone size matters.
   - Git LFS only makes sense for large files we keep.
 - Ask before shrinking anything.
-
-## Next up
-- **Seed shop, then the map border, then the car dealer, then the home menu with a version number** (see NEXT UP at the top). After those: fuel and the gas station, fertiliser, paint shop.
-- **2D version analysis:** done, see the section below.
 
 ## 2D game analysis (Sim94, C# Windows Forms, ~1,800 lines in one file)
 Source: `anthony3974/Sim94`. Everything below was read from the code, not played.
