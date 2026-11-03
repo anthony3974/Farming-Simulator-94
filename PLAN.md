@@ -13,6 +13,8 @@
 >    - To check in Play mode: drive to the dealer (the far end of the top road), buy both vehicles, switch with 1 / 2 / 3, harvest with the harvester, and check the shop menu on a phone.
 > 2. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
 >
+> **Building and tractor redesigns (2026-11-03, written, not yet run in Unity).** Run each tool once with GameScene open, then save: **Tools > Tractor Builder** (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), **Tools > Sell Station Builder** (wheat / barley / oat grain elevators), **Tools > Shop Builder** (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). Fertilizer can be bought (10,000 for $4,000 to $5,000) but not used on fields yet. Note: the seed shop in the scene still sells 1,000 seeds for $450 to $550 (Inspector values), not the 10,000 for $4,500 to $5,500 the code defaults say; ask the owner which is wanted.
+>
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
