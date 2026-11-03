@@ -19,25 +19,10 @@ This is an initial plan from reading the code. It is not the plan from the earli
 
 ## Improvements needed
 
-### Bugs and risks
-1. ~~**Overlapping fields.** Pressing E triggers every field the player is inside. Only the nearest or most recently entered field should respond.~~ **DONE**
-2. ~~**Cleanup of `isPlayerInside`.** `InputKey` checks `inputManager.Interact` in every field's `Update`. Move the check to the field the player is in.~~ **DONE (only the active field reacts)**
-3. ~~**`FieldView.cs` has stray `using` lines** (`System.Drawing`, `UnityEngine.Rendering.DebugUI`, `GridLayoutGroup`). These can cause ambiguous-type errors or build problems. Remove them.~~ **DONE**
-4. ~~**`FieldController` imports `Unity.VisualScripting`** without using it. Remove it.~~ **DONE**
-5. ~~**Pop-up goes stale.** The field details pop-up only refreshes when the player enters the field. The crop stage doesn't update while the player stands inside, so call `UpdateUI` after every stage change.~~ **DONE**
-6. ~~**Harvest order.** In `FieldStageChanger`, `crop` becomes `Dirt` before `HarvestField()` runs. This works now, but it is fragile.~~ **DONE (the crop is read before the field is reset)**
-7. ~~**`ReadyCrop` starts a growth timer** (`StartCoroutine(Grow(7))` after reaching Ready) that does nothing useful. Remove it.~~ **DONE**
-8. ~~**Local package edits** (`Packages/manifest.json`, `packages-lock.json`) are uncommitted. Check them before committing.~~ **DONE (committed; the deprecated VS Code package was removed)**
-
 ### Current bugs*
 (*Not a real bug yet, a limit we will hit once there are enough fields. Not numbered so the item numbers below and the references to them stay valid.)
 - **Field names run out.** Non-player fields get a random unused name from a list of 12 names taken from the 2D game (`FieldNames` in `FieldController`). Once all 12 are taken, the next field keeps whatever name is typed in the Inspector, which can be blank or a duplicate. Fix: when the list is empty, build a unique name (for example "Dahl Ranch 2"), or add more names. Not urgent: there are only 3 fields now and the number of fields in the final map is not decided.
 
-### Code quality
-9. ~~**Replace the long if/else chains** in `FieldStageChanger` and `SetColor` with a crop-type enum plus a stage index (0 to 5), and one colour table (`Color32[,]`).~~ **DONE**
-10. ~~**Create 16 materials per field.** Share them across fields, or use a `MaterialPropertyBlock` or colour property instead.~~ **DONE**
-11. ~~**Make settings tunable.** The growth time (7 s) and the size divisor (`0.043029259f`) are hard-coded. Expose them as `[SerializeField]` fields.~~ **DONE**
-14. ~~**`GameCharacter` camera clamp** uses Euler angle tricks and a "MIGHT BE A ISSUE LATER" comment. Track pitch as a float and clamp it.~~ **DONE**
 
 ### Unfinished features
 15. **Fertiliser** (`Fert1`, `Fert2`, `fertStage`): states and colours exist, nothing uses them.
