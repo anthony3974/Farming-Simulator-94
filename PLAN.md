@@ -13,6 +13,13 @@
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
 
+To try everything: open GameScene, run each tool once, then press Ctrl+S:
+
+    Tools > Tractor Builder > Rebuild tractor
+    Tools > Sell Station Builder > Rebuild sell stations
+    Tools > Shop Builder: press “Rebuild seed shop”, then “Build / rebuild fertilizer shop”
+
+Decision for you: your seed shop in the scene sells 1,000 seeds for $450–550, but the code’s defaults are 10,000 for $4,500–5,500. Which do you want? The two prices are about the same per seed; the difference is how many you get per press.
 
 Unity 6000.0.85f1 (upgraded from 2022.3.55f1). Scene: `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`.
 This is an initial plan from reading the code. It is not the plan from the earlier chats. Edit it as you remember more.
