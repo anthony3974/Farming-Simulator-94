@@ -63,6 +63,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
 - Fertiliser: apply during growth to speed up growth or increase yield.
+- **Advanced crop harvesting:** drive-over harvest cells with bonuses (see "Advanced crop harvesting" below).
 
 **Phase 5: Polish**
 - Save/load (18). (Camera clamp (14) and input cleanup (13) are already done.)
@@ -163,6 +164,41 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - **Map:** the old 2D map is not being copied. The 3D map is being laid out fresh, so sell point placement is open.
 - **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. The 2D version is a reference only (see "Direction").
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
+
+## Advanced crop harvesting (design, not yet started)
+Today harvesting is instant: press E / USE on a Ready field and the whole field's yield (`Convert.ToInt32(size)`) goes into the counters at once (`FieldController.Harvest`). The new version makes harvesting something you **drive across the field to do**, like the real game.
+
+**Idea (carried over from the owner's earlier version):** split the field's area into many small hitboxes, created by a `for` loop. While the player is in **harvesting mode** and drives into a hitbox, that hitbox is harvested and pays out its share of the field's yield.
+
+**How it works**
+1. **Hitbox generation.** When a field is ready to harvest (or on `Start`), a `for` loop (nested, X by Z) creates a grid of small trigger `BoxCollider` objects as children of the field, covering the field's footprint. Grid resolution is an Inspector field (for example `harvestCellSize`, in metres), so a bigger field gets more cells.
+2. **Share of the yield.** Each cell is worth `1 / cellCount` of the field's total yield (so cells add up to exactly 100%). When the harvester touches a cell, the player gets that percentage of the yield **plus any bonuses in effect**.
+3. **Harvesting mode.** A toggle (E / USE, or a separate HARVEST button) that is only on while the player is in the harvester/vehicle. Cells only react when the mode is on and the field's stage is `Ready`. Driving over a cell in any other mode does nothing.
+4. **One-shot cells.** A cell can be harvested once. When it is hit, it is disabled and the crop under it is visibly cut (see "Visuals"). Progress is shown on the field pop-up as "Harvested 45%".
+5. **Finishing the field.** When all cells are harvested (100%), the field returns to `Dirt` / empty, same as the current `Harvest()` end state. Leaving a field half-harvested is allowed; the rest stays `Ready` and can be finished later.
+6. **Bonuses.** Yield per cell = `baseYield / cellCount * (1 + sum of bonuses)`. Bonus sources, all kept as editable Inspector fields:
+   - **Harvester:** +60% (the 2D game's number).
+   - **Fertilizer:** +50% per level, two levels (2D game; uses `fertStage`, which exists but is unused).
+   - Later: vehicle upgrades, crop type, etc. Add a small `HarvestBonus` list (name + multiplier) so new bonuses don't need code changes.
+7. **Stock goes to `PlayerValues`** as it is harvested (the existing counters), so selling at the station (NEXT UP) works unchanged.
+
+**Implementation notes**
+- Add a small `HarvestCell` script on each generated cell (or one `HarvestCell` pattern in `FieldController`) that reports back to its field: `field.OnCellHarvested(cell)`. The field owns the percentage maths and the bonuses.
+- Cells only need to be created once the field is `Ready` and can be destroyed when it resets, to avoid hundreds of idle colliders on every field. Use pooling if it is slow.
+- Triggers need a Rigidbody on one side. The vehicle already has one, so cells can be plain trigger colliders. Filter by tag/layer (`Player` / harvester) as `FieldController` already does for entering a field.
+- Keep the existing instant harvest as a fallback (for example on foot, with no harvester), but without the +60% harvester bonus. Decide whether on-foot harvesting should stay at all.
+- Mobile: harvesting mode needs a touch button (add to `TouchControls`).
+
+**Visuals**
+- Cut cells should change the ground under them (swap to the `Dirt` colour for that cell, or place a stubble quad). The field currently uses one colour for the whole field via shared materials, so per-cell visuals need either a texture mask or small quads per cell. Start with disabled-cell-only (no visual) and add the cut look afterwards.
+
+**Open questions**
+- Is the harvester a separate vehicle (needs a model, enter/exit and vehicle switching) or a mode on the existing truck? The plan notes say the harvester model does not exist yet; the first version can use the existing vehicle with harvesting mode.
+- Should harvesting use fuel (the 2D game's diesel) per cell?
+- Grid cell size vs. performance: test on the Android build before picking a default.
+- Does the yield stay `size`-based (2D: size x 550 to 650) or keep the current `size` number?
+
+**Suggested order:** (1) generate the cell grid and show it with gizmos, (2) harvesting-mode toggle, (3) per-cell percentage payout with the harvester bonus, (4) progress shown on the pop-up and field reset at 100%, (5) fertilizer bonus once fertilizer exists, (6) visuals for cut cells, (7) touch button.
 
 ## Repo housekeeping
 - [x] Android build output is no longer tracked (committed and pushed); `apk/` and `*_BurstDebugInformation_DoNotShip/` are in `.gitignore`.
