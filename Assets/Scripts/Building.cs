@@ -10,7 +10,8 @@ using UnityEngine;
 /// </summary>
 public class Building : MonoBehaviour
 {
-    public enum BuildingType { Sell, Buy, Paint, Dealer, Gas }
+    // the scene stores these as numbers: add new types at the end only
+    public enum BuildingType { Sell, Buy, Paint, Dealer, Gas, Fertilizer }
     public enum Crop { Wheat, Barley, Oat }
 
     public InputManager inputManager;
@@ -30,6 +31,13 @@ public class Building : MonoBehaviour
     [Tooltip("Cost of one purchase is random between these two values (about 0.5 dollars per seed).")]
     public float minSeedCost = 4500f;
     public float maxSeedCost = 5500f;
+
+    [Header("Fertilizer shop (Fertilizer type only)")]
+    [Tooltip("Fertilizer you get per purchase. The 2D game sold 1,000 compost for 400 to 500 dollars; 3D fields are about 10x bigger, so a purchase is 10,000.")]
+    public int fertilizerPerPurchase = 10000;
+    [Tooltip("Cost of one purchase is random between these two values (about 0.45 dollars per unit).")]
+    public float minFertilizerCost = 4000f;
+    public float maxFertilizerCost = 5000f;
 
     [Header("Dealer (Dealer type only)")]
     [Tooltip("The dealer that opens its shop menu here. Empty = the Dealer on this object or a parent.")]
@@ -87,6 +95,7 @@ public class Building : MonoBehaviour
             case BuildingType.Sell: return $"Press {key} to sell {crop}";
             case BuildingType.Buy: return $"Press {key} to buy {seedsPerPurchase:N0} seeds (about $ {(minSeedCost + maxSeedCost) / 2f:N0})";
             case BuildingType.Dealer: return $"Press {key} to buy vehicles";
+            case BuildingType.Fertilizer: return $"Press {key} to buy {fertilizerPerPurchase:N0} fertilizer (about $ {(minFertilizerCost + maxFertilizerCost) / 2f:N0})";
             default: return $"{type} (coming soon)";
         }
     }
@@ -133,6 +142,7 @@ public class Building : MonoBehaviour
             case BuildingType.Sell: Sell(); break;
             case BuildingType.Buy: BuySeeds(); break;
             case BuildingType.Dealer: OpenDealer(); break;
+            case BuildingType.Fertilizer: BuyFertilizer(); break;
             default: Debug.Log($"{type} building is not implemented yet."); break;
         }
     }
@@ -177,6 +187,20 @@ public class Building : MonoBehaviour
         playerValues.Money -= cost;
         playerValues.Seeds += seedsPerPurchase;
         ShowMessage($"Bought {seedsPerPurchase:N0} seeds for $ {cost:N0}");
+    }
+
+    private void BuyFertilizer()
+    {
+        int cost = Mathf.RoundToInt(Random.Range(minFertilizerCost, maxFertilizerCost));
+        if (playerValues.Money < cost)
+        {
+            ShowMessage($"Not enough money. {fertilizerPerPurchase:N0} fertilizer costs $ {cost:N0}");
+            return;
+        }
+
+        playerValues.Money -= cost;
+        playerValues.Fertilizer += fertilizerPerPurchase;
+        ShowMessage($"Bought {fertilizerPerPurchase:N0} fertilizer for $ {cost:N0}");
     }
 
     private void ShowMessage(string text)
