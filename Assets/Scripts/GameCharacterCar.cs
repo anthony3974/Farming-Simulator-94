@@ -163,6 +163,8 @@ public partial class GameCharacter
             if (acceleration > minAccF || acceleration < minAccR)
             {
                 float rotation = direction.Right ? rotationAmount : -rotationAmount;
+                // in reverse the truck turns the other way, like a real car (steer right = back swings right)
+                if (acceleration < 0) rotation = -rotation;
                 characterLocation.transform.Rotate(0, rotation, 0);
             }
         }
