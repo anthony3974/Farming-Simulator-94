@@ -32,7 +32,7 @@ public class Vehicle : MonoBehaviour
 
     [Header("Front wheel steering (visual)")]
     [Tooltip("How far the front tires turn at full steering, in degrees.")]
-    public float maxSteerAngle = 30f;
+    public float maxSteerAngle = 20f;
     [Tooltip("How fast the tires turn, in degrees per second.")]
     public float steerAnglePerSecond = 120f;
 
