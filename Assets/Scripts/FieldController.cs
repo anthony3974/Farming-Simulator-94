@@ -180,7 +180,7 @@ public class FieldController : MonoBehaviour
             string question = IsPlayerField
                 ? $"Sell {fieldName} for $ {price}?" + (stage != Stage.Empty ? " (the crop stays on the field)" : "")
                 : $"Buy {fieldName} from {ownerName} for $ {price}?";
-            box.Flash($"{question}\nPress B again to confirm", ConfirmSeconds);
+            box.Flash($"{question}\nPress again to confirm", ConfirmSeconds);
             return;
         }
 
