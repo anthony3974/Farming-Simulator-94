@@ -24,6 +24,9 @@ public class FieldView : MonoBehaviour
         txtName.enableAutoSizing = true;
         txtName.fontSizeMax = txtName.fontSize;
         txtName.fontSizeMin = 12;
+
+        // the panel is active in the scene so Awake runs; start hidden, a field shows it when the player enters
+        gameObject.SetActive(false);
     }
 
     private static string Line(string label, string value)
