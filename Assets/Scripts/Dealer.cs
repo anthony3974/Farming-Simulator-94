@@ -118,7 +118,7 @@ public class Dealer : MonoBehaviour
             var spot = parkingSpots[(first + i) % parkingSpots.Length];
             if (spot == null) continue;
 
-            // anything solid above the ground at the spot (a parked vehicle, the truck) blocks it
+            // anything solid above the ground at the spot (a parked vehicle, the tractor) blocks it
             var center = spot.position + Vector3.up * 2.4f;
             var half = new Vector3(3.5f, 2f, 4.5f);
             if (Physics.CheckBox(center, half, spot.rotation, ~0, QueryTriggerInteraction.Ignore)) continue;

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum VehicleKind { Truck, Van, Harvester }
+public enum VehicleKind { Tractor, Van, Harvester }
 
 /// <summary>
-/// One drivable vehicle (the truck, a van or a harvester). Only the active vehicle, the one the player
+/// One drivable vehicle (the tractor, a van or a harvester). Only the active vehicle, the one the player
 /// is driving (see <see cref="GameCharacter"/>), reads input. The others stay parked where they were left.
 /// Each vehicle also remembers which fields and buildings it is standing in, so switching to a parked
 /// vehicle picks up the field or shop it is parked in.
@@ -13,13 +13,13 @@ public enum VehicleKind { Truck, Van, Harvester }
 [RequireComponent(typeof(CharacterController))]
 public class Vehicle : MonoBehaviour
 {
-    public VehicleKind kind = VehicleKind.Truck;
-    public string displayName = "Truck";
+    public VehicleKind kind = VehicleKind.Tractor;
+    public string displayName = "Tractor";
 
     [Tooltip("Extra harvest from fields: 0.6 = 60% more (the harvester).")]
     public float harvestBonus = 0f;
 
-    // The defaults are the truck's tuned values from the scene, so a truck without saved values drives the same.
+    // The defaults are the tractor's tuned values from the scene, so a tractor without saved values drives the same.
     [Header("Driving")]
     [Tooltip("Top speed, in the km/h shown on the speedometer.")]
     public float topSpeed = 50;
@@ -37,7 +37,7 @@ public class Vehicle : MonoBehaviour
     public float steerAnglePerSecond = 120f;
 
     [Header("Camera")]
-    [Tooltip("Where the follow camera sits, in the vehicle's own space. Zero = where the camera already is (the truck).")]
+    [Tooltip("Where the follow camera sits, in the vehicle's own space. Zero = where the camera already is (the tractor).")]
     public Vector3 cameraOffset;
 
     [Tooltip("Body parts that take the vehicle colour (set by the dealer now, the paint shop later).")]
@@ -76,7 +76,7 @@ public class Vehicle : MonoBehaviour
     {
         Controller = GetComponent<CharacterController>();
 
-        // the vehicle's own solid parts (the truck's body boxes, a placeholder's body box) must not block its own controller
+        // the vehicle's own solid parts (the tractor's body boxes, a placeholder's body box) must not block its own controller
         foreach (var c in GetComponentsInChildren<Collider>(true))
             if (c != Controller && !c.isTrigger) Physics.IgnoreCollision(Controller, c);
     }
@@ -220,7 +220,7 @@ public class Vehicle : MonoBehaviour
             if (acceleration > minAccF || acceleration < minAccR)
             {
                 float rotation = direction.Right ? rotationAmount : -rotationAmount;
-                // in reverse the truck turns the other way, like a real car (steer right = back swings right)
+                // in reverse the tractor turns the other way, like a real car (steer right = back swings right)
                 if (acceleration < 0) rotation = -rotation;
                 transform.Rotate(0, rotation, 0);
             }

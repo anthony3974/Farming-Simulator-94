@@ -133,7 +133,7 @@ public class InputManager : MonoBehaviour
     public bool CycleCrop { get => cycleCrop; set => cycleCrop = value; }
     /// <summary>H key: open or close the help menu.</summary>
     public bool Help { get => help; set => help = value; }
-    /// <summary>1 / 2 / 3 keys: drive the truck, van or harvester (1 to 3). CAR touch button: -1 = next vehicle. 0 = no request.</summary>
+    /// <summary>1 / 2 / 3 keys: drive the tractor, van or harvester (1 to 3). CAR touch button: -1 = next vehicle. 0 = no request.</summary>
     public int SwitchVehicle => switchVehicle;
     public bool Up { get => up; set => up = value; }
     public bool Right { get => right; set => right = value; }

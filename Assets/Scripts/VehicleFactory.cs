@@ -9,23 +9,23 @@ public static class VehicleCatalog
         public VehicleKind kind;
         public string name;
         public int price;
-        public float topSpeed;     // km/h on the speedometer (the truck is 50)
+        public float topSpeed;     // km/h on the speedometer (the tractor is 50)
         public float harvestBonus; // 0.6 = 60% more harvest
         public string description;
     }
 
     // 2D game: the van and the harvester cost 5,000 each. Speeds keep the 2D ratios
-    // (truck 8, van 10, harvester 6), so the van is 25% faster and the harvester 25% slower.
+    // (tractor 8, van 10, harvester 6), so the van is 25% faster and the harvester 25% slower.
     private static readonly Info[] All =
     {
-        new() { kind = VehicleKind.Truck, name = "Truck", price = 0, topSpeed = 50, description = "Your starting vehicle." },
-        new() { kind = VehicleKind.Van, name = "Van", price = 5000, topSpeed = 62, description = "The fastest on the road (top speed 62 km/h, the truck does 50)." },
+        new() { kind = VehicleKind.Tractor, name = "Tractor", price = 0, topSpeed = 50, description = "Your starting vehicle." },
+        new() { kind = VehicleKind.Van, name = "Van", price = 5000, topSpeed = 62, description = "The fastest on the road (top speed 62 km/h, the tractor does 50)." },
         new() { kind = VehicleKind.Harvester, name = "Harvester", price = 5000, topSpeed = 38, harvestBonus = 0.6f, description = "Harvests 60% more from every field, but is slow (38 km/h)." },
     };
 
     public static Info Get(VehicleKind kind) => All[(int)kind];
 
-    /// <summary>The vehicles sold at the dealer (everything but the starting truck).</summary>
+    /// <summary>The vehicles sold at the dealer (everything but the starting tractor).</summary>
     public static IEnumerable<Info> ForSale
     {
         get { foreach (var info in All) if (info.price > 0) yield return info; }
@@ -43,7 +43,7 @@ public static class VehicleCatalog
 
 /// <summary>
 /// Builds a drivable vehicle. There are no models for the van and the harvester yet, so they are
-/// placeholders made of boxes and cylinders (like the truck). Forward is +Z, the pivot is on the ground.
+/// placeholders made of boxes and cylinders (like the tractor). Forward is +Z, the pivot is on the ground.
 /// </summary>
 public static class VehicleFactory
 {
@@ -79,7 +79,7 @@ public static class VehicleFactory
             radius = 2.5f; camera = new Vector3(0, 5f, -8.5f);
         }
 
-        // the controller drives it. Like the truck's it is a ball about as wide as the vehicle is long, so the
+        // the controller drives it. Like the tractor's it is a ball about as wide as the vehicle is long, so the
         // ends do not poke into walls. The box makes the parked vehicle solid (the vehicle ignores its own box).
         var cc = root.AddComponent<CharacterController>();
         cc.radius = radius;

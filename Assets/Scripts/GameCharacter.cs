@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// The player: reads input, drives the active <see cref="Vehicle"/>, moves the follow camera and switches
-/// between the vehicles you own (1 / 2 / 3, or CAR on touch). Sits on the starting truck, which is the
+/// between the vehicles you own (1 / 2 / 3, or CAR on touch). Sits on the starting tractor, which is the
 /// first vehicle you own; vehicles bought at the dealer are added with <see cref="AddVehicle"/>.
 /// </summary>
 public class GameCharacter : MonoBehaviour
@@ -32,21 +32,21 @@ public class GameCharacter : MonoBehaviour
 
     void Start()
     {
-        // the truck this script sits on is the starting vehicle (the Dealer Builder tool adds its Vehicle,
-        // this is a fallback with the truck's default values)
-        var truck = GetComponent<Vehicle>();
-        if (truck == null) truck = gameObject.AddComponent<Vehicle>();
-        if (truck.cameraOffset == Vector3.zero && characterCam.parent == truck.transform)
-            truck.cameraOffset = characterCam.localPosition;
-        AddVehicle(truck);
+        // the tractor this script sits on is the starting vehicle (the Dealer Builder tool adds its Vehicle,
+        // this is a fallback with the tractor's default values)
+        var tractor = GetComponent<Vehicle>();
+        if (tractor == null) tractor = gameObject.AddComponent<Vehicle>();
+        if (tractor.cameraOffset == Vector3.zero && characterCam.parent == tractor.transform)
+            tractor.cameraOffset = characterCam.localPosition;
+        AddVehicle(tractor);
 
-        // the speedometer is calibrated on the truck (its top speed shows as its topSpeed km/h), so faster vehicles show more
+        // the speedometer is calibrated on the tractor (its top speed shows as its topSpeed km/h), so faster vehicles show more
         speedo = gameObject.AddComponent<Speedometer>();
-        speedo.target = truck.transform;
-        speedo.maxWorldSpeed = truck.WorldTopSpeed;
-        speedo.maxDisplayKmh = truck.topSpeed;
+        speedo.target = tractor.transform;
+        speedo.maxWorldSpeed = tractor.WorldTopSpeed;
+        speedo.maxDisplayKmh = tractor.topSpeed;
 
-        DriveVehicle(truck);
+        DriveVehicle(tractor);
 
         // start from the camera's current pitch (-180..180) instead of Euler 0..360
         pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, characterCam.localEulerAngles.x), minPitch, maxPitch);
@@ -112,15 +112,15 @@ public class GameCharacter : MonoBehaviour
 
         if (request < 0)
         {
-            // CAR button: the next vehicle you own, in the order truck, van, harvester
-            var current = Vehicle.Active != null ? Vehicle.Active.kind : VehicleKind.Truck;
+            // CAR button: the next vehicle you own, in the order tractor, van, harvester
+            var current = Vehicle.Active != null ? Vehicle.Active.kind : VehicleKind.Tractor;
             int count = System.Enum.GetValues(typeof(VehicleKind)).Length;
             for (int i = 1; i < count; i++)
             {
                 var next = (VehicleKind)(((int)current + i) % count);
                 if (Owns(next)) { SwitchTo(next); return; }
             }
-            ScreenPrompt.Instance.Flash("You only own the truck. Buy more vehicles at the dealer.", 3f);
+            ScreenPrompt.Instance.Flash("You only own the tractor. Buy more vehicles at the dealer.", 3f);
             return;
         }
 

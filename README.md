@@ -9,7 +9,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 - Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
 - Sell stations for each crop; you have to drive there to sell
 - Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
-- Truck front wheels turn with the steering buttons
+- Tractor front wheels turn with the steering buttons
 - Help menu with the controls list (H, or the HELP button on touch)
 - Planting costs seeds, and a seed shop sells more. Your own field starts planted with wheat
 - Android support with on-screen touch controls (APK builds and runs on an Android VM)
@@ -33,7 +33,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 | E | Plant or harvest your field, sell at a sell station, buy seeds at the seed shop, open the dealer's shop |
 | B | Buy or sell the field you are standing in (press twice to confirm) |
 | C | Choose the crop to plant |
-| 1 / 2 / 3 | Drive the truck / van / harvester (once you own them) |
+| 1 / 2 / 3 | Drive the tractor / van / harvester (once you own them) |
 | H | Open or close the help menu (the controls list) |
 | F1 | Toggle debug (does nothing yet) |
 | On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle), `HELP` (same as H, top-left) |
@@ -52,7 +52,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 ## Project layout
 - `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `GameCharacter`, `Vehicle`, `VehicleFactory`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`)
 - `Assets/Scenes`: game scene
-- `Assets/Prefabs`: houses, garage, truck
+- `Assets/Prefabs`: houses, garage, tractor
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
 - `Assets/Editor`: editor tools (Map Border Builder, Dealer Builder)

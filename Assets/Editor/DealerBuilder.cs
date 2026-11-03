@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 // Editor tool: builds the vehicle dealer in the top-left corner of the map, like the 2D game (a red
-// L-shaped building on a grey concrete lot), and sets up the truck as the first Vehicle.
+// L-shaped building on a grey concrete lot), and sets up the tractor as the first Vehicle.
 // Use: open GameScene, then Tools > Dealer Builder, press "Build dealer", save the scene (Ctrl+S).
 // Running it again deletes the old "Dealer" object and rebuilds it. Placeholder boxes, a real model can replace them later.
 public class DealerBuilder : EditorWindow
@@ -29,7 +29,7 @@ public class DealerBuilder : EditorWindow
     void OnGUI()
     {
         EditorGUILayout.HelpBox("Builds the vehicle dealer (red L-shaped building and concrete lot) in the top-left corner of the map, " +
-            "the same place as in the 2D game, and makes the truck the first vehicle. Run it with GameScene open, then save the scene.", MessageType.Info);
+            "the same place as in the 2D game, and makes the tractor the first vehicle. Run it with GameScene open, then save the scene.", MessageType.Info);
         dealerName = EditorGUILayout.TextField("Dealer name", dealerName);
         buildingHeight = EditorGUILayout.FloatField("Building height (m)", buildingHeight);
 
@@ -181,23 +181,23 @@ public class DealerBuilder : EditorWindow
             if (t.GetComponent<Building>() == null && t.GetComponent<Dealer>() == null && t.parent == root.transform && !t.name.StartsWith("Parking"))
                 t.gameObject.isStatic = true;
 
-        SetUpTruck(player);
+        SetUpTractor(player);
 
         EditorSceneManager.MarkSceneDirty(root.scene);
         Selection.activeGameObject = root;
         Debug.Log($"Dealer built at X {lotC.x:0}, Z {lotC.z:0} (lot {lotS.x:0} x {lotS.z:0} m). Save the scene (Ctrl+S).", root);
     }
 
-    // the truck is the starting vehicle: give it a Vehicle with its tuned driving values and its camera position
-    static void SetUpTruck(GameCharacter player)
+    // the tractor is the starting vehicle: give it a Vehicle with its tuned driving values and its camera position
+    static void SetUpTractor(GameCharacter player)
     {
         var go = player.gameObject;
         var vehicle = go.GetComponent<Vehicle>();
         if (vehicle == null) vehicle = Undo.AddComponent<Vehicle>(go);
-        else Undo.RecordObject(vehicle, "Set up truck");
+        else Undo.RecordObject(vehicle, "Set up tractor");
 
-        vehicle.kind = VehicleKind.Truck;
-        vehicle.displayName = "Truck";
+        vehicle.kind = VehicleKind.Tractor;
+        vehicle.displayName = "Tractor";
         if (player.characterCam != null && player.characterCam.parent == go.transform)
             vehicle.cameraOffset = player.characterCam.localPosition;
 

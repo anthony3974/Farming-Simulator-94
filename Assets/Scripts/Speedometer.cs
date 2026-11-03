@@ -10,13 +10,13 @@ public class Speedometer : MonoBehaviour
 {
     public Transform target;
 
-    [Tooltip("The truck's top speed in world units per second (set by GameCharacter). Other vehicles use the same scale.")]
+    [Tooltip("The tractor's top speed in world units per second (set by GameCharacter). Other vehicles use the same scale.")]
     public float maxWorldSpeed = 30f;
 
-    [Tooltip("What the speedometer shows at maxWorldSpeed (the current truck's top speed).")]
+    [Tooltip("What the speedometer shows at maxWorldSpeed (the current tractor's top speed).")]
     public float maxDisplayKmh = 50f;
 
-    [Tooltip("The speed at the end of the dial. Higher than the truck's top speed, so faster vehicles fit later.")]
+    [Tooltip("The speed at the end of the dial. Higher than the tractor's top speed, so faster vehicles fit later.")]
     public float dialMaxKmh = 100f;
 
     [Tooltip("Dial diameter in canvas pixels (canvas is 1920x1080).")]
