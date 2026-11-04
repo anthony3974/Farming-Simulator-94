@@ -20,9 +20,14 @@ public class GameCharacter : MonoBehaviour
     public float minPitch = -10f;
     public float maxPitch = 50f;
 
+    [Tooltip("Touch: degrees the camera tilts for a drag the full height of the screen.")]
+    public float touchLookSensitivity = 120f;
+    [Tooltip("Touch: tick so dragging up looks down (as if pulling the view) instead of up (like the mouse).")]
+    public bool invertTouchLook = false;
+
     // Mouse look works on PC while the cursor is locked (click the game, Esc frees it). On phones the cursor is
-    // never locked, so the camera stays still there; drag-to-look for touch is not built yet (see PLAN.md).
-    // (The old staticCamera testing switch was removed on 2026-11-03.)
+    // never locked; dragging a finger on the game view tilts the camera instead (TouchLook, "Touch Look" object).
+    // Both only tilt up and down; steering turns the camera with the vehicle.
 
     private float pitch;
     private bool mouseLook;
@@ -90,10 +95,12 @@ public class GameCharacter : MonoBehaviour
 
     private void RotateY()
     {
-        if (!mouseLook) return;
+        // moving the mouse or a finger up (positive) looks up (negative pitch)
+        float up = inputManager.TouchLookY * touchLookSensitivity * (invertTouchLook ? -1f : 1f);
+        if (mouseLook) up += inputManager.MouseY * mouseSensitivity;
+        if (up == 0f) return;
 
-        // moving the mouse up (positive) looks up (negative pitch)
-        pitch = Mathf.Clamp(pitch - inputManager.MouseY * mouseSensitivity, minPitch, maxPitch);
+        pitch = Mathf.Clamp(pitch - up, minPitch, maxPitch);
         characterCam.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 

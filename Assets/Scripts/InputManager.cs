@@ -41,6 +41,9 @@ public class InputManager : MonoBehaviour
     private bool touchFertilizeQueued;
     private bool touchHelpQueued;
     private bool touchVehicleQueued;
+    // drag-to-look, set by TouchLook: summed since the last frame, in screen heights (up = positive)
+    private float touchLookPending;
+    private float touchLookY;
 
     /// <summary>True when the on-screen buttons are active.</summary>
     public bool TouchControlsActive { get; private set; }
@@ -69,6 +72,12 @@ public class InputManager : MonoBehaviour
         }
 
         gameObject.AddComponent<HelpMenu>();
+    }
+
+    /// <summary>Called by <see cref="TouchLook"/> while a finger drags on the game view (dy in screen heights, up = positive).</summary>
+    public void AddTouchLook(float dy)
+    {
+        touchLookPending += dy;
     }
 
     /// <summary>Called by the on-screen buttons.</summary>
@@ -126,12 +135,16 @@ public class InputManager : MonoBehaviour
         else if (touchVehicleQueued) switchVehicle = -1;
         touchVehicleQueued = false;
 
+        touchLookY = touchLookPending;
+        touchLookPending = 0f;
+
         // a menu is open: the vehicle stops taking input (it rolls to a stop) and the game keys do nothing
         if (MenuOpen)
         {
             horizontal = vertical = 0f;
             up = down = left = right = false;
             interact = trade = cycleCrop = fertilize = false;
+            touchLookY = 0f;
             switchVehicle = 0;
         }
     }
@@ -140,6 +153,8 @@ public class InputManager : MonoBehaviour
     public float Vertical { get => vertical; set => vertical = value; }
     public float MouseX { get => mouseX; set => mouseX = value; }
     public float MouseY { get => mouseY; set => mouseY = value; }
+    /// <summary>Drag-to-look on touch this frame, in screen heights (up = positive). 0 while a menu is open.</summary>
+    public float TouchLookY => touchLookY;
     public bool Interact { get => interact; set => interact = value; }
     /// <summary>B key: buy or sell the field you are standing in (press twice to confirm).</summary>
     public bool Trade { get => trade; set => trade = value; }

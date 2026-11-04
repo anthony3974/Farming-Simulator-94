@@ -22,7 +22,7 @@ public class HelpMenu : MonoBehaviour
     {
         new[] { "Drive forward / back", "W / S or Up / Down", "GAS / BRAKE" },
         new[] { "Steer left / right", "A / D or Left / Right", "< / >" },
-        new[] { "Look around", "Mouse", "-" },
+        new[] { "Look up / down", "Mouse", "DRAG" },
         new[] { "Use (plant, harvest, sell, shops)", "E", "USE" },
         new[] { "Buy / sell field", "B", "BUY/SELL" },
         new[] { "Choose crop", "C", "CROP" },
