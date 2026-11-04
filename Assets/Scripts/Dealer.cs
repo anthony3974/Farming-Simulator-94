@@ -8,35 +8,86 @@ using UnityEngine.UI;
 /// lot to open the shop menu. The van and the harvester are real objects in the scene (Van.prefab and
 /// Harvester.prefab, parked on "Parking" by the house); buying one makes that vehicle yours, where it stands.
 /// Switch to it with 1 / 2 / 3 (CAR on touch). Vehicles are red (their paint material); there is no colour choice.
-/// The menu is built here at runtime: the title is dealerName, each row's name, price and description come
-/// from VehicleCatalog (VehicleCatalog.cs), and the money, footer and button texts are in Build / Refresh below.
+/// The shop menu is a real object in the scene hierarchy ("Dealer Menu", made by Tools > Build Dealer Menu), so
+/// it can be moved, resized, restyled and reworded in the editor. This script only opens and closes it, fills
+/// in the money and the BUY / OWNED buttons, and does the buying. Prices come from VehicleCatalog.cs.
 /// </summary>
 public class Dealer : MonoBehaviour
 {
-    public string dealerName = "Vehicle Dealer";
+    [System.Serializable]
+    public class Row
+    {
+        public VehicleKind kind;
+        [Tooltip("The BUY button (a copy of the UI Button prefab).")]
+        public Button button;
+        [Tooltip("The button's text: shows the price, or OWNED.")]
+        public TMP_Text label;
+        [Tooltip("Optional: the button's brown Fill, turned grey once the vehicle is yours.")]
+        public Image fill;
+    }
+
     public PlayerValues playerValues;
     public InputManager inputManager;
     [Tooltip("Empty = found at runtime.")]
     public GameCharacter player;
 
-    private static readonly Color Gold = new Color32(255, 201, 51, 255);
-    private static readonly Color Yellow = new Color32(255, 204, 0, 255);
-    private static readonly Color Panel = new Color32(31, 31, 31, 245);
+    [Header("Menu scene objects (set by the builder; keep them set if you rearrange)")]
+    [Tooltip("The part shown while open (dimmer and panel). Hidden when the game runs.")]
+    public GameObject menuRoot;
+    [Tooltip("Optional: the full-screen dimmer behind the panel; a tap on it closes the menu.")]
+    public Button closeButton;
+    public TMP_Text moneyText;
+    [Tooltip("Optional: the footer shown on PC.")]
+    public GameObject keyboardFooter;
+    [Tooltip("Optional: the footer shown with touch controls.")]
+    public GameObject touchFooter;
+    [Tooltip("One per vehicle for sale.")]
+    public List<Row> rows = new();
+
+    [Header("Texts ({0} = the amount)")]
+    public string moneyFormat = "Your money: $ {0:N0}";
+    public string buyFormat = "BUY  $ {0:N0}";
+    public string ownedText = "OWNED";
+
+    // the old runtime menu's colours: brown fill (the UI Button prefab's) and the greyed-out grey
     private static readonly Color ButtonFill = new Color32(60, 45, 20, 255);
     private static readonly Color ButtonOff = new Color32(70, 70, 70, 255);
 
-    private GameObject root;
-    private TMP_Text moneyText;
-    private readonly List<(VehicleCatalog.Info info, Button button, TMP_Text label)> rows = new();
+    private bool ready;
     private int openedFrame;
 
-    public bool IsOpen => root != null && root.activeSelf;
+    public bool IsOpen => ready && menuRoot.activeSelf;
 
     void Start()
     {
         if (player == null) player = FindFirstObjectByType<GameCharacter>();
         if (playerValues == null) playerValues = FindFirstObjectByType<PlayerValues>();
         if (inputManager == null) inputManager = FindFirstObjectByType<InputManager>();
+
+        bool rowsOk = rows.Count > 0;
+        foreach (var r in rows) if (r == null || r.button == null || r.label == null) rowsOk = false;
+        if (menuRoot == null || moneyText == null || !rowsOk || player == null || playerValues == null || inputManager == null)
+        {
+            string missing = (menuRoot == null ? " Menu Root" : "") + (moneyText == null ? " Money Text" : "")
+                + (!rowsOk ? " Rows (a button or label)" : "") + (player == null ? " (no GameCharacter in the scene)" : "")
+                + (playerValues == null ? " (no PlayerValues in the scene)" : "") + (inputManager == null ? " (no InputManager in the scene)" : "");
+            Debug.LogError($"Dealer menu turned off: '{name}' is missing{missing}. Drag the objects back into its Dealer slots, "
+                + "or run Tools > Build Dealer Menu again.", this);
+            if (menuRoot != null) menuRoot.SetActive(false);
+            return;
+        }
+
+        bool touch = inputManager.TouchControlsActive;
+        if (keyboardFooter != null) keyboardFooter.SetActive(!touch);
+        if (touchFooter != null) touchFooter.SetActive(touch);
+        if (closeButton != null) closeButton.onClick.AddListener(() => Close(relockMouse: true));
+        foreach (var r in rows)
+        {
+            var kind = r.kind;
+            r.button.onClick.AddListener(() => Buy(VehicleCatalog.Get(kind)));
+        }
+        menuRoot.SetActive(false);
+        ready = true;
     }
 
     void Update()
@@ -50,14 +101,13 @@ public class Dealer : MonoBehaviour
 
     public void OpenMenu()
     {
-        if (player == null || playerValues == null || inputManager == null)
+        if (!ready)
         {
-            Debug.LogError("Dealer is missing a reference (player, playerValues or inputManager).", this);
+            Debug.LogError("Dealer menu is turned off (see the error logged at the start).", this);
             return;
         }
-        if (root == null) Build();
 
-        root.SetActive(true);
+        menuRoot.SetActive(true);
         openedFrame = Time.frameCount;
         inputManager.MenuOpen = true;
         player.SetCursorLocked(false);
@@ -66,7 +116,7 @@ public class Dealer : MonoBehaviour
 
     private void Close(bool relockMouse)
     {
-        root.SetActive(false);
+        menuRoot.SetActive(false);
         inputManager.MenuOpen = false;
         if (relockMouse && !inputManager.TouchControlsActive) player.SetCursorLocked(true);
     }
@@ -117,140 +167,13 @@ public class Dealer : MonoBehaviour
 
     private void Refresh()
     {
-        moneyText.text = $"Your money: $ {playerValues.Money:N0}";
-        foreach (var (info, button, label) in rows)
+        moneyText.text = string.Format(moneyFormat, playerValues.Money);
+        foreach (var r in rows)
         {
-            bool owned = player.Owns(info.kind);
-            button.interactable = !owned;
-            button.GetComponent<Image>().color = owned ? ButtonOff : ButtonFill;
-            label.text = owned ? "OWNED" : $"BUY  $ {info.price:N0}";
+            bool owned = player.Owns(r.kind);
+            r.button.interactable = !owned;
+            if (r.fill != null) r.fill.color = owned ? ButtonOff : ButtonFill;
+            r.label.text = owned ? ownedText : string.Format(buyFormat, VehicleCatalog.Get(r.kind).price);
         }
-    }
-
-    private void Build()
-    {
-        bool touch = inputManager.TouchControlsActive;
-
-        var canvasGo = new GameObject("DealerMenuCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-        canvasGo.transform.SetParent(transform, false);
-        var canvas = canvasGo.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 60; // above the touch buttons (50) and the message box (50)
-        var scaler = canvasGo.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
-
-        root = new GameObject("DealerMenu", typeof(RectTransform));
-        root.transform.SetParent(canvasGo.transform, false);
-        Stretch((RectTransform)root.transform);
-
-        // full-screen dimmer; tapping outside the panel closes the menu (the panel is a sibling, so taps on it do not)
-        var dimmer = new GameObject("Dimmer", typeof(RectTransform), typeof(Image), typeof(Button));
-        dimmer.transform.SetParent(root.transform, false);
-        Stretch((RectTransform)dimmer.transform);
-        dimmer.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
-        dimmer.GetComponent<Button>().onClick.AddListener(() => Close(relockMouse: true));
-
-        // yellow border that grows with the content, dark panel inside it
-        var border = new GameObject("Border", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
-        border.transform.SetParent(root.transform, false);
-        var borderRt = (RectTransform)border.transform;
-        borderRt.anchorMin = borderRt.anchorMax = borderRt.pivot = new Vector2(0.5f, 0.5f);
-        borderRt.sizeDelta = new Vector2(1100, 0);
-        border.GetComponent<Image>().color = Yellow;
-        var outer = border.GetComponent<VerticalLayoutGroup>();
-        outer.padding = new RectOffset(4, 4, 4, 4);
-        outer.childControlWidth = outer.childControlHeight = true;
-        outer.childForceExpandWidth = true;
-        outer.childForceExpandHeight = false;
-        border.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-        var inner = new GameObject("Panel", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup));
-        inner.transform.SetParent(border.transform, false);
-        inner.GetComponent<Image>().color = Panel;
-        var lg = inner.GetComponent<VerticalLayoutGroup>();
-        lg.padding = new RectOffset(34, 34, 22, 22);
-        lg.spacing = 14;
-        lg.childControlWidth = lg.childControlHeight = true;
-        lg.childForceExpandWidth = true;
-        lg.childForceExpandHeight = false;
-
-        Height(MakeText(inner.transform, dealerName.ToUpper(), 44, Gold, TextAlignmentOptions.Center, true), 60);
-        moneyText = MakeText(inner.transform, "", 28, Color.white, TextAlignmentOptions.Center, false);
-        Height(moneyText, 40);
-
-        foreach (var info in VehicleCatalog.ForSale)
-            AddVehicleRow(inner.transform, info);
-
-        var footer = MakeText(inner.transform, touch ? "Tap outside to close" : "Click BUY.  E or Esc to close", 26, Color.white, TextAlignmentOptions.Center, false);
-        Height(footer, 44);
-
-        root.SetActive(false);
-    }
-
-    private void AddVehicleRow(Transform parent, VehicleCatalog.Info info)
-    {
-        var row = new GameObject(info.name + " Row", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-        row.transform.SetParent(parent, false);
-        var h = row.GetComponent<HorizontalLayoutGroup>();
-        h.childControlWidth = h.childControlHeight = true;
-        h.childForceExpandWidth = h.childForceExpandHeight = false;
-        h.childAlignment = TextAnchor.MiddleLeft;
-        h.spacing = 24;
-
-        var text = MakeText(row.transform, $"<color=#FFC933><b>{info.name}</b></color>\n<size=80%>{info.description}</size>", 32, Color.white, TextAlignmentOptions.Left, false);
-        var le = text.gameObject.AddComponent<LayoutElement>();
-        le.preferredWidth = 720;
-        le.flexibleWidth = 1;
-
-        var (button, label) = MakeButton(row.transform, "BUY", 260, 90);
-        button.onClick.AddListener(() => Buy(info));
-        rows.Add((info, button, label));
-    }
-
-    // ---- UI helpers ----
-
-    private (Button, TMP_Text) MakeButton(Transform parent, string text, float width, float height)
-    {
-        var go = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-        go.transform.SetParent(parent, false);
-        var le = go.GetComponent<LayoutElement>();
-        le.preferredWidth = le.minWidth = width;
-        le.preferredHeight = le.minHeight = height;
-        go.GetComponent<Image>().color = ButtonFill;
-        var outline = go.AddComponent<Outline>();
-        outline.effectColor = Yellow;
-        outline.effectDistance = new Vector2(3, -3);
-
-        var label = MakeText(go.transform, text, 30, Gold, TextAlignmentOptions.Center, true);
-        Stretch((RectTransform)label.transform);
-        label.raycastTarget = false;
-        return (go.GetComponent<Button>(), label);
-    }
-
-    private static void Stretch(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
-    }
-
-    private static void Height(TMP_Text t, float min)
-    {
-        t.gameObject.AddComponent<LayoutElement>().minHeight = min;
-    }
-
-    private static TMP_Text MakeText(Transform parent, string text, float size, Color color, TextAlignmentOptions align, bool bold)
-    {
-        var go = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var t = go.GetComponent<TextMeshProUGUI>();
-        t.text = text;
-        t.fontSize = size;
-        t.color = color;
-        t.alignment = align;
-        t.fontStyle = bold ? FontStyles.Bold : FontStyles.Normal;
-        return t;
     }
 }
