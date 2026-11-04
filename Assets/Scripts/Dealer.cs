@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The vehicle dealer: the red L-shaped building in the top-left corner of the map (built by
-/// Tools > Dealer Builder). Press E / USE in its lot to open the shop menu. A bought vehicle is parked
-/// in the lot; switch to it with 1 / 2 / 3 (CAR on touch).
+/// The vehicle dealer: the red L-shaped building in the top-left corner of the map. Press E / USE in its
+/// lot to open the shop menu. The van and the harvester are real objects in the scene (Van.prefab and
+/// Harvester.prefab, parked on "Parking" by the house); buying one makes that vehicle yours, where it stands.
+/// Switch to it with 1 / 2 / 3 (CAR on touch). Vehicles are red (their paint material); there is no colour choice.
+/// The menu is built here at runtime: the title is dealerName, each row's name, price and description come
+/// from VehicleCatalog (VehicleCatalog.cs), and the money, footer and button texts are in Build / Refresh below.
 /// </summary>
 public class Dealer : MonoBehaviour
 {
@@ -15,9 +18,6 @@ public class Dealer : MonoBehaviour
     public InputManager inputManager;
     [Tooltip("Empty = found at runtime.")]
     public GameCharacter player;
-
-    [Tooltip("Where bought vehicles are parked, facing the spot's forward. The first free spot is used.")]
-    public Transform[] parkingSpots;
 
     private static readonly Color Gold = new Color32(255, 201, 51, 255);
     private static readonly Color Yellow = new Color32(255, 204, 0, 255);
@@ -28,8 +28,6 @@ public class Dealer : MonoBehaviour
     private GameObject root;
     private TMP_Text moneyText;
     private readonly List<(VehicleCatalog.Info info, Button button, TMP_Text label)> rows = new();
-    private readonly List<Image> swatchFrames = new();
-    private int colorIndex;
     private int openedFrame;
 
     public bool IsOpen => root != null && root.activeSelf;
@@ -90,46 +88,29 @@ public class Dealer : MonoBehaviour
             box.Flash($"Not enough money. The {info.name} costs $ {info.price:N0}", 3f);
             return;
         }
-        if (!FindFreeSpot(info.kind, out Vector3 pos, out Quaternion rot))
+        var vehicle = FindParked(info.kind);
+        if (vehicle == null)
         {
-            box.Flash("The lot is full. Move a vehicle out of the parking spots first.", 3f);
+            Debug.LogError($"Dealer: there is no {info.name} in the scene to sell. Run Tools > Vehicle Prefabs, or drag " +
+                           $"Assets/Prefabs/{info.name}.prefab into the scene.", this);
+            box.Flash($"Sorry, there is no {info.name} on the map right now.", 3f);
             return;
         }
 
         playerValues.Money -= info.price;
-        var vehicle = VehicleFactory.Build(info.kind, VehicleCatalog.Colors[colorIndex].color, pos, rot);
         player.AddVehicle(vehicle);
         Close(relockMouse: true);
 
         string how = inputManager.TouchControlsActive ? "tap CAR" : $"press {(int)info.kind + 1}";
-        box.Flash($"Bought the {VehicleCatalog.Colors[colorIndex].name.ToLower()} {info.name} for $ {info.price:N0}.\nIt is parked in the lot, {how} to drive it.", 5f);
+        box.Flash($"Bought the {info.name} for $ {info.price:N0}.\nIt is parked by your house, {how} to drive it.", 5f);
     }
 
-    // the kind's own spot first (van = spot 1, harvester = spot 2), then any other free one
-    private bool FindFreeSpot(VehicleKind kind, out Vector3 pos, out Quaternion rot)
+    // the van or harvester standing in the scene (you can only own one of each, so any one of that kind)
+    private static Vehicle FindParked(VehicleKind kind)
     {
-        pos = transform.position;
-        rot = transform.rotation;
-        if (parkingSpots == null || parkingSpots.Length == 0) return true;
-
-        int first = Mathf.Clamp((int)kind - 1, 0, parkingSpots.Length - 1);
-        for (int i = 0; i < parkingSpots.Length; i++)
-        {
-            var spot = parkingSpots[(first + i) % parkingSpots.Length];
-            if (spot == null) continue;
-
-            // anything solid above the ground at the spot (a parked vehicle, the tractor) blocks it
-            var center = spot.position + Vector3.up * 2.4f;
-            var half = new Vector3(3.5f, 2f, 4.5f);
-            if (Physics.CheckBox(center, half, spot.rotation, ~0, QueryTriggerInteraction.Ignore)) continue;
-
-            pos = spot.position;
-            if (Physics.Raycast(spot.position + Vector3.up * 20f, Vector3.down, out var hit, 40f, ~0, QueryTriggerInteraction.Ignore))
-                pos.y = hit.point.y;
-            rot = spot.rotation;
-            return true;
-        }
-        return false;
+        foreach (var v in FindObjectsByType<Vehicle>(FindObjectsSortMode.None))
+            if (v.kind == kind) return v;
+        return null;
     }
 
     // ---- menu ----
@@ -144,8 +125,6 @@ public class Dealer : MonoBehaviour
             button.GetComponent<Image>().color = owned ? ButtonOff : ButtonFill;
             label.text = owned ? "OWNED" : $"BUY  $ {info.price:N0}";
         }
-        for (int i = 0; i < swatchFrames.Count; i++)
-            swatchFrames[i].color = i == colorIndex ? Yellow : new Color(0, 0, 0, 0);
     }
 
     private void Build()
@@ -204,8 +183,6 @@ public class Dealer : MonoBehaviour
         foreach (var info in VehicleCatalog.ForSale)
             AddVehicleRow(inner.transform, info);
 
-        AddColorRow(inner.transform);
-
         var footer = MakeText(inner.transform, touch ? "Tap outside to close" : "Click BUY.  E or Esc to close", 26, Color.white, TextAlignmentOptions.Center, false);
         Height(footer, 44);
 
@@ -230,48 +207,6 @@ public class Dealer : MonoBehaviour
         var (button, label) = MakeButton(row.transform, "BUY", 260, 90);
         button.onClick.AddListener(() => Buy(info));
         rows.Add((info, button, label));
-    }
-
-    private void AddColorRow(Transform parent)
-    {
-        var row = new GameObject("Colour Row", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-        row.transform.SetParent(parent, false);
-        var h = row.GetComponent<HorizontalLayoutGroup>();
-        h.childControlWidth = h.childControlHeight = true;
-        h.childForceExpandWidth = h.childForceExpandHeight = false;
-        h.childAlignment = TextAnchor.MiddleLeft;
-        h.spacing = 18;
-
-        var label = MakeText(row.transform, "Colour", 32, Gold, TextAlignmentOptions.Left, true);
-        label.gameObject.AddComponent<LayoutElement>().preferredWidth = 140;
-
-        for (int i = 0; i < VehicleCatalog.Colors.Length; i++)
-        {
-            int index = i;
-            // yellow frame shows the picked colour, the swatch sits inside it
-            var frame = new GameObject(VehicleCatalog.Colors[i].name, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-            frame.transform.SetParent(row.transform, false);
-            var fle = frame.GetComponent<LayoutElement>();
-            fle.preferredWidth = fle.minWidth = 160;
-            fle.preferredHeight = fle.minHeight = 70;
-            var frameImage = frame.GetComponent<Image>();
-            frame.GetComponent<Button>().onClick.AddListener(() => { colorIndex = index; Refresh(); });
-            swatchFrames.Add(frameImage);
-
-            var swatch = new GameObject("Swatch", typeof(RectTransform), typeof(Image));
-            swatch.transform.SetParent(frame.transform, false);
-            var srt = (RectTransform)swatch.transform;
-            Stretch(srt);
-            srt.offsetMin = new Vector2(6, 6);
-            srt.offsetMax = new Vector2(-6, -6);
-            var simg = swatch.GetComponent<Image>();
-            simg.color = VehicleCatalog.Colors[i].color;
-            simg.raycastTarget = false;
-
-            var caption = MakeText(swatch.transform, VehicleCatalog.Colors[i].name, 24, Color.white, TextAlignmentOptions.Center, true);
-            Stretch((RectTransform)caption.transform);
-            caption.raycastTarget = false;
-        }
     }
 
     // ---- UI helpers ----

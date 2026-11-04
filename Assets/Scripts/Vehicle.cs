@@ -40,7 +40,7 @@ public class Vehicle : MonoBehaviour
     [Tooltip("Where the follow camera sits, in the vehicle's own space. Zero = where the camera already is (the tractor).")]
     public Vector3 cameraOffset;
 
-    [Tooltip("Body parts that take the vehicle colour (set by the dealer now, the paint shop later).")]
+    [Tooltip("Body parts that take the vehicle colour (for the paint shop later; the dealer sells red only).")]
     public List<Renderer> paintRenderers = new();
 
     /// <summary>The vehicle the player is driving.</summary>

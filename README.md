@@ -50,7 +50,7 @@ The 3D version aims for the same feature set as the 2D game: buy fields, grow an
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
 ## Project layout
-- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `GameCharacter`, `Vehicle`, `VehicleFactory`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`)
+- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`)
 - `Assets/Scenes`: game scene
 - `Assets/Prefabs`: houses, garage, tractor
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
