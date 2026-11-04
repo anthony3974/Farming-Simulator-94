@@ -232,11 +232,12 @@ public class Vehicle : MonoBehaviour
     /// <summary>
     /// Finds the two front tires (the FlTire / FrTire objects furthest forward on the vehicle) and puts each
     /// on a pivot at its centre. Looks at positions, not parent names, because the scene renames the axles.
+    /// Only active tires: a turned-off model (the old tractor kept beside the new one) must stay hidden.
     /// </summary>
     private void SetupFrontWheels()
     {
         var tires = new List<Transform>();
-        foreach (var t in GetComponentsInChildren<Transform>(true))
+        foreach (var t in GetComponentsInChildren<Transform>())
             if (t.name == "FlTire" || t.name == "FrTire") tires.Add(t);
 
         if (tires.Count == 0)
