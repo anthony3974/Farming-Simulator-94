@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108"><defs></defs>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3E8FD6"/>
+      <stop offset="1" stop-color="#A9D8F5"/>
+    </linearGradient>
+    <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A4E26"/>
+      <stop offset="1" stop-color="#5A3818"/>
+    </linearGradient>
+  </defs>
+  <rect width="108" height="108" fill="url(#sky)"/>
+  <circle cx="73" cy="35" r="12.5" fill="#FFF3B8" opacity="0.45"/>
+  <circle cx="73" cy="35" r="8.5" fill="#FFC933"/>
+  <path d="M0 64 Q 27 57 54 62 T 108 60 V 70 H 0 Z" fill="#5E9E3A"/>
+  <rect y="67" width="108" height="41" fill="url(#soil)"/>
+  <rect y="66" width="108" height="3" fill="#4C8A2C"/>
+  <rect y="73" width="108" height="1.6" fill="#4A2D12" opacity="0.55"/><rect y="80" width="108" height="2.2" fill="#4A2D12" opacity="0.55"/><rect y="89" width="108" height="2.8" fill="#4A2D12" opacity="0.55"/><rect y="100" width="108" height="3.4" fill="#4A2D12" opacity="0.55"/>
+</svg>

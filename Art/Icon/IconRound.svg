@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72"><defs><clipPath id="round"><circle cx="54.0" cy="54.0" r="36.0"/></clipPath></defs><g clip-path="url(#round)">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3E8FD6"/>
+      <stop offset="1" stop-color="#A9D8F5"/>
+    </linearGradient>
+    <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A4E26"/>
+      <stop offset="1" stop-color="#5A3818"/>
+    </linearGradient>
+  </defs>
+  <rect width="108" height="108" fill="url(#sky)"/>
+  <circle cx="73" cy="35" r="12.5" fill="#FFF3B8" opacity="0.45"/>
+  <circle cx="73" cy="35" r="8.5" fill="#FFC933"/>
+  <path d="M0 64 Q 27 57 54 62 T 108 60 V 70 H 0 Z" fill="#5E9E3A"/>
+  <rect y="67" width="108" height="41" fill="url(#soil)"/>
+  <rect y="66" width="108" height="3" fill="#4C8A2C"/>
+  <rect y="73" width="108" height="1.6" fill="#4A2D12" opacity="0.55"/><rect y="80" width="108" height="2.2" fill="#4A2D12" opacity="0.55"/><rect y="89" width="108" height="2.8" fill="#4A2D12" opacity="0.55"/><rect y="100" width="108" height="3.4" fill="#4A2D12" opacity="0.55"/>
+<ellipse cx="54.5" cy="74.6" rx="27" ry="2.6" fill="#000000" opacity="0.25"/>
+  <g transform="translate(54 53) scale(0.85) translate(-54.5 -53)">
+    <!-- exhaust -->
+    <rect x="69.5" y="37" width="3" height="14" rx="1" fill="#212124"/>
+    <rect x="68.8" y="35.5" width="4.4" height="2.4" rx="1" fill="#212124"/>
+    <!-- hood -->
+    <path d="M46 49 H79 Q83 49 83 53 V62 H46 Z" fill="#C71A14"/>
+    <rect x="46" y="49" width="37" height="2.2" fill="#E2362F"/>
+    <rect x="80.6" y="52" width="2.4" height="9" fill="#212124"/>
+    <circle cx="81.2" cy="51.6" r="1.5" fill="#FFF5CC"/>
+    <text x="62" y="59.6" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-weight="bold"
+          font-size="8.5" text-anchor="middle" fill="#FFC933">94</text>
+    <!-- frame under the hood, joins the wheels -->
+    <rect x="40" y="61" width="36" height="4" fill="#212124"/>
+    <!-- cab -->
+    <rect x="30" y="32" width="20" height="30" rx="1.5" fill="#C71A14"/>
+    <rect x="33" y="35.5" width="14.5" height="15" rx="1" fill="#33526B"/>
+    <path d="M34.5 37 L40 37 L35 49 L34.5 49 Z" fill="#FFFFFF" opacity="0.25"/>
+    <rect x="27.5" y="28" width="25" height="4.5" rx="1.2" fill="#212124"/>
+    <rect x="31" y="31.5" width="2" height="3" fill="#212124"/>
+    <rect x="47" y="31.5" width="2" height="3" fill="#212124"/>
+    <!-- rear wheel -->
+    <circle cx="40" cy="64" r="14" fill="#141414"/>
+    <circle cx="40" cy="64" r="14" fill="none" stroke="#2C2C2C" stroke-width="2.4" stroke-dasharray="3 2.5"/>
+    <circle cx="40" cy="64" r="8.2" fill="#EBC733"/>
+    <circle cx="40" cy="64" r="5.6" fill="none" stroke="#C9A51E" stroke-width="1"/>
+    <circle cx="40" cy="64" r="2.6" fill="#212124"/>
+    <!-- rear fender over the wheel -->
+    <path d="M24.5 61 A15.8 15.8 0 0 1 55.5 61 L52.6 61 A12.9 12.9 0 0 0 27.4 61 Z" fill="#8E120E"/>
+    <!-- front wheel -->
+    <circle cx="72" cy="68.5" r="9.5" fill="#141414"/>
+    <circle cx="72" cy="68.5" r="9.5" fill="none" stroke="#2C2C2C" stroke-width="1.8" stroke-dasharray="2.4 2"/>
+    <circle cx="72" cy="68.5" r="5.4" fill="#EBC733"/>
+    <circle cx="72" cy="68.5" r="1.9" fill="#212124"/>
+  </g>
+</g></svg>
