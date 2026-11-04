@@ -35,7 +35,7 @@
 > - [x] **Van number plate:** Overrides > Apply All done by the owner, `VehiclePlate.mat` deleted (2026-11-04).
 > - [x] **Van scaled up** by the owner (scale 1.2808 on the scene copy). The camera then sat 1.28x further back (the camera is a child of the van, so it scales too); `cameraOffset` on `Van.prefab` was divided by 1.28 (`(0, 5, -8.5)` to `(0, 3.9, -6.64)`), so it sits as far away as before. **Owner to check it feels right**, adjust `cameraOffset` on the Van if not.
 > - [x] **Unused assets deleted:** `House.prefab`, `houseTop.fbx`, `Garage EX.prefab` (2026-11-04).
-> - [ ] **Phone check:** the HELP and PAUSE buttons' place (top-left).
+> - [x] **Phone check:** the HELP and PAUSE buttons (top-left) look good on the phone (owner, 2026-11-04).
 >
 > **Fixed (2026-11-04):** ~~**On phones the grass looks like water.**~~ The two layers the terrain uses (`Grass_B`, `Pebbles_B`) took smoothness from the texture's alpha, but those textures are imported with **no alpha**, so alpha reads as 1 = fully glossy, and the sky reflects off the ground like water. Both layers are now **Smoothness Source: Constant** (smoothness 0). **Confirmed on the phone by the owner.** Android stays on Medium quality (High would mainly add soft shadows, at a frame-rate and battery cost).
 >
