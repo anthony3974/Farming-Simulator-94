@@ -91,7 +91,7 @@ public class Dealer : MonoBehaviour
         var vehicle = FindParked(info.kind);
         if (vehicle == null)
         {
-            Debug.LogError($"Dealer: there is no {info.name} in the scene to sell. Run Tools > Vehicle Prefabs, or drag " +
+            Debug.LogError($"Dealer: there is no {info.name} in the scene to sell. Drag " +
                            $"Assets/Prefabs/{info.name}.prefab into the scene.", this);
             box.Flash($"Sorry, there is no {info.name} on the map right now.", 3f);
             return;

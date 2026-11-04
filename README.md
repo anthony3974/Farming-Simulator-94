@@ -55,7 +55,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - `Assets/Prefabs`: houses, garage, tractor
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: editor tools (Map Border Builder). Earlier one-off builders (dealer, tractor, sell stations, shops, road look) were run and removed; they are in the git history
+- `Assets/Editor`: editor tools (Map Border Builder). Earlier one-off builders (dealer, tractor, sell stations, shops, road look, house, garage, vehicle prefabs) were run and removed; they are in the git history
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
 ## Status
