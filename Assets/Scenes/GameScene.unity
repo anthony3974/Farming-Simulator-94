@@ -14908,12 +14908,12 @@ MonoBehaviour:
   crop: 0
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 1000
-  minSeedCost: 450
-  maxSeedCost: 550
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -17830,12 +17830,12 @@ MonoBehaviour:
   crop: 0
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 10000
-  minSeedCost: 4500
-  maxSeedCost: 5500
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -47434,8 +47434,8 @@ Transform:
   m_GameObject: {fileID: 700602377}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 971.1, y: 0.01, z: 548.7681}
-  m_LocalScale: {x: 3.8450172, y: 1, z: 109.73576}
+  m_LocalPosition: {x: 971.6221, y: 0.01, z: 579.959}
+  m_LocalScale: {x: 3.9498146, y: 1, z: 115.977615}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1719858440}
@@ -55298,12 +55298,12 @@ MonoBehaviour:
   crop: 2
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 1000
-  minSeedCost: 450
-  maxSeedCost: 550
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -58079,12 +58079,12 @@ MonoBehaviour:
   crop: 0
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 1000
-  minSeedCost: 450
-  maxSeedCost: 550
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -99619,12 +99619,12 @@ MonoBehaviour:
   crop: 1
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 1000
-  minSeedCost: 450
-  maxSeedCost: 550
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -138764,12 +138764,12 @@ MonoBehaviour:
   crop: 0
   minPrice: 0.65
   maxPrice: 0.75
-  seedsPerPurchase: 10000
-  minSeedCost: 4500
-  maxSeedCost: 5500
-  fertilizerPerPurchase: 10000
-  minFertilizerCost: 4000
-  maxFertilizerCost: 5000
+  seedsPerBuy: 2000
+  minSeedPrice: 900
+  maxSeedPrice: 1100
+  fertilizerPerBuy: 2000
+  minFertilizerPrice: 800
+  maxFertilizerPrice: 1000
   dealer: {fileID: 1234911827}
   messageText: {fileID: 0}
   messageSeconds: 3
