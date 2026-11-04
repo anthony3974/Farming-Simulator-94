@@ -46,11 +46,16 @@ public class GameCharacter : MonoBehaviour
             tractor.cameraOffset = characterCam.localPosition;
         AddVehicle(tractor);
 
-        // the speedometer is calibrated on the tractor (its top speed shows as its topSpeed km/h), so faster vehicles show more
-        speedo = gameObject.AddComponent<Speedometer>();
-        speedo.target = tractor.transform;
-        speedo.maxWorldSpeed = tractor.WorldTopSpeed;
-        speedo.maxDisplayKmh = tractor.topSpeed;
+        // the speedometer (a scene object) is calibrated on the tractor (its top speed shows as its topSpeed km/h),
+        // so faster vehicles show more
+        speedo = FindFirstObjectByType<Speedometer>();
+        if (speedo != null)
+        {
+            speedo.SetTarget(tractor.transform);
+            speedo.maxWorldSpeed = tractor.WorldTopSpeed;
+            speedo.maxDisplayKmh = tractor.topSpeed;
+        }
+        else Debug.LogWarning("No Speedometer in the scene: run Tools > Build Speedometer in GameScene.", this);
 
         DriveVehicle(tractor);
 
