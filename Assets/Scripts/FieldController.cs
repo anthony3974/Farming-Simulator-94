@@ -33,10 +33,10 @@ public class FieldController : MonoBehaviour
     // Short list for now, add more names later.
     private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
 
-    // Was 7 s ("growTime", saved in the scene). Raised 35% to 9.45 s. The field was renamed so the old
-    // saved 7 is ignored and this default applies to every field.
+    // Was 7 s ("growTime"), then 9.45 s ("secondsPerStage"), doubled to 18.9 s by the owner on 2026-11-03.
+    // Each time the field was renamed so the value saved in the scene is ignored and this default applies.
     [Tooltip("Seconds each growth step takes (planted > stage 1 > stage 2 > stage 3 > ready). 4 steps in total.")]
-    [SerializeField] private float secondsPerStage = 9.45f;
+    [SerializeField] private float secondsPerGrowthStage = 18.9f;
 
     [Tooltip("The player's own field starts the game planted with this crop (the Planted stage, just like after pressing E). None = starts empty.")]
     [SerializeField] private CropType startCrop = CropType.Wheat;
@@ -152,6 +152,17 @@ public class FieldController : MonoBehaviour
         // drop an old "press B again" before reading the key, so a stale confirmation can never be used
         if (confirmTrade && Time.time > confirmUntil)
             confirmTrade = false;
+
+        // the van is for the road: it can sell crops and buy seeds and fertilizer at the buildings, but it cannot
+        // plant, harvest, fertilize, buy or sell fields (owner, 2026-11-03)
+        if (Vehicle.Active.kind == VehicleKind.Van)
+        {
+            if (inputManager.Interact || inputManager.Fertilize || inputManager.Trade)
+                ScreenPrompt.Instance.Flash(inputManager.TouchControlsActive
+                    ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
+                    : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
+            return;
+        }
 
         if (inputManager.Interact && IsPlayerField)
             Interact();
@@ -330,7 +341,7 @@ public class FieldController : MonoBehaviour
 
     private IEnumerator Grow()
     {
-        yield return new WaitForSeconds(secondsPerStage);
+        yield return new WaitForSeconds(secondsPerGrowthStage);
 
         stage++;
         if (stage < Stage.Ready) StartCoroutine(Grow());

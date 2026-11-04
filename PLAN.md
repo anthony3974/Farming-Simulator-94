@@ -9,6 +9,7 @@
 >    - Keys **1 / 2 / 3** drive the truck / van / harvester (if owned), touch button **CAR** picks the next one. The camera and speedometer move to that vehicle; the others stay parked where you left them.
 >    - `Dealer` + `Building` type Dealer: press E / USE anywhere on the lot to open the shop menu (van and harvester, $5,000 each). **Red only (owner, 2026-11-03): the colour choice was removed.** The van and the harvester are prefabs (`Assets/Prefabs/Van.prefab`, `Harvester.prefab`, materials in `Assets/Vehicles`) standing on `Parking` by the house; buying one makes that vehicle yours where it stands. Made with the one-off Vehicle Prefabs tool, then removed (git history, `530c871`) (the old runtime `VehicleFactory` builder is gone; the names, prices and descriptions are in `VehicleCatalog.cs`). The dealer menu is built in code in `Dealer.cs`.
 >    - Van: top speed 62 km/h (truck 50). Harvester: 38 km/h and **+60% harvest** (2D speed ratios 8 / 10 / 6).
+>    - **The van cannot work fields (owner, 2026-11-03):** in the van, E / F / B in a field only show "The van can't work fields". It still sells crops and buys seeds and fertilizer at the buildings, and opens the dealer.
 >    - The dealer was built by `Assets/Editor/DealerBuilder.cs` (now only in git history, `3340302`) from the 2D map rectangles (the 3D terrain is the 2D map turned on its side: 2D up = +X, 2D right = -Z), which also added a `Vehicle` to the truck.
 >    - Still worth checking: the shop menu on a phone.
 > 2. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
@@ -144,7 +145,7 @@ In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not 
 - Land: 2.1 dollars per unit of harvest (2D: 1,250 per 600), so Tony is about 49,000 (was 11,650) and the smallest field about 10,000. Selling back pays 80%.
 - Start: 5,000 dollars (money used to start at 0) and 25,000 seeds.
 - Prices are intentional settings of the new game (for example selling a field pays 80%, where 2D paid back 100%), not mistakes.
-- **Time:** growth was 4 x 7 s = 28 s; the 2D game took 160 to 205 s. It is now 4 x 9.45 s (7 s + 35%) = 37.8 s per crop, set by `secondsPerStage` on `FieldController` (renamed from `growTime`, so the old 7 saved in the scene no longer applies). Still about 4.5x the 2D pace, so raise it further if it feels too fast.
+- **Time:** growth was 4 x 7 s = 28 s, then 4 x 9.45 s = 37.8 s; the 2D game took 160 to 205 s. **Doubled by the owner (2026-11-03) to 4 x 18.9 s = 75.6 s per crop**, set by `secondsPerGrowthStage` on `FieldController` (renamed from `secondsPerStage`, so the 9.45 saved in the scene no longer applies). Still about 2 to 2.7x faster than the 2D game.
 - **Starting field:** the player's own field ("Tony") starts the game planted with wheat, in the Planted stage (`startCrop` on `FieldController`; None = empty). The owner had to sell it to afford the first planting, so it now starts growing for free.
 
 ## Code review notes (`/code-review high Assets/Scripts`, 2026-11-02)
