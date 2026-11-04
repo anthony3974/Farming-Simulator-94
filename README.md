@@ -59,7 +59,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - `Assets/Prefabs`: tractor, van, harvester, and `UI/UI Button` (every menu button is a copy of it, so they all match)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: editor tools (Map Border Builder). Earlier one-off builders (dealer, tractor, sell stations, shops, road look, house, garage, vehicle prefabs, menus, button prefab) were run and removed; they are in the git history
+- `Assets/Editor`: one-off editor tools while they are in use (none right now, so the folder is gone; a new tool recreates it). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab) were run and removed; they are in the git history
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
 ## Status
