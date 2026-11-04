@@ -21,6 +21,8 @@
 > 4. **Move the UI still built in code into the hierarchy** (see the rule below): `HelpMenu`, the `Dealer` shop menu, the `Building` message box, `Speedometer`, and `TouchControls` (with the touch rework, item 20). Buttons become copies of the `UI Button` prefab. One at a time.
 > 5. **Tractor redesign (owner, 2026-11-04).** The current tractor (Tractor Builder, `8c1c8b6`) is better than the original but has **too many gaps and floating parts**. Redo it so every part touches or overlaps its neighbour (no visible gaps, nothing hovering), as a prefab the owner can edit in the hierarchy. Ask the owner for the look before building.
 >
+> 6. **App icon (owner, 2026-11-04).** The phone shows Unity's default icon. Make a Farming Simulator 94 icon (square, at least 1024 x 1024 PNG; Android also wants an adaptive icon: a foreground layer and a background layer) and set it in Project Settings > Player > Icon (Android and Default). Needed before publishing on Google Play (512 x 512 for the store listing).
+>
 > **Later (not soon):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), save/load (item 18), the touch buttons rework (item 20).
 > **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
