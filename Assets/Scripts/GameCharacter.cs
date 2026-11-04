@@ -20,8 +20,9 @@ public class GameCharacter : MonoBehaviour
     public float minPitch = -10f;
     public float maxPitch = 50f;
 
-    // Testing switch: when true the mouse does not move the camera at all (look code is kept, just skipped)
-    public bool staticCamera = true;
+    // Mouse look works on PC while the cursor is locked (click the game, Esc frees it). On phones the cursor is
+    // never locked, so the camera stays still there; drag-to-look for touch is not built yet (see PLAN.md).
+    // (The old staticCamera testing switch was removed on 2026-11-03.)
 
     private float pitch;
     private bool mouseLook;
@@ -73,7 +74,7 @@ public class GameCharacter : MonoBehaviour
         // a click on an open menu (the dealer) is for its buttons, not for grabbing the mouse
         else if (!inputManager.TouchControlsActive && !inputManager.MenuOpen && Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
 
-        mouseLook = !staticCamera && Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
+        mouseLook = Cursor.lockState == CursorLockMode.Locked && ignoreMouseFrames <= 0;
         if (ignoreMouseFrames > 0) ignoreMouseFrames--;
     }
 

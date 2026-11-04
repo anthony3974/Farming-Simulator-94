@@ -67,7 +67,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 
 ## Waiting on the owner (decisions)
 - **Sky and terrain layers: decided (owner, 2026-11-03).** The current set is final for now (the owner may delete one or two later). See Repo housekeeping.
-- **Camera:** `staticCamera` is still ticked on `GameCharacter` for testing. Untick it to restore mouse look.
+- **Camera: decided (owner, 2026-11-03).** The `staticCamera` testing switch is removed, so mouse look is back on PC. The phone side was left untouched on purpose: on touch the camera stays still (see Android port item 4, touch look).
 - **Touch layout:** fixed from a phone screenshot (2026-11-02): steering arrows moved right of the speedometer, right-hand buttons shrunk to 130 px so CROP no longer covers the Money/Seeds/Fertilizer panel. Needs a re-check on the phone (not yet seen after the change).
 
 ## Noted from play-testing (all done, see Progress below)
@@ -110,14 +110,14 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - [x] Car dealer, `Vehicle` split and vehicle switching: built and tested by the owner (2026-11-03)
 - [x] Top road texture no longer stretched: `RoadTiling` tiles each road by metres (6 m per tile, set on the road's component), the road texture has 8x anisotropic filtering. The one-off Road Look tool is kept only in git history (`48d5ead`)
 - [x] Van redesigned with rear doors, tail lights, number plate, the 2D sprite's roof ribs, mirrors and side detail (now `Assets/Prefabs/Van.prefab`, 87 parts; not yet checked in Play mode)
-- [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
+- [x] Static camera removed: mouse look is back on PC (2026-11-03). Phones unchanged (no touch look yet).
 
 ## Android port (notes for revising later)
 Phase 1 is done (see above). Still to do:
 1. ~~**Test the touch buttons in the editor.**~~ DONE. Tick `Show Touch Controls` on `InputManager`, check layout, drive, and plant/harvest with USE. Adjust button sizes/positions from screenshots.
 2. ~~**Make the existing UI scale.**~~ DONE. The scene Canvas uses *Constant Pixel Size* (reference 800x600), so the counters and field pop-up will be the wrong size on phones. Switch it to *Scale With Screen Size* (for example 1920x1080, match 0.5) and re-check both panels.
 3. (Partly done: no overlaps at 1920x1080.) **Check the touch layout against the pop-up.** GAS / BRAKE / USE sit above the bottom-right pop-up (260 px tall + 20 px margin); verify on a real screen, including phones with a notch or rounded corners (safe area).
-4. **Touch look.** When `staticCamera` is turned off again, add a drag-to-look area (the cursor is not locked in touch mode, so `GameCharacter` mouse look does not apply on a phone).
+4. **Touch look (not started, owner asked to leave the phone side as it is for now, 2026-11-03).** `staticCamera` is gone and mouse look is back on PC. To do: add a drag-to-look area (the cursor is not locked in touch mode, so `GameCharacter` mouse look does not apply on a phone).
 5. ~~**Player Settings for Android:**~~ DONE (landscape, API 23+, IL2CPP, ARM64, package name).
    - minimum API level is 22 but Unity 6 needs 23 or higher; set it deliberately
    - force landscape orientation
