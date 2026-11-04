@@ -19,7 +19,7 @@ public class FieldView : MonoBehaviour
     void Awake()
     {
         // long field names shrink to fit instead of running into the next column
-        txtName.enableWordWrapping = false;
+        txtName.textWrappingMode = TextWrappingModes.NoWrap;
         txtName.overflowMode = TextOverflowModes.Ellipsis;
         txtName.enableAutoSizing = true;
         txtName.fontSizeMax = txtName.fontSize;
