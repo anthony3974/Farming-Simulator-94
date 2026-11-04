@@ -56,7 +56,8 @@ public class Dealer : MonoBehaviour
     private bool ready;
     private int openedFrame;
 
-    public bool IsOpen => ready && menuRoot.activeSelf;
+    // menuRoot != null: when the scene unloads (leaving Play mode) the menu can be destroyed before OnDisable runs
+    public bool IsOpen => ready && menuRoot != null && menuRoot.activeSelf;
 
     void Start()
     {
