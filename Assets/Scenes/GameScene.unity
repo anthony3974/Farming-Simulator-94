@@ -372,6 +372,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &3542860
 BoxCollider:
@@ -1339,6 +1342,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1455714485}
+  - {fileID: 1911655930}
   - {fileID: 107881934}
   - {fileID: 1485138022}
   - {fileID: 390530832}
@@ -1562,6 +1566,7 @@ MonoBehaviour:
   startSeeds: 2000
   startMoney: 5000
   txSeeds: {fileID: 257652377}
+  startFertilizer: 0
   txFertilizer: {fileID: 974915935}
 --- !u!4 &25997642
 Transform:
@@ -3835,6 +3840,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &64661790
 BoxCollider:
@@ -5282,6 +5290,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &89107621
 BoxCollider:
@@ -6711,6 +6722,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &107881936
 BoxCollider:
@@ -11613,6 +11627,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &196921347
 BoxCollider:
@@ -15015,37 +15032,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 249549068}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &252419023
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 252419024}
-  m_Layer: 0
-  m_Name: Parking 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &252419024
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 252419023}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
-  m_LocalPosition: {x: 12.333313, y: 0, z: -34.654907}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1234911826}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &256390387
 GameObject:
   m_ObjectHideFlags: 0
@@ -19049,6 +19035,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &302604601
 BoxCollider:
@@ -20757,6 +20746,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &326585566
 BoxCollider:
@@ -24956,6 +24948,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &390530834
 BoxCollider:
@@ -33660,6 +33655,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &504482874
 BoxCollider:
@@ -48768,6 +48766,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &719465522
 BoxCollider:
@@ -78719,37 +78720,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1183900333}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1185006414
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1185006415}
-  m_Layer: 0
-  m_Name: Parking 3
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1185006415
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1185006414}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
-  m_LocalPosition: {x: -11.666687, y: 0, z: -34.654907}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1234911826}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1185328314
 GameObject:
   m_ObjectHideFlags: 0
@@ -81119,11 +81089,6 @@ Transform:
   - {fileID: 1652980535}
   - {fileID: 1945419012}
   - {fileID: 2100021830}
-  - {fileID: 252419024}
-  - {fileID: 1725925189}
-  - {fileID: 1185006415}
-  - {fileID: 2013350506}
-  - {fileID: 2073183742}
   m_Father: {fileID: 1164005861}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &1234911827
@@ -94166,8 +94131,8 @@ Transform:
   m_GameObject: {fileID: 1455714484}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 645.747, y: 0.01, z: 156.4459}
-  m_LocalScale: {x: 29.706198, y: 1, z: 22.75563}
+  m_LocalPosition: {x: 644.5, y: 0.01, z: 163.7}
+  m_LocalScale: {x: 29.163465, y: 1, z: 21.092878}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 22132942}
@@ -94196,6 +94161,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &1455714487
 BoxCollider:
@@ -96941,6 +96909,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &1485138027
 BoxCollider:
@@ -114799,37 +114770,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1724690546}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1725925188
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1725925189}
-  m_Layer: 0
-  m_Name: Parking 2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1725925189
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1725925188}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
-  m_LocalPosition: {x: 0.333313, y: 0, z: -34.654907}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1234911826}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1728010135
 GameObject:
   m_ObjectHideFlags: 0
@@ -123580,6 +123520,9 @@ MonoBehaviour:
   minSeedsPerYield: 0.75
   maxSeedsPerYield: 0.9
   landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
   sellBackFraction: 0.8
 --- !u!65 &1857566553
 BoxCollider:
@@ -126184,6 +126127,143 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1911509041}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1911655929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1911655930}
+  - component: {fileID: 1911655934}
+  - component: {fileID: 1911655933}
+  - component: {fileID: 1911655932}
+  - component: {fileID: 1911655931}
+  m_Layer: 0
+  m_Name: Field1 (3)
+  m_TagString: Field
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1911655930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911655929}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 844.5, y: 0.01, z: 163.6}
+  m_LocalScale: {x: 6.8687162, y: 1, z: 21.475342}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 22132942}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1911655931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911655929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bc7d16fb6da8b645856376c592f0f0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputManager: {fileID: 25997643}
+  playerValues: {fileID: 25997641}
+  fieldView: {fileID: 395314555}
+  fieldName: john hopkins
+  ownerName: fred
+  playerName: Anthony
+  secondsPerStage: 9.45
+  startCrop: 1
+  sizeDivisor: 0.04302926
+  minSeedsPerYield: 0.75
+  maxSeedsPerYield: 0.9
+  landPricePerYield: 2.1
+  minFertilizerPerYield: 0.42
+  maxFertilizerPerYield: 0.58
+  fertilizerBonusPerLevel: 0.5
+  sellBackFraction: 0.8
+--- !u!65 &1911655932
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911655929}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 15, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1911655933
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911655929}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 0aaa643ec654e1a439a799e86831d04e, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1911655934
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911655929}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1913418788
 GameObject:
   m_ObjectHideFlags: 0
@@ -133003,37 +133083,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2012265814}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2013350505
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2013350506}
-  m_Layer: 0
-  m_Name: Parking 4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2013350506
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2013350505}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
-  m_LocalPosition: {x: -23.666687, y: 0, z: -34.654907}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1234911826}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2015134506
 GameObject:
   m_ObjectHideFlags: 0
@@ -136397,37 +136446,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2072809934}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2073183741
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2073183742}
-  m_Layer: 0
-  m_Name: Parking 5
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2073183742
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2073183741}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000004371139}
-  m_LocalPosition: {x: -35.666687, y: 0, z: -34.654907}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1234911826}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2075107864
 GameObject:
   m_ObjectHideFlags: 0

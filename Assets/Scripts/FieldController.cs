@@ -417,6 +417,6 @@ public class FieldController : MonoBehaviour
 
     private string FertilizerName()
     {
-        return fertStage == 0 ? "No" : $"{fertStage}/{MaxFertilizerLevel} (+{fertStage * fertilizerBonusPerLevel * 100f:0}%)";
+        return fertStage == 0 ? "No" : $"+{fertStage * fertilizerBonusPerLevel * 100f:0}%";
     }
 }
