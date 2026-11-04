@@ -25,19 +25,22 @@ public class Building : MonoBehaviour
     public float minPrice = 0.65f;
     public float maxPrice = 0.75f;
 
+    // Owner, 2026-11-03: both shops sell 2,000 at a time, at the same price per unit as before. The fields were
+    // renamed (from seedsPerPurchase, minSeedCost, ...) so the old values saved in the scene are ignored and
+    // these defaults apply to every shop.
     [Header("Seed shop (Buy type only)")]
-    [Tooltip("Seeds you get per purchase. The 2D game sold 1,000 for 450 to 550 dollars (about 0.5 dollars per seed); fields are much bigger in 3D, so a purchase is 10,000.")]
-    public int seedsPerPurchase = 10000;
+    [Tooltip("Seeds you get per purchase. The 2D game sold 1,000 for 450 to 550 dollars (about 0.5 dollars per seed).")]
+    public int seedsPerBuy = 2000;
     [Tooltip("Cost of one purchase is random between these two values (about 0.5 dollars per seed).")]
-    public float minSeedCost = 4500f;
-    public float maxSeedCost = 5500f;
+    public float minSeedPrice = 900f;
+    public float maxSeedPrice = 1100f;
 
     [Header("Fertilizer shop (Fertilizer type only)")]
-    [Tooltip("Fertilizer you get per purchase. The 2D game sold 1,000 compost for 400 to 500 dollars; 3D fields are about 10x bigger, so a purchase is 10,000.")]
-    public int fertilizerPerPurchase = 10000;
+    [Tooltip("Fertilizer you get per purchase. The 2D game sold 1,000 compost for 400 to 500 dollars (about 0.45 dollars per unit).")]
+    public int fertilizerPerBuy = 2000;
     [Tooltip("Cost of one purchase is random between these two values (about 0.45 dollars per unit).")]
-    public float minFertilizerCost = 4000f;
-    public float maxFertilizerCost = 5000f;
+    public float minFertilizerPrice = 800f;
+    public float maxFertilizerPrice = 1000f;
 
     [Header("Dealer (Dealer type only)")]
     [Tooltip("The dealer that opens its shop menu here. Empty = the Dealer on this object or a parent.")]
@@ -93,9 +96,9 @@ public class Building : MonoBehaviour
         switch (type)
         {
             case BuildingType.Sell: return $"Press {key} to sell {crop}";
-            case BuildingType.Buy: return $"Press {key} to buy {seedsPerPurchase:N0} seeds (about $ {(minSeedCost + maxSeedCost) / 2f:N0})";
+            case BuildingType.Buy: return $"Press {key} to buy {seedsPerBuy:N0} seeds (about $ {(minSeedPrice + maxSeedPrice) / 2f:N0})";
             case BuildingType.Dealer: return $"Press {key} to buy vehicles";
-            case BuildingType.Fertilizer: return $"Press {key} to buy {fertilizerPerPurchase:N0} fertilizer (about $ {(minFertilizerCost + maxFertilizerCost) / 2f:N0})";
+            case BuildingType.Fertilizer: return $"Press {key} to buy {fertilizerPerBuy:N0} fertilizer (about $ {(minFertilizerPrice + maxFertilizerPrice) / 2f:N0})";
             default: return $"{type} (coming soon)";
         }
     }
@@ -177,30 +180,30 @@ public class Building : MonoBehaviour
 
     private void BuySeeds()
     {
-        int cost = Mathf.RoundToInt(Random.Range(minSeedCost, maxSeedCost));
+        int cost = Mathf.RoundToInt(Random.Range(minSeedPrice, maxSeedPrice));
         if (playerValues.Money < cost)
         {
-            ShowMessage($"Not enough money. {seedsPerPurchase:N0} seeds cost $ {cost:N0}");
+            ShowMessage($"Not enough money. {seedsPerBuy:N0} seeds cost $ {cost:N0}");
             return;
         }
 
         playerValues.Money -= cost;
-        playerValues.Seeds += seedsPerPurchase;
-        ShowMessage($"Bought {seedsPerPurchase:N0} seeds for $ {cost:N0}");
+        playerValues.Seeds += seedsPerBuy;
+        ShowMessage($"Bought {seedsPerBuy:N0} seeds for $ {cost:N0}");
     }
 
     private void BuyFertilizer()
     {
-        int cost = Mathf.RoundToInt(Random.Range(minFertilizerCost, maxFertilizerCost));
+        int cost = Mathf.RoundToInt(Random.Range(minFertilizerPrice, maxFertilizerPrice));
         if (playerValues.Money < cost)
         {
-            ShowMessage($"Not enough money. {fertilizerPerPurchase:N0} fertilizer costs $ {cost:N0}");
+            ShowMessage($"Not enough money. {fertilizerPerBuy:N0} fertilizer costs $ {cost:N0}");
             return;
         }
 
         playerValues.Money -= cost;
-        playerValues.Fertilizer += fertilizerPerPurchase;
-        ShowMessage($"Bought {fertilizerPerPurchase:N0} fertilizer for $ {cost:N0}");
+        playerValues.Fertilizer += fertilizerPerBuy;
+        ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}");
     }
 
     private void ShowMessage(string text)

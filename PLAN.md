@@ -13,7 +13,7 @@
 >    - Still worth checking: the shop menu on a phone.
 > 2. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
 >
-> **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). Fertilizer can be bought (10,000 for $4,000 to $5,000) but not used on fields yet. Note: the seed shop in the scene still sells 1,000 seeds for $450 to $550 (Inspector values), not the 10,000 for $4,500 to $5,500 the code defaults say; ask the owner which is wanted.
+> **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). **Shop amounts (owner, 2026-11-03): both shops sell 2,000 at a time, same price per unit:** 2,000 seeds for $900 to $1,100 and 2,000 fertilizer for $800 to $1,000. The `Building` fields were renamed (`seedsPerBuy`, `minSeedPrice`, `fertilizerPerBuy`, ...) so the old Inspector values in the scene are ignored.
 >
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
@@ -139,7 +139,7 @@ Phase 1 is done (see above). Still to do:
 ## Economy balance (set 2026-11-02, owner may revise)
 In 3D, a field's `size` is also its harvest amount (about 4,900 to 23,300), not the 2D size of 1 to 3.5, so the 2D prices per size could not be used directly (planting the 23,300 field wanted 11 million seeds). All prices are now per unit of harvest, keeping the 2D ratios:
 - Seeds per planting: 0.75 to 0.9 x harvest (2D: 500 per 600). Starter field "Tony" (23,300) needs about 17,500 to 21,000 seeds.
-- Seed shop: 10,000 seeds for 4,500 to 5,500 dollars (same 0.5 dollars per seed as 2D; 1,000 would mean 20 trips).
+- Seed shop: 2,000 seeds for 900 to 1,100 dollars (owner, 2026-11-03; same 0.5 dollars per seed as 2D). Fertilizer shop: 2,000 for 800 to 1,000 dollars (0.45 per unit).
 - Selling: 0.65 to 0.75 dollars per unit (unchanged, same as 2D). Tony pays about 16,000 per harvest, so about 6,000 profit after buying the seeds.
 - Land: 2.1 dollars per unit of harvest (2D: 1,250 per 600), so Tony is about 49,000 (was 11,650) and the smallest field about 10,000. Selling back pays 80%.
 - Start: 5,000 dollars (money used to start at 0) and 25,000 seeds.
