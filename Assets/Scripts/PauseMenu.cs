@@ -44,7 +44,11 @@ public class PauseMenu : MonoBehaviour
         player = FindFirstObjectByType<GameCharacter>();
         if (menuRoot == null || resumeButton == null || mainMenuButton == null || input == null || player == null)
         {
-            Debug.LogError("PauseMenu is missing a reference (menuRoot, resumeButton, mainMenuButton, InputManager or GameCharacter).", this);
+            string missing = (menuRoot == null ? " Menu Root" : "") + (resumeButton == null ? " Resume Button" : "")
+                + (mainMenuButton == null ? " Main Menu Button" : "") + (input == null ? " (no InputManager in the scene)" : "")
+                + (player == null ? " (no GameCharacter in the scene)" : "");
+            Debug.LogError($"Pause menu turned off: '{name}' is missing{missing}. Drag the objects back into its Pause Menu slots, "
+                + "run Tools > Build Pause Menu again, or delete this object if you don't want a pause menu.", this);
             enabled = false;
             return;
         }
