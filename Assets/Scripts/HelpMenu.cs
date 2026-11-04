@@ -29,7 +29,7 @@ public class HelpMenu : MonoBehaviour
         new[] { "Fertilize field (while it grows)", "F", "FERT" },
         new[] { "Switch vehicle (tractor, van, harvester)", "1 / 2 / 3", "CAR" },
         new[] { "Help", "H", "HELP" },
-        new[] { "Release mouse", "Esc", "-" },
+        new[] { "Pause (releases the mouse)", "Esc", "PAUSE" },
         new[] { "Debug toggle", "F1", "-" },
     };
 

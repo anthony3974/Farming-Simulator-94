@@ -49,7 +49,16 @@ public class InputManager : MonoBehaviour
     /// Set by a menu that needs the mouse (the dealer). While true, driving and the game keys are ignored
     /// and a click does not grab the mouse.
     /// </summary>
-    public bool MenuOpen { get; set; }
+    public bool MenuOpen
+    {
+        get => menuOpen;
+        set { if (menuOpen && !value) menuClosedFrame = Time.frameCount; menuOpen = value; }
+    }
+    private bool menuOpen;
+    private int menuClosedFrame = -1;
+
+    /// <summary>True on the frame a menu closed, so the same Esc press does not also open the pause menu.</summary>
+    public bool MenuJustClosed => menuClosedFrame == Time.frameCount;
 
     void Awake()
     {

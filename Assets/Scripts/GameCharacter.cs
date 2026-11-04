@@ -70,7 +70,8 @@ public class GameCharacter : MonoBehaviour
 
     private void HandleCursor()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) SetCursorLocked(false);
+        // Esc frees the mouse, unless it is closing a menu (the pause menu relocks it when it resumes)
+        if (Input.GetKeyDown(KeyCode.Escape)) { if (!inputManager.MenuOpen && !inputManager.MenuJustClosed) SetCursorLocked(false); }
         // a click on an open menu (the dealer) is for its buttons, not for grabbing the mouse
         else if (!inputManager.TouchControlsActive && !inputManager.MenuOpen && Cursor.lockState != CursorLockMode.Locked && Input.GetMouseButtonDown(0)) SetCursorLocked(true);
 
