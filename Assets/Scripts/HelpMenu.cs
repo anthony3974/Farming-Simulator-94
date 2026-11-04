@@ -26,6 +26,7 @@ public class HelpMenu : MonoBehaviour
         new[] { "Use (plant, harvest, sell, shops)", "E", "USE" },
         new[] { "Buy / sell field", "B", "BUY/SELL" },
         new[] { "Choose crop", "C", "CROP" },
+        new[] { "Fertilize field (while it grows)", "F", "FERT" },
         new[] { "Switch vehicle (tractor, van, harvester)", "1 / 2 / 3", "CAR" },
         new[] { "Help", "H", "HELP" },
         new[] { "Release mouse", "Esc", "-" },

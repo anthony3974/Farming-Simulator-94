@@ -7,7 +7,8 @@ public enum CropType { None, Wheat, Barley, Oat }
 
 /// <summary>
 /// One farm field. Press the interact key inside it to plant the selected crop, wait while it
-/// grows through three stages, then press again to harvest.
+/// grows through three stages, then press again to harvest. While it grows, F (FERT on touch)
+/// fertilizes it: up to two levels, one per growth stage, each +50% harvest (like the 2D game).
 /// </summary>
 public class FieldController : MonoBehaviour
 {
@@ -54,6 +55,15 @@ public class FieldController : MonoBehaviour
     [Tooltip("Buy price of the field = size x this (2D ratio about 2.1). Selling it back pays Sell Back Fraction of this.")]
     [SerializeField] private float landPricePerYield = 2.1f;
 
+    // 2D game: fertilizing cost 250 to 350 compost per size, against a harvest of 550 to 650 per size,
+    // so about 0.42 to 0.58 fertilizer per harvested unit. Two levels, one per growth stage, +50% each.
+    [Tooltip("Fertilizing costs this much fertilizer per unit of harvest, each time (random between the two values).")]
+    [SerializeField] private float minFertilizerPerYield = 0.42f;
+    [SerializeField] private float maxFertilizerPerYield = 0.58f;
+    [Tooltip("Extra harvest for each fertilizer level: 0.5 = +50% (2D game).")]
+    [SerializeField] private float fertilizerBonusPerLevel = 0.5f;
+    private const int MaxFertilizerLevel = 2;
+
     private enum Stage { Empty, Planted, Growing1, Growing2, Growing3, Ready }
 
     // Colours for each crop's three growth stages and its ready state.
@@ -92,7 +102,9 @@ public class FieldController : MonoBehaviour
 
     private Stage stage = Stage.Empty;
     private CropType cropType = CropType.None;
-    private byte fertStage;
+    private byte fertStage;               // fertilizer levels on the current crop (0 to MaxFertilizerLevel)
+    private Stage fertilizedAt = Stage.Empty; // growth stage of the last fertilizing (one per stage)
+    private int fertilizerQuote;
 
     void Start()
     {
@@ -143,6 +155,9 @@ public class FieldController : MonoBehaviour
 
         if (inputManager.Interact && IsPlayerField)
             Interact();
+
+        if (inputManager.Fertilize)
+            Fertilize();
 
         if (inputManager.Trade)
             Trade();
@@ -229,6 +244,7 @@ public class FieldController : MonoBehaviour
     {
         confirmTrade = false;
         seedQuote = 0;
+        fertilizerQuote = 0;
         if (IsActiveField()) RefreshUI();
         else if (Vehicle.Active == null || Vehicle.Active.CurrentZone<FieldController>() == null) fieldView.UpdateUI(false);
     }
@@ -238,6 +254,7 @@ public class FieldController : MonoBehaviour
     {
         confirmTrade = false;
         seedQuote = 0;
+        fertilizerQuote = 0;
 
         var current = Vehicle.Active.CurrentZone<FieldController>();
         if (current != null) current.RefreshUI();
@@ -275,6 +292,42 @@ public class FieldController : MonoBehaviour
         Changed();
     }
 
+    // F key: one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
+    private void Fertilize()
+    {
+        var box = ScreenPrompt.Instance;
+        if (!IsPlayerField) { box.Flash($"{fieldName} belongs to {ownerName}. Buy it first (B) to fertilize it.", 3f); return; }
+        if (stage == Stage.Empty) { box.Flash("Plant the field first, then fertilize it while it grows.", 3f); return; }
+        if (stage == Stage.Ready) { box.Flash("The crop is ready. Harvest it first.", 3f); return; }
+        if (fertStage >= MaxFertilizerLevel)
+        {
+            box.Flash($"{fieldName} is fully fertilized ({MaxFertilizerLevel}/{MaxFertilizerLevel}).", 3f);
+            return;
+        }
+        if (fertilizedAt == stage)
+        {
+            box.Flash("Already fertilized in this growth stage. Wait for the next stage.", 3f);
+            return;
+        }
+
+        // rolled once and kept until you fertilize or leave the field, like the seed price
+        if (fertilizerQuote <= 0)
+            fertilizerQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minFertilizerPerYield, maxFertilizerPerYield)));
+        if (playerValues.Fertilizer < fertilizerQuote)
+        {
+            box.Flash($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}, you have {playerValues.Fertilizer:N0}.\nBuy more at the fertilizer shop.", 3f);
+            return;
+        }
+
+        playerValues.Fertilizer -= fertilizerQuote;
+        int used = fertilizerQuote;
+        fertilizerQuote = 0;
+        fertStage++;
+        fertilizedAt = stage;
+        box.Flash($"Fertilized {fieldName} ({fertStage}/{MaxFertilizerLevel}): +{fertStage * fertilizerBonusPerLevel * 100f:0}% harvest. Used {used:N0} fertilizer.", 3f);
+        Changed();
+    }
+
     private IEnumerator Grow()
     {
         yield return new WaitForSeconds(secondsPerStage);
@@ -286,12 +339,18 @@ public class FieldController : MonoBehaviour
 
     private void Harvest()
     {
-        // the harvester brings in more (2D game: +60%)
+        // the harvester brings in more (2D game: +60%), and each fertilizer level +50%
         var vehicle = Vehicle.Active;
-        float bonus = vehicle != null ? vehicle.harvestBonus : 0f;
-        int amount = Convert.ToInt32(size * (1f + bonus));
-        if (bonus > 0f)
-            ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType} (+{bonus * 100f:0}% with the {vehicle.displayName})", 3f);
+        float vehicleBonus = vehicle != null ? vehicle.harvestBonus : 0f;
+        float fertilizerBonus = fertStage * fertilizerBonusPerLevel;
+        int amount = Convert.ToInt32(size * (1f + vehicleBonus + fertilizerBonus));
+        if (vehicleBonus > 0f || fertilizerBonus > 0f)
+        {
+            var parts = new List<string>();
+            if (vehicleBonus > 0f) parts.Add($"+{vehicleBonus * 100f:0}% with the {vehicle.displayName}");
+            if (fertilizerBonus > 0f) parts.Add($"+{fertilizerBonus * 100f:0}% from fertilizer");
+            ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType} ({string.Join(", ", parts)})", 3f);
+        }
 
         if (cropType == CropType.Wheat) playerValues.InWheat += amount;
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;
@@ -299,6 +358,8 @@ public class FieldController : MonoBehaviour
 
         stage = Stage.Empty;
         cropType = CropType.None;
+        fertStage = 0;
+        fertilizedAt = Stage.Empty;
         Changed();
     }
 
@@ -356,6 +417,6 @@ public class FieldController : MonoBehaviour
 
     private string FertilizerName()
     {
-        return fertStage == 0 ? "No" : $"Stage {fertStage}";
+        return fertStage == 0 ? "No" : $"{fertStage}/{MaxFertilizerLevel} (+{fertStage * fertilizerBonusPerLevel * 100f:0}%)";
     }
 }

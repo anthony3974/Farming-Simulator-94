@@ -31,13 +31,15 @@ public class TouchControls : MonoBehaviour
         // right side: 130 px buttons in two columns and three rows. The bottom row sits above the field
         // pop-up (bottom-right, about 260 px tall + 20 px margin) and the top row stays below the
         // Money/Seeds/Fertilizer panel (top-right, about 195 px) even on very wide phones.
-        const float col1 = 60, col2 = 200, row1 = 295, row2 = 435, row3 = 575, btn = 130;
+        const float col1 = 60, col2 = 200, col3 = 340, row1 = 295, row2 = 435, row3 = 575, btn = 130;
         CreateButton(canvas, TouchButton.Gas, "GAS", bottomRight: true, x: col1, y: row1, size: btn);
         CreateButton(canvas, TouchButton.Brake, "BRAKE", bottomRight: true, x: col2, y: row1, size: btn);
         CreateButton(canvas, TouchButton.Interact, "USE", bottomRight: true, x: col1, y: row2, size: btn);
         CreateButton(canvas, TouchButton.Trade, "BUY/SELL", bottomRight: true, x: col2, y: row2, size: btn);
         CreateButton(canvas, TouchButton.CycleCrop, "CROP", bottomRight: true, x: col1, y: row3, size: btn);
         CreateButton(canvas, TouchButton.Vehicle, "CAR", bottomRight: true, x: col2, y: row3, size: btn);
+        // fertilizer: a third column beside CAR (temporary place until the touch buttons are reworked)
+        CreateButton(canvas, TouchButton.Fertilize, "FERT", bottomRight: true, x: col3, y: row3, size: btn);
 
         // help menu, top-left corner
         CreateButton(canvas, TouchButton.Help, "HELP", bottomRight: false, x: 40, y: 40, size: 110, top: true);

@@ -32,7 +32,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 
 
 ### Unfinished features
-15. **Fertiliser** (`Fert1`, `Fert2`, `fertStage`): states and colours exist, nothing uses them.
+15. **Fertilizer** (code written 2026-11-03, not yet tested in Unity): press **F** (touch: **FERT**, a third button column beside CAR, temporary place) in your own field while the crop grows. Two levels, at most one per growth stage, each **+50% harvest** (2D game). Each use costs fertilizer of about 0.42 to 0.58 x the field's harvest (the 2D ratio, Inspector values on `FieldController`), rolled once per visit like the seed price. The field pop-up shows "Fertilized 1/2 (+50%)". Harvest adds the fertilizer bonus to the harvester's +60%. Start stock is `startFertilizer` on `PlayerValues` (0); buy it at the fertilizer shop. Fertilizing does not speed up growth.
 16. ~~**Selling and money.**~~ **DONE** (sell stations for wheat, barley and oat, money in the counters panel, field `value` is the buy price).
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
@@ -54,7 +54,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
-- Fertiliser: apply during growth to speed up growth or increase yield.
+- ~~Fertiliser~~ written (see item 15): F during growth, +50% yield per level, two levels.
 - **Advanced crop harvesting:** drive-over harvest cells with bonuses (see "Advanced crop harvesting" below).
 
 **Phase 5: Polish**
@@ -130,7 +130,6 @@ Phase 1 is done (see above). Still to do:
 10. **Optional later:** replace `<` `>` `GAS` `BRAKE` `USE` text labels with icons; haptic feedback; a pause/settings button.
 
 ## Other things noticed (not yet scheduled)
-- `fertStage` in `FieldController` is never set (compiler warning). It will be used when fertiliser is built.
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
 - ~~`GameCharacter` and `GameCharacterCar` are two halves of one partial class.~~ Split into `GameCharacter` (player) and `Vehicle` with the car dealer (2026-11-03). Getting out on foot (enter/exit) is not built; ask the owner if it is wanted.
 - Vehicles are not saved yet: bought vehicles are lost when the game restarts (part of save/load, item 18).
@@ -176,7 +175,7 @@ Today harvesting is instant: press E / USE on a Ready field and the whole field'
 5. **Finishing the field.** When all cells are harvested (100%), the field returns to `Dirt` / empty, same as the current `Harvest()` end state. Leaving a field half-harvested is allowed; the rest stays `Ready` and can be finished later.
 6. **Bonuses.** Yield per cell = `baseYield / cellCount * (1 + sum of bonuses)`. Bonus sources, all kept as editable Inspector fields:
    - **Harvester:** +60% (the 2D game's number).
-   - **Fertilizer:** +50% per level, two levels (2D game; uses `fertStage`, which exists but is unused).
+   - **Fertilizer:** +50% per level, two levels (2D game; `fertStage` now counts the levels, see item 15).
    - Later: vehicle upgrades, crop type, etc. Add a small `HarvestBonus` list (name + multiplier) so new bonuses don't need code changes.
 7. **Stock goes to `PlayerValues`** as it is harvested (the existing counters), so selling at the station (NEXT UP) works unchanged.
 

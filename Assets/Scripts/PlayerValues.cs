@@ -23,6 +23,8 @@ public class PlayerValues : MonoBehaviour
     [Tooltip("Optional. Shows the seeds in the Statistics panel.")]
     public TMP_Text txSeeds;
     private int fertilizer;
+    [Tooltip("Fertilizer you start the game with. Buy more at the fertilizer shop.")]
+    [SerializeField] private int startFertilizer = 0;
     [Tooltip("Optional. Shows the fertilizer in the Statistics panel.")]
     public TMP_Text txFertilizer;
 
@@ -37,6 +39,7 @@ public class PlayerValues : MonoBehaviour
         if (inputManager == null) inputManager = FindFirstObjectByType<InputManager>();
         seeds = startSeeds;
         money = startMoney;
+        fertilizer = startFertilizer;
         UpdateUI();
     }
 
