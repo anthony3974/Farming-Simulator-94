@@ -40,7 +40,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 | On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `FERT` (same as F), `CAR` (next vehicle), `HELP` (same as H, top-left) |
 
 ## Roadmap
-The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds with a seed shop, and the map border. Also done: the car dealer (van and harvester, placeholder models) and fertilizer (untested). Planned, in order:
+The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds with a seed shop, and the map border. Also done: the car dealer (van and harvester, placeholder models) and fertilizer. Planned, in order:
 
 1. Home menu (with the version number)
 2. Fuel and a gas station

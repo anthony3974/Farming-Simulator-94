@@ -16,6 +16,13 @@
 >
 > **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). **Shop amounts (owner, 2026-11-03): both shops sell 2,000 at a time, same price per unit:** 2,000 seeds for $900 to $1,100 and 2,000 fertilizer for $800 to $1,000. The `Building` fields were renamed (`seedsPerBuy`, `minSeedPrice`, `fertilizerPerBuy`, ...) so the old Inspector values in the scene are ignored.
 >
+> **Start of the next session: test and tidy first (owner, 2026-11-03).**
+> - [ ] **Test the van in a field:** E, F and B should only show "The van can't work fields". Selling crops and the seed / fertilizer shops should still work in the van.
+> - [ ] **Test growth time:** about 75 s per crop (4 x 18.9 s).
+> - [ ] **Van number plate:** select the Van in the scene, **Overrides > Apply All** (the plate was removed only on the scene instance), then delete `Assets/Vehicles/VehiclePlate.mat` (nothing else uses it once the prefab has no plate).
+>
+> **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (`Assets/Prefabs/House.prefab`, `houseTop.fbx` and `Garage EX.prefab` are no longer used in the scene and could be deleted too).
+>
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
@@ -33,7 +40,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 
 
 ### Unfinished features
-15. **Fertilizer** (code written 2026-11-03, not yet tested in Unity): press **F** (touch: **FERT**, a third button column beside CAR, temporary place) in your own field while the crop grows. Two levels, at most one per growth stage, each **+50% harvest** (2D game). Each use costs fertilizer of about 0.42 to 0.58 x the field's harvest (the 2D ratio, Inspector values on `FieldController`), rolled once per visit like the seed price. The field pop-up shows only the bonus: "Fertilized: +50%" (level 1) or "+100%" (level 2). Harvest adds the fertilizer bonus to the harvester's +60%. Start stock is `startFertilizer` on `PlayerValues` (0); buy it at the fertilizer shop. Fertilizing does not speed up growth.
+15. **Fertilizer** (written and tested by the owner, 2026-11-03): press **F** (touch: **FERT**, a third button column beside CAR, temporary place) in your own field while the crop grows. Two levels, at most one per growth stage, each **+50% harvest** (2D game). Each use costs fertilizer of about 0.42 to 0.58 x the field's harvest (the 2D ratio, Inspector values on `FieldController`), rolled once per visit like the seed price. The field pop-up shows only the bonus: "Fertilized: +50%" (level 1) or "+100%" (level 2). Harvest adds the fertilizer bonus to the harvester's +60%. Start stock is `startFertilizer` on `PlayerValues` (0); buy it at the fertilizer shop. Fertilizing does not speed up growth.
 16. ~~**Selling and money.**~~ **DONE** (sell stations for wheat, barley and oat, money in the counters panel, field `value` is the buy price).
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
