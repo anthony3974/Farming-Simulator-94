@@ -9,7 +9,8 @@ using UnityEngine.UI;
 public class TouchControls : MonoBehaviour
 {
     private static readonly Color Yellow = new Color32(255, 204, 0, 255);
-    private static readonly Color Fill = new Color32(31, 31, 31, 235);
+    // the same brown as the counters panels, speedometer face and message box; opaque so the yellow border does not show through
+    private static readonly Color Fill = new Color32(60, 45, 20, 255);
     private static readonly Color FillPressed = new Color32(110, 85, 10, 245);
     private static readonly Color LabelColor = new Color32(255, 201, 51, 255);
 

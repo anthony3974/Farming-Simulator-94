@@ -27,7 +27,7 @@
 >
 > **Ideas noted by the owner (2026-11-03), not started:**
 > - **Scale the van up.** It looks too small next to the tractor and the buildings. Scaling the `Van` root also scales its CharacterController and body box, so check the collider sizes and the follow camera position (`cameraOffset` on `Vehicle`) afterwards.
-> - **On phones the grass looks like water.** Probably the Android quality level (Medium) lowering the terrain textures or detail, or the `TerrainGrass.shadergraph` grass looking wrong on mobile; compare the Android quality settings with Ultra. Ties in with Android port item 7 (performance on a phone).
+> - **On phones the grass looks like water.** Likely cause found (2026-11-04): the two layers the terrain uses (`Grass_B`, `Pebbles_B`) took smoothness from the texture's alpha, but those textures are imported with **no alpha**, so alpha reads as 1 = fully glossy, and the sky reflects off the ground like water (worse on the phone's lower shader quality). Changed both layers to **Smoothness Source: Constant** (smoothness 0). To check on PC: Project Settings > Quality, click Medium (the Android level). Not yet confirmed on a phone; if it still looks wrong, compare the Android quality level with Ultra next.
 > - **Working lights on the house and garage (maybe).** For example the porch light and the garage side-door light switching on (a Light component and a glowing material), maybe only at night if a day/night cycle comes later. Keep phones in mind: few real-time lights, or fake glow only.
 >
 > **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (`Assets/Prefabs/House.prefab`, `houseTop.fbx` and `Garage EX.prefab` are no longer used in the scene and could be deleted too).
@@ -37,6 +37,9 @@
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
+
+## UI colours (owner, 2026-11-04): keep them the same everywhere
+HUD and buttons: **brown fill `(60, 45, 20)` opaque, yellow border `(255, 204, 0)`, gold text `(255, 201, 51)`**. Buttons are a yellow square with the brown fill inset 5 px (the touch-button style); not an Outline effect. Pop-up panels (help, dealer, menus) are dark grey `(31, 31, 31)` with the same buttons on them. Pressed touch button: `(110, 85, 10)`. Greyed-out button: `(70, 70, 70)`.
 
 ## Rule: build things in the scene hierarchy, not in code (owner, 2026-11-04)
 New objects (menus and their canvases, buildings, vehicles, anything visible) go **into the scene hierarchy or a prefab as real objects**, so the owner can select, move, resize and restyle them in the editor. Do **not** build them from code at runtime (the tractor felt like that and the owner did not like it). Scripts only hold references to those objects (Inspector fields) and run the behaviour.
