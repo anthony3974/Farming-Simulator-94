@@ -1,31 +1,25 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Car Dealer, then Home Menu <<<
+> ## >>> NEXT UP: Home Menu <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-03). The seed shop is finished (the owner may revise the economy later).
 > 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder; the tool is kept so the wall can be rebuilt or resized). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab can be dropped into the tool later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
-> 1. **Car dealer.** **Code written (2026-11-03), not yet tested in Unity.** Run **Tools > Dealer Builder > Build dealer** once with GameScene open, then save the scene. Owner's decisions (2026-11-03): the dealer is its **own new building**, a red L-shaped building on a grey concrete lot in the **top-left corner of the map**, the same place as in the 2D game (not the `House` or `Garage EX`). The **harvester is its own vehicle.** There are no vehicle models, so the van and the harvester are placeholders built from boxes. What was built:
+> 1. ~~**Car dealer.**~~ **DONE (2026-11-03).** Built in GameScene and tested in Play mode by the owner. The builder tool was removed afterwards (kept in git history, last version `3340302`). Owner's decisions (2026-11-03): the dealer is its **own new building**, a red L-shaped building on a grey concrete lot in the **top-left corner of the map**, the same place as in the 2D game (not the `House` or `Garage EX`). The **harvester is its own vehicle.** There are no vehicle models, so the van and the harvester are placeholders built from boxes. What was built:
 >    - `Vehicle` (was `GameCharacterCar`): one per vehicle, holds the driving code and stats (top speed, harvest bonus, camera position, paint parts) and remembers which fields and buildings it is parked in. `GameCharacter` is now the player only: input, camera, and the vehicles you own. The unused walking mode (`drive` off) was removed; there is no getting out on foot.
 >    - Keys **1 / 2 / 3** drive the truck / van / harvester (if owned), touch button **CAR** picks the next one. The camera and speedometer move to that vehicle; the others stay parked where you left them.
 >    - `Dealer` + `Building` type Dealer: press E / USE anywhere on the lot to open the shop menu (van and harvester, $5,000 each, pick one of four colours: red, yellow, blue, green). A bought vehicle is parked in the lot (5 spots).
 >    - Van: top speed 62 km/h (truck 50). Harvester: 38 km/h and **+60% harvest** (2D speed ratios 8 / 10 / 6).
->    - `Assets/Editor/DealerBuilder.cs` builds the dealer from the 2D map rectangles (the 3D terrain is the 2D map turned on its side: 2D up = +X, 2D right = -Z) and adds a `Vehicle` to the truck. Running it again rebuilds the dealer.
->    - To check in Play mode: drive to the dealer (the far end of the top road), buy both vehicles, switch with 1 / 2 / 3, harvest with the harvester, and check the shop menu on a phone.
+>    - The dealer was built by `Assets/Editor/DealerBuilder.cs` (now only in git history, `3340302`) from the 2D map rectangles (the 3D terrain is the 2D map turned on its side: 2D up = +X, 2D right = -Z), which also added a `Vehicle` to the truck.
+>    - Still worth checking: the shop menu on a phone.
 > 2. **Home menu.** A start/home screen shown before the game. Details not decided yet; ask the owner (buttons such as Play and Quit, a title, a background). **Also include a version number** shown either on the home menu or on the game screen (owner's request; ask which one, or show it on both). Read it from `Application.version` (Project Settings > Player > Version) so there is one place to change it.
 >
-> **Building and tractor redesigns (2026-11-03, written, not yet run in Unity).** Run each tool once with GameScene open, then save: **Tools > Tractor Builder** (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), **Tools > Sell Station Builder** (wheat / barley / oat grain elevators), **Tools > Shop Builder** (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). Fertilizer can be bought (10,000 for $4,000 to $5,000) but not used on fields yet. Note: the seed shop in the scene still sells 1,000 seeds for $450 to $550 (Inspector values), not the 10,000 for $4,500 to $5,500 the code defaults say; ask the owner which is wanted.
+> **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). Fertilizer can be bought (10,000 for $4,000 to $5,000) but not used on fields yet. Note: the seed shop in the scene still sells 1,000 seeds for $450 to $550 (Inspector values), not the 10,000 for $4,500 to $5,500 the code defaults say; ask the owner which is wanted.
 >
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
 > **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
-
-To try everything: open GameScene, run each tool once, then press Ctrl+S:
-
-    Tools > Tractor Builder > Rebuild tractor
-    Tools > Sell Station Builder > Rebuild sell stations
-    Tools > Shop Builder: press “Rebuild seed shop”, then “Build / rebuild fertilizer shop”
 
 Decision for you: your seed shop in the scene sells 1,000 seeds for $450–550, but the code’s defaults are 10,000 for $4,500–5,500. Which do you want? The two prices are about the same per seed; the difference is how many you get per press.
 
@@ -116,7 +110,9 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - [x] Truck: the front tires turn with the steering button (visual only, `maxSteerAngle` 30 and `steerAnglePerSecond` 120 on `GameCharacter`; untested)
 - [x] Field layout: the home field (Tony) is split into four (2 x 2, even gaps). The two facing the house are the player's and the one nearest the house starts planted; the back two are AI. Six random AI fields were added on free ground (owner checked and saved the scene, 2026-11-02). The layout tool is kept only in git history (`d5b10c0`).
 - [x] Reverse steering fixed, field confirm message says "Press again to confirm" (2026-11-03)
-- [ ] Car dealer, `Vehicle` split and vehicle switching: code written, waiting for Tools > Dealer Builder and a Play-mode test (2026-11-03)
+- [x] Car dealer, `Vehicle` split and vehicle switching: built and tested by the owner (2026-11-03)
+- [x] Top road texture no longer stretched: `RoadTiling` tiles each road by metres (6 m per tile, set on the road's component), the road texture has 8x anisotropic filtering. The one-off Road Look tool is kept only in git history (`48d5ead`)
+- [x] Van redesigned with rear doors, tail lights, number plate, the 2D sprite's roof ribs, mirrors and side detail (`VehicleFactory.BuildVan`, 87 parts; not yet checked in Play mode)
 - [ ] Camera is currently set to **static** for testing (`staticCamera` on `GameCharacter`). Untick it to restore mouse look.
 
 ## Android port (notes for revising later)

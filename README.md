@@ -39,7 +39,7 @@ A small first-person farming game built in Unity. Walk or drive around the map, 
 | On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle), `HELP` (same as H, top-left) |
 
 ## Roadmap
-The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds with a seed shop, and the map border. In progress: the car dealer (van and harvester, placeholder models). Planned, in order:
+The 3D version aims for the same feature set as the 2D game: buy fields, grow and sell crops, and spend the money on vehicles. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds with a seed shop, and the map border. Also done: the car dealer (van and harvester, placeholder models). Planned, in order:
 
 1. Home menu (with the version number)
 2. Fuel and a gas station
@@ -55,7 +55,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - `Assets/Prefabs`: houses, garage, tractor
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: editor tools (Map Border Builder, Dealer Builder)
+- `Assets/Editor`: editor tools (Map Border Builder). Earlier one-off builders (dealer, tractor, sell stations, shops, road look) were run and removed; they are in the git history
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
 ## Status
