@@ -1,8 +1,8 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Home Menu <<<
+> ## >>> NEXT UP: Look around on phones <<<
 >
-> **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-03). The seed shop is finished (the owner may revise the economy later).
+> **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-04). The seed shop is finished (the owner may revise the economy later).
 > 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder; the tool is kept so the wall can be rebuilt or resized). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab can be dropped into the tool later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
 > 1. ~~**Car dealer.**~~ **DONE (2026-11-03).** Built in GameScene and tested in Play mode by the owner. The builder tool was removed afterwards (kept in git history, last version `3340302`). Owner's decisions (2026-11-03): the dealer is its **own new building**, a red L-shaped building on a grey concrete lot in the **top-left corner of the map**, the same place as in the 2D game (not the `House` or `Garage EX`). The **harvester is its own vehicle.** There are no vehicle models, so the van and the harvester are placeholders built from boxes. What was built:
 >    - `Vehicle` (was `GameCharacterCar`): one per vehicle, holds the driving code and stats (top speed, harvest bonus, camera position, paint parts) and remembers which fields and buildings it is parked in. `GameCharacter` is now the player only: input, camera, and the vehicles you own. The unused walking mode (`drive` off) was removed; there is no getting out on foot.
@@ -11,30 +11,35 @@
 >    - Van: top speed 62 km/h (truck 50). Harvester: 38 km/h and **+60% harvest** (2D speed ratios 8 / 10 / 6).
 >    - **The van cannot work fields (owner, 2026-11-03):** in the van, E / F / B in a field only show "The van can't work fields". It still sells crops and buys seeds and fertilizer at the buildings, and opens the dealer.
 >    - The dealer was built by `Assets/Editor/DealerBuilder.cs` (now only in git history, `3340302`) from the 2D map rectangles (the 3D terrain is the 2D map turned on its side: 2D up = +X, 2D right = -Z), which also added a `Vehicle` to the truck.
->    - Still worth checking: the shop menu on a phone.
+>    - **Shop menu checked on a phone by the owner (2026-11-04): looks good.**
 > 2. ~~**Home menu.**~~ **DONE (2026-11-04, branch `home-menu`): main menu and pause menu built in the scenes and working (owner). Version now 0.3.** Owner's decisions (2026-11-04): a **separate `MainMenu` scene**; the background is a **game screenshot** the owner will take; **no Quit button**; **version number on the home menu only** (from `Application.version`, Project Settings > Player > Version, now 0.2); a **TERMS OF SERVICE button that does nothing yet** (a reminder for Google Play, link it with `Application.OpenURL` when publishing). What was built:
 >    - **The menu is real objects in the `MainMenu` scene** (see the rule below the NEXT UP box); `MainMenu.cs` only switches screens and runs the buttons. Home screen: screenshot background (fills the screen, cropped not stretched, darkened by the `Darken` object), gold title, big PLAY, small TERMS OF SERVICE bottom-right, version bottom-left. PLAY opens a Play panel: NEW GAME (loads GameScene), LOAD GAME (greyed out until save/load, item 18), BACK (Escape / Android back also goes back). Kept inside the phone safe area.
 >    - `Assets/Editor/MainMenuBuilder.cs` (Tools > Build Main Menu Scene, run by the owner, then removed: git history `8ae0ee6`) created `Assets/Scenes/MainMenu.unity` with the whole menu (camera, EventSystem, canvas, screens, buttons) and put it first in Build Settings, GameScene second.
 >    - To change the background: drag a screenshot into the **Texture** of `Main Menu > Background > Screenshot`. Still worth checking the layout on a phone.
 >    - **Pause menu (2026-11-04, same branch, working).** Owner wants it as **real objects in the scene hierarchy** so it can be rearranged in the editor (see the rule below the NEXT UP box). `Assets/Editor/PauseMenuBuilder.cs` (Tools > Build Pause Menu, run by the owner, then removed: git history `a4b97f9`) added a `Pause Menu` canvas: PAUSE touch button (top-left beside HELP, touch only), and a `Menu` part with PAUSED, RESUME, MAIN MENU (press twice: the farm is not saved) and an "Esc to resume" hint. Plain objects, no layout groups. `PauseMenu.cs` only shows/hides it and runs the buttons; Esc toggles it, game time stops while paused (`Time.timeScale` 0). The `Menu` part stays visible in the editor and hides itself on Play. Esc no longer just frees the mouse: it pauses (which frees it), and an Esc that closes the dealer does not also pause (`InputManager.MenuJustClosed`). Help list: "Pause (releases the mouse) / Esc / PAUSE".
+> 3. **Look around on phones (owner, 2026-11-04: soon).** A drag-to-look area so the camera can turn on touch (today the camera stays still on phones; mouse look needs a locked cursor). See Android port item 4. Keep it clear of the buttons.
+> 4. **Move the UI still built in code into the hierarchy** (see the rule below): `HelpMenu`, the `Dealer` shop menu, the `Building` message box, `Speedometer`, and `TouchControls` (with the touch rework, item 20). Buttons become copies of the `UI Button` prefab. One at a time.
+> 5. **Tractor redesign (owner, 2026-11-04).** The current tractor (Tractor Builder, `8c1c8b6`) is better than the original but has **too many gaps and floating parts**. Redo it so every part touches or overlaps its neighbour (no visible gaps, nothing hovering), as a prefab the owner can edit in the hierarchy. Ask the owner for the look before building.
+>
+> **Later (not soon):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), save/load (item 18), the touch buttons rework (item 20).
+> **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
+> **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
 >
 > **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). **Shop amounts (owner, 2026-11-03): both shops sell 2,000 at a time, same price per unit:** 2,000 seeds for $900 to $1,100 and 2,000 fertilizer for $800 to $1,000. The `Building` fields were renamed (`seedsPerBuy`, `minSeedPrice`, `fertilizerPerBuy`, ...) so the old Inspector values in the scene are ignored.
 >
-> **Start of the next session: test and tidy first (owner, 2026-11-03).**
-> - [ ] **Test the van in a field:** E, F and B should only show "The van can't work fields". Selling crops and the seed / fertilizer shops should still work in the van.
+> **Tests and tidy (updated 2026-11-04).**
+> - [x] **Van in a field:** E, F and B only show "The van can't work fields" (owner, 2026-11-04).
 > - [ ] **Test growth time:** about 75 s per crop (4 x 18.9 s).
-> - [ ] **Van number plate:** select the Van in the scene, **Overrides > Apply All** (the plate was removed only on the scene instance), then delete `Assets/Vehicles/VehiclePlate.mat` (nothing else uses it once the prefab has no plate).
+> - [x] **Van number plate:** Overrides > Apply All done by the owner, `VehiclePlate.mat` deleted (2026-11-04).
+> - [x] **Van scaled up** by the owner (scale 1.2808 on the scene copy). The camera then sat 1.28x further back (the camera is a child of the van, so it scales too); `cameraOffset` on `Van.prefab` was divided by 1.28 (`(0, 5, -8.5)` to `(0, 3.9, -6.64)`), so it sits as far away as before. **Owner to check it feels right**, adjust `cameraOffset` on the Van if not.
+> - [x] **Unused assets deleted:** `House.prefab`, `houseTop.fbx`, `Garage EX.prefab` (2026-11-04).
+> - [ ] **Phone check:** the HELP and PAUSE buttons' place (top-left).
 >
-> **Ideas noted by the owner (2026-11-03), not started:**
-> - **Scale the van up.** It looks too small next to the tractor and the buildings. Scaling the `Van` root also scales its CharacterController and body box, so check the collider sizes and the follow camera position (`cameraOffset` on `Vehicle`) afterwards.
-> - ~~**On phones the grass looks like water.**~~ **FIXED.** Cause found (2026-11-04): the two layers the terrain uses (`Grass_B`, `Pebbles_B`) took smoothness from the texture's alpha, but those textures are imported with **no alpha**, so alpha reads as 1 = fully glossy, and the sky reflects off the ground like water (worse on the phone's lower shader quality). Changed both layers to **Smoothness Source: Constant** (smoothness 0). To check on PC: Project Settings > Quality, click Medium (the Android level). **Confirmed fixed on the phone by the owner (2026-11-04).** Android stays on Medium quality (High would mainly add soft shadows, at a frame-rate and battery cost).
-> - **Working lights on the house and garage (maybe).** For example the porch light and the garage side-door light switching on (a Light component and a glowing material), maybe only at night if a day/night cycle comes later. Keep phones in mind: few real-time lights, or fake glow only.
+> **Fixed (2026-11-04):** ~~**On phones the grass looks like water.**~~ The two layers the terrain uses (`Grass_B`, `Pebbles_B`) took smoothness from the texture's alpha, but those textures are imported with **no alpha**, so alpha reads as 1 = fully glossy, and the sky reflects off the ground like water. Both layers are now **Smoothness Source: Constant** (smoothness 0). **Confirmed on the phone by the owner.** Android stays on Medium quality (High would mainly add soft shadows, at a frame-rate and battery cost).
 >
-> **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (`Assets/Prefabs/House.prefab`, `houseTop.fbx` and `Garage EX.prefab` are no longer used in the scene and could be deleted too).
+> **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (their prefabs were deleted 2026-11-04).
 >
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
->
-> **Moved down the list (not dropped):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), fertiliser and compost, paint shop, dial/touch polish.
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
 
@@ -47,7 +52,7 @@ New objects (menus and their canvases, buildings, vehicles, anything visible) go
 - Use plain positioned objects for UI (no layout groups) unless asked, so dragging things around works.
 - Still built in code, to move into the hierarchy when next touched: `HelpMenu`, `TouchControls` (part of the touch rework, item 20), the `Dealer` shop menu, the `Building` message box, `Speedometer`.
 
-Unity 6000.0.85f1. Scene: `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`.
+Unity 6000.0.85f1. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`.
 This is an initial plan from reading the code. It is not the plan from the earlier chats. Edit it as you remember more.
 
 ## Improvements needed
@@ -76,7 +81,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - ~~Money in `PlayerValues`, sell prices, sell points, money in the UI~~ DONE.
 - ~~Field buying and selling~~ DONE.
 - ~~Seeds and seed shop~~ DONE (seed shop complete; the economy may be revised later).
-- Next (owner's order, 2026-11-03): map border, the car dealer, then the home menu (with a version number). After that: fuel and gas station, fertiliser, paint shop (see the 2D checklist below).
+- Next (owner's order, 2026-11-03): map border, the car dealer, then the home menu (with a version number). All three done. After that (2026-11-04): phone look, UI into the hierarchy, tractor redesign; later fuel and gas station and save/load. The paint shop is dropped.
 
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
