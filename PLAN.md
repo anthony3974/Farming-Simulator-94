@@ -23,6 +23,8 @@
 > 5. **Tractor redesign (owner, 2026-11-04).** The current tractor (Tractor Builder, `8c1c8b6`) is better than the original but has **too many gaps and floating parts**. Redo it so every part touches or overlaps its neighbour (no visible gaps, nothing hovering), as a prefab the owner can edit in the hierarchy. Ask the owner for the look before building.
 >
 > 6. **App icon (owner, 2026-11-04).** The phone shows Unity's default icon. Make a Farming Simulator 94 icon (square, at least 1024 x 1024 PNG; Android also wants an adaptive icon: a foreground layer and a background layer) and set it in Project Settings > Player > Icon (Android and Default). Needed before publishing on Google Play (512 x 512 for the store listing).
+
+7. **Sounds (owner, 2026-11-04).** The game has no sound yet. Ask the owner which sounds and where they come from before starting. Likely list: engine for each vehicle (pitch follows speed), button clicks in the menus, planting / harvesting / fertilizing, money in and out at the shops and sell stations, and maybe background music and ambient farm noise. A volume setting (pause menu) could come with it.
 >
 > **Later (not soon):** fuel and the gas station (2D: diesel tank 100, 1 unit about every 200 movement ticks, 2 dollars per unit, game over at 0), save/load (item 18), the touch buttons rework (item 20).
 > **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
