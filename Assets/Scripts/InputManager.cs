@@ -70,8 +70,7 @@ public class InputManager : MonoBehaviour
             TouchControlsActive = true;
             gameObject.AddComponent<TouchControls>();
         }
-
-        gameObject.AddComponent<HelpMenu>();
+        // the help menu is a scene object now ("Help Menu", HelpMenu.cs), not added from here
     }
 
     /// <summary>Called by <see cref="TouchLook"/> while a finger drags on the game view (dy in screen heights, up = positive).</summary>
