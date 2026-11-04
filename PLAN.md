@@ -29,7 +29,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 
 ### Current bugs*
 (*Not a real bug yet, a limit we will hit once there are enough fields. Not numbered so the item numbers below and the references to them stay valid.)
-- **Field names run out.** Non-player fields get a random unused name from a list of 12 names taken from the 2D game (`FieldNames` in `FieldController`). Once all 12 are taken, the next field keeps whatever name is typed in the Inspector, which can be blank or a duplicate. Fix: when the list is empty, build a unique name (for example "Dahl Ranch 2"), or add more names. Not urgent: there are only 3 fields now and the number of fields in the final map is not decided.
+- ~~**Field names run out.**~~ **FIXED (2026-11-03).** The 14 fields in the scene (2 the player's, 12 AI) used all 12 names from the 2D game. Now, once the list is used up, an AI field gets a random base name with the next free number ("Dahl Ranch 2", "Dahl Ranch 3", ...), so more fields can be added. (A player field's scene name that is also in the list is still not reserved; minor.)
 
 
 ### Unfinished features

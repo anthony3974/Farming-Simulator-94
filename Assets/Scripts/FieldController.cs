@@ -116,15 +116,7 @@ public class FieldController : MonoBehaviour
         }
 
         if (!IsPlayerField)
-        {
-            var free = new List<string>(FieldNames);
-            free.RemoveAll(usedNames.Contains);
-            if (free.Count > 0)
-            {
-                fieldName = free[UnityEngine.Random.Range(0, free.Count)];
-                usedNames.Add(fieldName);
-            }
-        }
+            fieldName = PickAiFieldName();
 
         if (!IsPlayerField)
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
@@ -270,6 +262,29 @@ public class FieldController : MonoBehaviour
         var current = Vehicle.Active.CurrentZone<FieldController>();
         if (current != null) current.RefreshUI();
         else fieldView.UpdateUI(false);
+    }
+
+    // A random unused name from the 2D game's list. Once all of them are taken (12 AI fields), a random base
+    // name gets the next free number ("Dahl Ranch 2", "Dahl Ranch 3", ...), so adding fields never runs out.
+    private static string PickAiFieldName()
+    {
+        var free = new List<string>(FieldNames);
+        free.RemoveAll(usedNames.Contains);
+
+        string picked;
+        if (free.Count > 0)
+        {
+            picked = free[UnityEngine.Random.Range(0, free.Count)];
+        }
+        else
+        {
+            string baseName = FieldNames[UnityEngine.Random.Range(0, FieldNames.Length)];
+            int number = 2;
+            while (usedNames.Contains($"{baseName} {number}")) number++;
+            picked = $"{baseName} {number}";
+        }
+        usedNames.Add(picked);
+        return picked;
     }
 
     // ---- gameplay ----
