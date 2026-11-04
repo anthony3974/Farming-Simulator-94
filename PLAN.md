@@ -21,6 +21,11 @@
 > - [ ] **Test growth time:** about 75 s per crop (4 x 18.9 s).
 > - [ ] **Van number plate:** select the Van in the scene, **Overrides > Apply All** (the plate was removed only on the scene instance), then delete `Assets/Vehicles/VehiclePlate.mat` (nothing else uses it once the prefab has no plate).
 >
+> **Ideas noted by the owner (2026-11-03), not started:**
+> - **Scale the van up.** It looks too small next to the tractor and the buildings. Scaling the `Van` root also scales its CharacterController and body box, so check the collider sizes and the follow camera position (`cameraOffset` on `Vehicle`) afterwards.
+> - **On phones the grass looks like water.** Probably the Android quality level (Medium) lowering the terrain textures or detail, or the `TerrainGrass.shadergraph` grass looking wrong on mobile; compare the Android quality settings with Ultra. Ties in with Android port item 7 (performance on a phone).
+> - **Working lights on the house and garage (maybe).** For example the porch light and the garage side-door light switching on (a Light component and a glowing material), maybe only at night if a day/night cycle comes later. Keep phones in mind: few real-time lights, or fake glow only.
+>
 > **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (`Assets/Prefabs/House.prefab`, `houseTop.fbx` and `Garage EX.prefab` are no longer used in the scene and could be deleted too).
 >
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
