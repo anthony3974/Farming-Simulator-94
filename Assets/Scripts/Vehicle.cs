@@ -30,11 +30,14 @@ public class Vehicle : MonoBehaviour
     public float speed = 10;
     public float gravity = 20f;
 
-    [Header("Front wheel steering (visual)")]
-    [Tooltip("How far the front tires turn at full steering, in degrees.")]
+    [Header("Wheel steering (visual)")]
+    [Tooltip("How far the steered tires turn at full steering, in degrees.")]
     public float maxSteerAngle = 20f;
     [Tooltip("How fast the tires turn, in degrees per second.")]
     public float steerAnglePerSecond = 120f;
+    [Tooltip("Steer with the back tires (BlTire / BrTire) instead of the front ones (FlTire / FrTire), like a real " +
+             "combine harvester. The back tires turn the other way.")]
+    public bool steerRearWheels = false;
 
     [Header("Camera")]
     [Tooltip("Where the follow camera sits, in the vehicle's own space. Zero = where the camera already is (the tractor).")]
@@ -55,8 +58,8 @@ public class Vehicle : MonoBehaviour
     /// <summary>Top speed in world units per second.</summary>
     public float WorldTopSpeed => topSpeed * SpeedConverter * speed;
 
-    // each front tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
-    private readonly List<Transform> frontWheelPivots = new();
+    // each steered tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
+    private readonly List<Transform> steerPivots = new();
     private float steerAngle;
 
     private float acceleration = 0;
@@ -83,7 +86,7 @@ public class Vehicle : MonoBehaviour
 
     void Start()
     {
-        SetupFrontWheels();
+        SetupSteeredWheels();
     }
 
     void OnDestroy()
@@ -150,7 +153,7 @@ public class Vehicle : MonoBehaviour
         AccelerationManager();
         // handles the steering of the vehicle
         SteeringManager();
-        SteerFrontWheels();
+        SteerWheels();
 
         // applies the movement
         Vector3 move = acceleration * speed * transform.forward;
@@ -227,32 +230,39 @@ public class Vehicle : MonoBehaviour
         }
     }
 
-    // ---- front wheels (visual) ----
+    // ---- steered wheels (visual) ----
 
     /// <summary>
-    /// Finds the two front tires (the FlTire / FrTire objects furthest forward on the vehicle) and puts each
-    /// on a pivot at its centre. Looks at positions, not parent names, because the scene renames the axles.
-    /// Only active tires: a turned-off model (the old tractor kept beside the new one) must stay hidden.
+    /// Finds the two steered tires and puts each on a pivot at its centre: the front tires (FlTire / FrTire
+    /// furthest forward on the vehicle), or with <see cref="steerRearWheels"/> the back tires (BlTire / BrTire
+    /// furthest back). Looks at positions, not parent names, because the scene renames the axles.
+    /// Only active tires: a turned-off model (an old model kept beside the new one) must stay hidden.
     /// </summary>
-    private void SetupFrontWheels()
+    private void SetupSteeredWheels()
     {
+        string left = steerRearWheels ? "BlTire" : "FlTire";
+        string right = steerRearWheels ? "BrTire" : "FrTire";
         var tires = new List<Transform>();
         foreach (var t in GetComponentsInChildren<Transform>())
-            if (t.name == "FlTire" || t.name == "FrTire") tires.Add(t);
+            if (t.name == left || t.name == right) tires.Add(t);
 
         if (tires.Count == 0)
         {
-            Debug.LogWarning($"No FlTire / FrTire found under {name}, front wheels will not steer.", this);
+            Debug.LogWarning($"No {left} / {right} found under {name}, the wheels will not steer.", this);
             return;
         }
 
-        // forward is +Z in the vehicle's own space, so the front tires have the largest local Z
-        float frontZ = float.MinValue;
-        foreach (var t in tires) frontZ = Mathf.Max(frontZ, transform.InverseTransformPoint(t.position).z);
+        // forward is +Z in the vehicle's own space: the front tires have the largest local Z, the back tires the smallest
+        float endZ = steerRearWheels ? float.MaxValue : float.MinValue;
+        foreach (var t in tires)
+        {
+            float z = transform.InverseTransformPoint(t.position).z;
+            endZ = steerRearWheels ? Mathf.Min(endZ, z) : Mathf.Max(endZ, z);
+        }
 
         foreach (var tire in tires)
         {
-            if (transform.InverseTransformPoint(tire.position).z < frontZ - 0.5f) continue;
+            if (Mathf.Abs(transform.InverseTransformPoint(tire.position).z - endZ) > 0.5f) continue;
 
             Vector3 worldPos = tire.position;
             Quaternion worldRot = tire.rotation;
@@ -269,21 +279,22 @@ public class Vehicle : MonoBehaviour
             var ps = pivot.lossyScale;
             tire.localScale = new Vector3(worldScale.x / ps.x, worldScale.y / ps.y, worldScale.z / ps.z);
 
-            frontWheelPivots.Add(pivot);
+            steerPivots.Add(pivot);
         }
     }
 
-    /// <summary>Turns the front tires toward the steering button (A / D, arrows or the on-screen buttons).</summary>
-    private void SteerFrontWheels()
+    /// <summary>Turns the steered tires toward the steering button (A / D, arrows or the on-screen buttons).</summary>
+    private void SteerWheels()
     {
-        if (frontWheelPivots.Count == 0) return;
+        if (steerPivots.Count == 0) return;
 
         float target = ((direction.Right ? 1f : 0f) - (direction.Left ? 1f : 0f)) * maxSteerAngle;
         steerAngle = Mathf.MoveTowards(steerAngle, target, steerAnglePerSecond * Time.deltaTime);
 
-        // positive Y turns right, the same direction SteeringManager rotates the vehicle for Right
-        var rot = Quaternion.Euler(0f, steerAngle, 0f);
-        foreach (var pivot in frontWheelPivots) pivot.localRotation = rot;
+        // positive Y turns right, the same direction SteeringManager rotates the vehicle for Right.
+        // Back tires point the other way to turn the vehicle the same way (the back swings out).
+        var rot = Quaternion.Euler(0f, steerRearWheels ? -steerAngle : steerAngle, 0f);
+        foreach (var pivot in steerPivots) pivot.localRotation = rot;
     }
 }
 
