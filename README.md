@@ -50,6 +50,7 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - App icon
 - Fuel and a gas station
 - Save / load
+- Engine sound (look at what the Unity Asset Store has)
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
