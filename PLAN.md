@@ -1,6 +1,6 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: AI owners work their own fields (item 10) <<<
+> ## >>> NEXT UP: AI owners' fields (item 10): built, owner testing; then other sounds (item 11) <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-05: the app icon, the engine sound and the harvester are done; 2026-11-06: save / load and fuel tested and working (owner); the touch rework is done and merged, phone test pending). The seed shop is finished (the owner may revise the economy later).
 > 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder). The owner is happy with it, so the tool was removed (2026-11-04; git history, last version `9f800c5`, to rebuild or resize the wall). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab could be dropped into the tool (from git history) later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
@@ -56,7 +56,7 @@
       - The two freesound MP3s had ~60 ms of silence at the loop point, so `Art/Sounds/make_loops.py` makes trimmed, crossfaded mono WAVs in `Assets/Sounds/Loops` (originals unchanged). `Vehicle` got `SpeedKmh` and `Throttle` for the sound. Compiled outside Unity only; **not yet heard in Unity.**
       - Still missing (AUDIO_NOTES): engine start, shut-down and rev-up sounds.
 >
-> **Order set by the owner (2026-11-05):** ~~save / load~~ (done), ~~touch rework~~ (done, phone test pending), AI owners' fields, other sounds, ~~fuel testing~~ (done), street lamps, minimap.
+> **Order set by the owner (2026-11-05):** ~~save / load~~ (done), ~~touch rework~~ (done, phone test pending), AI owners' fields (built, owner testing), other sounds, ~~fuel testing~~ (done), street lamps, minimap.
 >
 > 8. ~~**Save / load.**~~ **DONE (2026-11-06): tested by the owner, "save and load works".** (Owner, 2026-11-05: first.) Save and load the farm: money, seeds, fertilizer, fuel, crops in stock, which fields you own and what grows on them (crop, stage, fertilizer), the vehicles you own and where they are parked. The main menu's LOAD GAME button is now live. Code only, no scene changes: the scripts compile outside Unity against stand-in Unity classes; **not yet run in Unity.**
 >    - [x] **Owner:** Play from `MainMenu`: NEW GAME, plant / fertilize a field, buy a field, buy the van, park it somewhere, drive off in it, sell some crop. Pause, MAIN MENU, LOAD GAME: everything should be as you left it, in the van. Also: close the app on the phone (swipe it away) and LOAD GAME. Then NEW GAME (asks "Press again to replace your saved farm") gives a fresh farm.
@@ -80,7 +80,11 @@
 >
 >    Original notes: **Touch controls rework (owner, 2026-11-05: second), including the new SETTINGS button.** See item 20 under Improvements needed: the buttons are a little confusing; move `TouchControls` into the scene hierarchy; the SETTINGS button below HELP (rounded buttons, other steering options such as a steering wheel with a pressing-down animation). The slide-off fix is done and tested.
 >
-> 10. **AI owners work their own fields (owner, 2026-11-05).** The AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it.
+> 10. **AI owners work their own fields: built (2026-11-06, branch `ai-fields`), owner testing.**
+>    - [ ] **Owner:** NEW GAME and drive around: the AI fields start in all states (empty, green, yellow, ready, some fertilized earlier). Watch one: an empty AI field gets planted after 15 to 60 s, grows at your speed, sometimes turns blue (fertilized), and is harvested 10 to 45 s after it is ready. Buy a growing one and harvest it yourself. Sell one of yours: the new AI owner keeps working it (a ready crop on it gets harvested by them).
+>    - Code only (`FieldController`): `AiRandomStart` (a new game puts each AI field at a random stage with a random crop and time into the stage, sometimes fertilized once in an earlier stage, so it does not start blue), `AiWork` (plant an empty field after Min / Max Ai Plant Delay, harvest a ready one after Min / Max Ai Harvest Delay, and in each growth stage fertilize with Ai Fertilize Chance 25%, two levels at most; game time, so it stops while paused). The AI harvest goes to the AI owner (nothing to your counters). Settings under "AI owners" on each field. Saved like your fields (crop, stage, time, fertilizer); the AI's wait starts again after loading. Compiled against the real Unity assemblies; **not yet run in Unity.**
+>
+>    Original note: **AI owners work their own fields (owner, 2026-11-05).** The AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it.
 >
 > 11. **Other sounds (owner, 2026-11-04; moved down 2026-11-05).** Only the engines have sound so far. Ask the owner which sounds and where they come from before starting. Likely list: button clicks in the menus, planting / harvesting / fertilizing, money in and out at the shops and sell stations, and maybe background music and ambient farm noise. A volume setting (pause menu) could come with it.
 >
@@ -253,7 +257,7 @@ Phase 1 is done (see above). Still to do:
 - `PlayerValues` counters and `FieldView` references are set by hand in the Inspector; the new missing-reference check in `FieldController` helps, but the other scripts have no such check.
 - ~~`GameCharacter` and `GameCharacterCar` are two halves of one partial class.~~ Split into `GameCharacter` (player) and `Vehicle` with the car dealer (2026-11-03). Getting out on foot (enter/exit) is not built; ask the owner if it is wanted.
 - ~~Vehicles are not saved yet.~~ Saved since save / load (2026-11-06): the vehicles you own, where they are parked, and the one you drive.
-- Fields are not planted or harvested by the AI owners (they only get a name and owner); decide later if they should.
+- ~~Fields are not planted or harvested by the AI owners.~~ They are since 2026-11-06 (NEXT UP item 10).
 - Touch layout: overlaps fixed (see Waiting on the owner), re-check on the phone. BUY/SELL and CROP positions are still not final.
 
 ## Economy balance (set 2026-11-02, owner may revise)

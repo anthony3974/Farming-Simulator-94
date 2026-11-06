@@ -67,6 +67,19 @@ public class FieldController : MonoBehaviour
     [SerializeField] private float fertilizerBonusPerLevel = 0.5f;
     private const int MaxFertilizerLevel = 2;
 
+    // AI owners work their own fields (owner, 2026-11-06): they plant an empty field after a while, let it grow
+    // (same speed as yours), sometimes fertilize it, and harvest it when ready. A new game starts every AI field
+    // at a random point of that, so the map looks alive. Buying a field gets you whatever grows on it.
+    [Header("AI owners")]
+    [Tooltip("An AI owner plants an empty field after this many seconds (random between the two).")]
+    [SerializeField] private float minAiPlantDelay = 15f;
+    [SerializeField] private float maxAiPlantDelay = 60f;
+    [Tooltip("An AI owner harvests a ready field after this many seconds (random between the two).")]
+    [SerializeField] private float minAiHarvestDelay = 10f;
+    [SerializeField] private float maxAiHarvestDelay = 45f;
+    [Tooltip("Chance an AI owner fertilizes in each growth stage (0 = never, 1 = always; still two levels at most).")]
+    [SerializeField, Range(0f, 1f)] private float aiFertilizeChance = 0.25f;
+
     private enum Stage { Empty, Planted, Growing1, Growing2, Growing3, Ready }
 
     // Colours for each crop's three growth stages and its ready state.
@@ -111,6 +124,8 @@ public class FieldController : MonoBehaviour
     private Stage fertilizedAt = Stage.Empty; // growth stage of the last fertilizing (one per stage)
     private int fertilizerQuote;
     private float growSeconds;            // time spent in the current growth stage (saved, so loading keeps it)
+    private float aiWait = -1f;           // seconds until the AI owner plants / harvests (-1 = not waiting)
+    private Stage aiFertilizeRolled = Stage.Empty; // the growth stage the AI owner already decided on fertilizing
 
     void Start()
     {
@@ -141,11 +156,16 @@ public class FieldController : MonoBehaviour
             growSeconds = 0f;
             Changed();
         }
+        else if (!IsPlayerField)
+        {
+            AiRandomStart();
+        }
     }
 
     void Update()
     {
         Grow();
+        AiWork();
 
         if (!IsActiveField()) return;
 
@@ -394,6 +414,81 @@ public class FieldController : MonoBehaviour
         Changed();
     }
 
+    // ---- AI owners ----
+
+    private static CropType RandomCrop() => (CropType)UnityEngine.Random.Range((int)CropType.Wheat, (int)CropType.Oat + 1);
+
+    // a new game: the field is somewhere in the AI owner's year (empty, growing or ready), with a random crop
+    private void AiRandomStart()
+    {
+        stage = (Stage)UnityEngine.Random.Range((int)Stage.Empty, (int)Stage.Ready + 1);
+        cropType = stage == Stage.Empty ? CropType.None : RandomCrop();
+        growSeconds = stage is > Stage.Empty and < Stage.Ready ? UnityEngine.Random.Range(0f, growthStageSeconds) : 0f;
+        fertStage = 0;
+        fertilizedAt = Stage.Empty;
+        // fertilized in an earlier stage sometimes (an earlier stage: the field does not start blue)
+        if (stage >= Stage.Growing1 && UnityEngine.Random.value < aiFertilizeChance)
+        {
+            fertStage = 1;
+            fertilizedAt = Stage.Planted;
+        }
+        aiFertilizeRolled = stage; // no extra roll for the stage it starts in
+        aiWait = -1f;
+        Changed();
+    }
+
+    // the AI owner plants an empty field and harvests a ready one, each after a random wait (game time,
+    // so it stops while paused); while it grows, it may fertilize once per stage
+    private void AiWork()
+    {
+        if (IsPlayerField || ownerName == null) { aiWait = -1f; return; }
+
+        if (stage == Stage.Empty || stage == Stage.Ready)
+        {
+            if (aiWait < 0f)
+                aiWait = stage == Stage.Empty
+                    ? UnityEngine.Random.Range(minAiPlantDelay, maxAiPlantDelay)
+                    : UnityEngine.Random.Range(minAiHarvestDelay, maxAiHarvestDelay);
+            aiWait -= Time.deltaTime;
+            if (aiWait > 0f) return;
+            aiWait = -1f;
+            if (stage == Stage.Empty) AiPlant();
+            else ClearCrop(); // the AI owner's harvest goes to the AI owner, not to your counters
+            return;
+        }
+
+        aiWait = -1f;
+        if (stage == aiFertilizeRolled) return;
+        aiFertilizeRolled = stage;
+        if (fertStage < MaxFertilizerLevel && fertilizedAt != stage && UnityEngine.Random.value < aiFertilizeChance)
+        {
+            fertStage++;
+            fertilizedAt = stage;
+            Changed();
+        }
+    }
+
+    private void AiPlant()
+    {
+        cropType = RandomCrop();
+        stage = Stage.Planted;
+        growSeconds = 0f;
+        fertStage = 0;
+        fertilizedAt = Stage.Empty;
+        Changed();
+    }
+
+    // back to an empty field (after a harvest)
+    private void ClearCrop()
+    {
+        stage = Stage.Empty;
+        cropType = CropType.None;
+        fertStage = 0;
+        fertilizedAt = Stage.Empty;
+        growSeconds = 0f;
+        Changed();
+    }
+
     private void Harvest()
     {
         // the harvester brings in more (2D game: +60%), and each fertilizer level +50%
@@ -413,12 +508,7 @@ public class FieldController : MonoBehaviour
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;
         else if (cropType == CropType.Oat) playerValues.InOat += amount;
 
-        stage = Stage.Empty;
-        cropType = CropType.None;
-        fertStage = 0;
-        fertilizedAt = Stage.Empty;
-        growSeconds = 0f;
-        Changed();
+        ClearCrop();
     }
 
     // ---- save / load (SaveGame.cs) ----
@@ -469,6 +559,8 @@ public class FieldController : MonoBehaviour
         seedQuote = 0;
         fertilizerQuote = 0;
         confirmTrade = false;
+        aiWait = -1f;              // an AI owner's wait starts again (not saved)
+        aiFertilizeRolled = stage; // and it does not roll again for the stage it was saved in
         Changed();
     }
 

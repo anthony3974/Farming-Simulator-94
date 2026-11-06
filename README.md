@@ -10,6 +10,7 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 - Fertilizer: two levels per crop, +50% harvest each; a freshly fertilized field turns blue (deeper blue at level 2) until its next growth stage, like the 2D game
 - Three crops (wheat, barley, oat), each with growth stages shown by colour (about 83 s from planting to ready)
 - Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
+- AI owners work their own fields: they plant, sometimes fertilize and harvest them, so the fields change over time; a field you buy comes with whatever grows on it
 - Sell stations for each crop; you have to drive there to sell
 - Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
 - The wheels turn with the steering (the harvester steers with its back wheels, like a real combine)
@@ -47,9 +48,8 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | On-screen controls (Android) | Steer with `<` `>`, the wheel or the slider, and drive with `GAS` / `BRAKE` or the pedal slider (picked in `SETTINGS`; held buttons sink while pressed, sliding off and back on keeps working); drag the screen to look up / down; `USE` (same as E), `BUY SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle); top-left: `HELP` (same as H), `PAUSE` (same as Esc), `SETTINGS` |
 
 ## Roadmap
-The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, fuel with the gas station, save / load, fertilized fields turning blue, and the touch controls rework (steering wheel, sliders, rounded buttons, SETTINGS). Next up, in order:
+The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, fuel with the gas station, save / load, fertilized fields turning blue, the touch controls rework (steering wheel, sliders, rounded buttons, SETTINGS), and AI owners working their own fields. Next up, in order:
 
-- AI owners working their own fields
 - Other sounds (menus, farming, money)
 - Street lamps across the map
 - A minimap
@@ -64,7 +64,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon, `Touch`: the steering wheel and the rounded button shapes)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: one-off editor tools while they are in use (now: `HelpTouchRowsFix`, adds the SETTINGS row to the help menu). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls) were run and removed; they are in the git history
+- `Assets/Editor`: one-off editor tools while they are in use (now: `HelpTouchRowsFix`, adds the SETTINGS row to the help menu; delete it once the scene is saved). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls) were run and removed; they are in the git history
 - `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops, `Touch/make_touch_sprites.py` draws the steering wheel and rounded button sprites
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
