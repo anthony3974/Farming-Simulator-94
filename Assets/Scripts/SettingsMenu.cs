@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// The SETTINGS panel ("Settings Menu" canvas in GameScene, made by Tools > Build Touch Controls). Opened by the
 /// SETTINGS touch button below HELP. Not the pause menu: the game keeps running (crops keep growing); only
 /// driving and the game keys stop while it is open, like the dealer. Two columns: STEERING (buttons, wheel,
-/// slider) and BUTTONS (square, rounded). The choice shows straight away and is remembered (<see cref="TouchSettings"/>).
+/// slider) and, on the right, BUTTON SHAPE (square, rounded) and PEDALS (GAS / BRAKE buttons, slider). The choice shows straight away and is remembered (<see cref="TouchSettings"/>).
 /// CLOSE, a tap outside the panel, or Esc / Android back closes it.
 /// </summary>
 public class SettingsMenu : MonoBehaviour
@@ -25,6 +25,8 @@ public class SettingsMenu : MonoBehaviour
     public Button steeringSliderOption;
     public Button squareOption;
     public Button roundedOption;
+    public Button pedalButtonsOption;
+    public Button pedalSliderOption;
 
     [Header("Look")]
     [Tooltip("Fill of the option that is picked.")]
@@ -54,6 +56,8 @@ public class SettingsMenu : MonoBehaviour
         Hook(steeringSliderOption, () => TouchSettings.Steering = SteeringMode.Slider);
         Hook(squareOption, () => TouchSettings.Rounded = false);
         Hook(roundedOption, () => TouchSettings.Rounded = true);
+        Hook(pedalButtonsOption, () => TouchSettings.Pedals = PedalMode.Buttons);
+        Hook(pedalSliderOption, () => TouchSettings.Pedals = PedalMode.Slider);
 
         menuRoot.SetActive(false);
         Refresh();
@@ -101,6 +105,8 @@ public class SettingsMenu : MonoBehaviour
         Mark(steeringSliderOption, steering == SteeringMode.Slider);
         Mark(squareOption, !rounded);
         Mark(roundedOption, rounded);
+        Mark(pedalButtonsOption, TouchSettings.Pedals == PedalMode.Buttons);
+        Mark(pedalSliderOption, TouchSettings.Pedals == PedalMode.Slider);
     }
 
     private void Mark(Button option, bool selected)

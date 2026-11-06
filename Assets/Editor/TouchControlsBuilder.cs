@@ -15,14 +15,15 @@ using UnityEngine.UI;
 //   Steering Buttons     < >  (bottom-left, right of the speedometer)
 //   Steering Wheel       touch area + SteeringWheel > Wheel (the picture that turns)
 //   Steering Slider      bar + SteeringSlider > Fill, Middle, Knob
-//   Pedals               GAS BRAKE (bottom-right, unchanged)
+//   Pedal Buttons        GAS BRAKE (right column)
+//   Pedal Slider         bar + PedalSlider > Fill, labels, Middle, Knob (instead of GAS BRAKE)
 //   Actions              USE BUY/SELL CROP CAR
 //   Help Button          top-left
 //   Settings Button      below HELP
 // Settings Menu          Canvas (sort 58) + SettingsMenu
 //   Menu                 turned off in the editor (tick it to work on it)
 //     Dimmer             tap closes
-//     Border > Panel     Title, STEERING column (3 options), BUTTON SHAPE column (2 options), Close Button
+//     Border > Panel     Title, STEERING column (3 options), BUTTON SHAPE and PEDALS (2 options each), Close Button
 public static class TouchControlsBuilder
 {
     const string ControlsName = "Touch Controls";
@@ -126,9 +127,37 @@ public static class TouchControlsBuilder
         //   BUY SELL  GAS
         //   USE       BRAKE
         const float right = 60, left = 200, row1 = 295, row2 = 435, row3 = 575, btn = 130;
-        var pedals = MakeGroup(controls.transform, "Pedals");
+        var pedals = MakeGroup(controls.transform, "Pedal Buttons");
         shaped.Add(TouchBtn(pedals, "Gas Button", "GAS", TouchButton.Gas, bottomRight, new Vector2(-right, row2), btn));
         shaped.Add(TouchBtn(pedals, "Brake Button", "BRAKE", TouchButton.Brake, bottomRight, new Vector2(-right, row1), btn));
+
+        // pedal slider, instead of GAS and BRAKE: the same column, from BRAKE's bottom to GAS's top.
+        // Up = gas, down = brake; the knob springs back to the middle.
+        var pedalBar = new GameObject("Pedal Slider", typeof(RectTransform), typeof(Image), typeof(PedalSlider));
+        pedalBar.transform.SetParent(controls.transform, false);
+        Place((RectTransform)pedalBar.transform, bottomRight, new Vector2(-right, row1), new Vector2(btn, row2 + btn - row1));
+        pedalBar.GetComponent<Image>().color = Yellow;
+        MakeFill(pedalBar.transform);
+        var gasText = MakeText(pedalBar.transform, "Gas Label", "GAS", 30, Gold, true);
+        Place(gasText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -12), new Vector2(120, 40));
+        var brakeText = MakeText(pedalBar.transform, "Brake Label", "BRAKE", 30, Gold, true);
+        Place(brakeText.rectTransform, new Vector2(0.5f, 0f), new Vector2(0, 12), new Vector2(120, 40));
+        var pedalMiddle = new GameObject("Middle", typeof(RectTransform), typeof(Image));
+        pedalMiddle.transform.SetParent(pedalBar.transform, false);
+        Center((RectTransform)pedalMiddle.transform, Vector2.zero, new Vector2(100, 4));
+        pedalMiddle.GetComponent<Image>().color = new Color(Yellow.r, Yellow.g, Yellow.b, 0.6f);
+        pedalMiddle.GetComponent<Image>().raycastTarget = false;
+        var pedalKnob = new GameObject("Knob", typeof(RectTransform), typeof(Image));
+        pedalKnob.transform.SetParent(pedalBar.transform, false);
+        Center((RectTransform)pedalKnob.transform, Vector2.zero, new Vector2(btn - 20, 80));
+        pedalKnob.GetComponent<Image>().color = Yellow;
+        pedalKnob.GetComponent<Image>().raycastTarget = false; // the bar takes the touch, not the knob
+        var pedalKnobFill = MakeFill(pedalKnob.transform);
+        var pedalSlider = pedalBar.GetComponent<PedalSlider>();
+        pedalSlider.knob = (RectTransform)pedalKnob.transform;
+        pedalSlider.knobFill = pedalKnobFill;
+        shaped.Add(pedalBar.GetComponent<Image>());
+        shaped.Add(pedalKnob.GetComponent<Image>());
         var actions = MakeGroup(controls.transform, "Actions");
         shaped.Add(TouchBtn(actions, "Use Button", "USE", TouchButton.Interact, bottomRight, new Vector2(-left, row1), btn));
         shaped.Add(TouchBtn(actions, "Buy Sell Button", "BUY\nSELL", TouchButton.Trade, bottomRight, new Vector2(-left, row2), btn));
@@ -148,6 +177,8 @@ public static class TouchControlsBuilder
         tc.steeringButtons = steerButtons.gameObject;
         tc.steeringWheel = wheelArea;
         tc.steeringSlider = slider;
+        tc.pedalButtons = pedals.gameObject;
+        tc.pedalSlider = pedalBar;
         tc.shapedParts = shaped;
         tc.roundedBorder = roundedBorder;
         tc.roundedFill = roundedFill;
@@ -155,6 +186,7 @@ public static class TouchControlsBuilder
         // are turned off here so they do not cover each other (tick them to work on them)
         wheelArea.SetActive(false);
         slider.SetActive(false);
+        pedalBar.SetActive(false);
 
         // ---------- Settings Menu ----------
         var settings = MakeCanvas(SettingsName, 58);
@@ -185,12 +217,17 @@ public static class TouchControlsBuilder
         var optWheel = PrefabButton(panel.transform, "Steering Wheel Option", "WHEEL", Center5, new Vector2(leftX, -30), optionSize);
         var optSlider = PrefabButton(panel.transform, "Steering Slider Option", "SLIDER", Center5, new Vector2(leftX, -140), optionSize);
 
+        // right column: two settings, each with two options side by side
+        var halfSize = new Vector2(195, 95);
+        const float halfGap = 102.5f;
         var shapeHeader = MakeText(panel.transform, "Shape Header", "BUTTON SHAPE", 36, Gold, true);
         Center(shapeHeader.rectTransform, new Vector2(rightX, 170), new Vector2(420, 50));
-        var optSquare = PrefabButton(panel.transform, "Square Option", "SQUARE", Center5, new Vector2(rightX, 80), optionSize);
-        var optRounded = PrefabButton(panel.transform, "Rounded Option", "ROUNDED", Center5, new Vector2(rightX, -30), optionSize);
-        var later = MakeText(panel.transform, "Pedals Note", "Gas pedal layouts: later", 26, new Color(1f, 1f, 1f, 0.5f), false);
-        Center(later.rectTransform, new Vector2(rightX, -140), new Vector2(420, 50));
+        var optSquare = PrefabButton(panel.transform, "Square Option", "SQUARE", Center5, new Vector2(rightX - halfGap, 80), halfSize);
+        var optRounded = PrefabButton(panel.transform, "Rounded Option", "ROUNDED", Center5, new Vector2(rightX + halfGap, 80), halfSize);
+        var pedalsHeader = MakeText(panel.transform, "Pedals Header", "PEDALS", 36, Gold, true);
+        Center(pedalsHeader.rectTransform, new Vector2(rightX, -15), new Vector2(420, 50));
+        var optPedalButtons = PrefabButton(panel.transform, "Pedal Buttons Option", "BUTTONS", Center5, new Vector2(rightX - halfGap, -105), halfSize);
+        var optPedalSlider = PrefabButton(panel.transform, "Pedal Slider Option", "SLIDER", Center5, new Vector2(rightX + halfGap, -105), halfSize);
 
         var divider = new GameObject("Divider", typeof(RectTransform), typeof(Image));
         divider.transform.SetParent(panel.transform, false);
@@ -210,6 +247,8 @@ public static class TouchControlsBuilder
         sm.steeringSliderOption = optSlider.GetComponent<Button>();
         sm.squareOption = optSquare.GetComponent<Button>();
         sm.roundedOption = optRounded.GetComponent<Button>();
+        sm.pedalButtonsOption = optPedalButtons.GetComponent<Button>();
+        sm.pedalSliderOption = optPedalSlider.GetComponent<Button>();
         menu.gameObject.SetActive(false); // like the help and dealer menus: tick Menu to work on it
 
         // the help menu's touch panel names the button the way it is labelled now (no slash)
@@ -222,7 +261,7 @@ public static class TouchControlsBuilder
         EditorSceneManager.MarkSceneDirty(controls.scene);
         EditorUtility.DisplayDialog("Touch Controls",
             "Built Touch Controls and Settings Menu. Save the scene (Ctrl+S), then delete Assets/Editor/TouchControlsBuilder.cs.\n\n"
-            + "Steering Wheel and Steering Slider are turned off in the editor (the game shows the one picked in SETTINGS).", "OK");
+            + "Steering Wheel, Steering Slider and Pedal Slider are turned off in the editor (the game shows the one picked in SETTINGS).", "OK");
     }
 
     static readonly Vector2 Center5 = new Vector2(0.5f, 0.5f);

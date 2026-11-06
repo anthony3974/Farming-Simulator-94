@@ -78,6 +78,8 @@ public class Vehicle : MonoBehaviour
     private readonly List<Transform> steerPivots = new();
     private float steerAngle;
     private float steer; // -1 full left to 1 full right; the touch wheel and slider give values in between
+    private float gas;   // 0 to 1; the touch pedal slider gives values in between, keys and buttons 1
+    private float brake; // 0 to 1, the same
 
     private float acceleration = 0;
     private const float accAmt = 0.02f;
@@ -217,6 +219,8 @@ public class Vehicle : MonoBehaviour
         direction.Right = input.Right;
         direction.Left = input.Left;
         steer = input.Steer;
+        gas = direction.Up ? Mathf.Max(0f, input.Throttle) : 0f;
+        brake = direction.Down ? Mathf.Max(0f, -input.Throttle) : 0f;
     }
 
     private void Accelerate()
@@ -247,13 +251,27 @@ public class Vehicle : MonoBehaviour
         float forwardMax = topSpeed * SpeedConverter * limit;
         float reverseMax = reverseSpeed * SpeedConverter * limit;
 
-        if (direction.Up && acceleration < forwardMax)
-            Accelerate();
-        if (direction.Down && acceleration > reverseMax)
+        // part gas (touch pedal slider) drives up to that part of the top speed, and eases off to it when
+        // the gas is lowered; part brake brakes that much less. Keys and buttons are always full.
+        if (direction.Up)
         {
-            // braking (still rolling forward) is stronger than speeding up in reverse
-            float steps = acceleration > 0f ? brakeStrength : 2f;
-            acceleration -= steps * accAmt * accelerationMultiplier * Time.deltaTime;
+            float target = forwardMax * gas;
+            if (acceleration < target) Accelerate();
+            else if (acceleration > target && acceleration <= forwardMax)
+                acceleration = Mathf.Max(target, acceleration - accAmt * accelerationMultiplier * Time.deltaTime);
+        }
+        if (direction.Down)
+        {
+            float target = reverseMax * brake;
+            if (acceleration > target)
+            {
+                // braking (still rolling forward) is stronger than speeding up in reverse
+                float steps = acceleration > 0f ? brakeStrength * brake : 2f;
+                acceleration -= steps * accAmt * accelerationMultiplier * Time.deltaTime;
+                if (acceleration < 0f && acceleration < target && target > reverseMax) acceleration = target;
+            }
+            else if (acceleration < target && acceleration >= reverseMax)
+                acceleration = Mathf.Min(target, acceleration + accAmt * accelerationMultiplier * Time.deltaTime);
         }
 
         if (acceleration > forwardMax) acceleration = Mathf.Max(forwardMax, acceleration - 2f * accAmt * accelerationMultiplier * Time.deltaTime);

@@ -30,6 +30,7 @@ public class InputManager : MonoBehaviour
     private bool down;
     private bool left;
     private float steer;
+    private float throttle;
 
     // touch state, set by TouchControls
     private bool touchLeft;
@@ -42,6 +43,7 @@ public class InputManager : MonoBehaviour
     private bool touchHelpQueued;
     private bool touchVehicleQueued;
     private float touchSteer; // the touch steering wheel or slider, -1 to 1
+    private float touchThrottle; // the touch pedal slider, -1 (full brake) to 1 (full gas)
     // drag-to-look, set by TouchLook: summed since the last frame, in screen heights (up = positive)
     private float touchLookPending;
     private float touchLookY;
@@ -82,6 +84,12 @@ public class InputManager : MonoBehaviour
         touchSteer = Mathf.Clamp(value, -1f, 1f);
     }
 
+    /// <summary>Called every frame by the touch pedal slider: -1 full brake, 0 nothing, 1 full gas.</summary>
+    public void SetThrottle(float value)
+    {
+        touchThrottle = Mathf.Clamp(value, -1f, 1f);
+    }
+
     /// <summary>Called by the on-screen buttons.</summary>
     public void SetTouch(TouchButton button, bool pressed)
     {
@@ -114,6 +122,9 @@ public class InputManager : MonoBehaviour
 
         up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || touchGas;
         down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || touchBrake;
+        throttle = Mathf.Clamp((up ? 1f : 0f) - (down ? 1f : 0f) + touchThrottle, -1f, 1f);
+        up |= touchThrottle > 0f;
+        down |= touchThrottle < 0f;
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || touchRight;
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || touchLeft;
         steer = Mathf.Clamp((right ? 1f : 0f) - (left ? 1f : 0f) + touchSteer, -1f, 1f);
@@ -144,6 +155,7 @@ public class InputManager : MonoBehaviour
             horizontal = vertical = 0f;
             up = down = left = right = false;
             steer = 0f;
+            throttle = 0f;
             interact = trade = cycleCrop = false;
             touchLookY = 0f;
             switchVehicle = 0;
@@ -171,5 +183,7 @@ public class InputManager : MonoBehaviour
     public bool Left { get => left; set => left = value; }
     /// <summary>Steering, -1 full left to 1 full right. Keys and the &lt; &gt; buttons give -1 / 0 / 1, the touch wheel and slider anything in between.</summary>
     public float Steer => steer;
+    /// <summary>Gas and brake, -1 full brake to 1 full gas. Keys and the GAS / BRAKE buttons give -1 / 0 / 1, the touch pedal slider anything in between.</summary>
+    public float Throttle => throttle;
     public bool DebugMode { get => debug; set => debug = value; }
 }

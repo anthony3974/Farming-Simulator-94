@@ -8,6 +8,7 @@ using UnityEngine.UI;
 /// with a <see cref="TouchButtonInput"/>. This script only:
 ///  - hides the whole canvas on PC (unless Show Touch Controls is ticked on the InputManager),
 ///  - shows the steering picked in SETTINGS (<see cref="TouchSettings"/>): the &lt; &gt; buttons, the wheel or the slider,
+///  - shows the pedals picked in SETTINGS: the GAS and BRAKE buttons or the pedal slider,
 ///  - gives the buttons the picked shape: square (plain) or rounded (the rounded sprites, 9-sliced).
 /// </summary>
 public class TouchControls : MonoBehaviour
@@ -16,6 +17,12 @@ public class TouchControls : MonoBehaviour
     public GameObject steeringButtons;
     public GameObject steeringWheel;
     public GameObject steeringSlider;
+
+    [Header("Pedals (one is shown, picked in SETTINGS)")]
+    [Tooltip("The GAS and BRAKE buttons.")]
+    public GameObject pedalButtons;
+    [Tooltip("The pedal slider: up gas, down brake.")]
+    public GameObject pedalSlider;
 
     [Header("Button shape")]
     [Tooltip("Every part that turns rounded: the button's yellow border Image; its child \"Fill\" is rounded too.")]
@@ -50,6 +57,10 @@ public class TouchControls : MonoBehaviour
         if (steeringButtons != null) steeringButtons.SetActive(mode == SteeringMode.Buttons);
         if (steeringWheel != null) steeringWheel.SetActive(mode == SteeringMode.Wheel);
         if (steeringSlider != null) steeringSlider.SetActive(mode == SteeringMode.Slider);
+
+        bool slider = TouchSettings.Pedals == PedalMode.Slider && pedalSlider != null;
+        if (pedalButtons != null) pedalButtons.SetActive(!slider);
+        if (pedalSlider != null) pedalSlider.SetActive(slider);
 
         bool rounded = TouchSettings.Rounded;
         foreach (var border in shapedParts)
