@@ -1,6 +1,6 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: Other sounds (item 8: ask the owner which ones first) <<<
+> ## >>> NEXT UP: Save / load (item 8) <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-05: the app icon, the engine sound and the harvester are done; fuel and the gas station are built and being tested). The seed shop is finished (the owner may revise the economy later).
 > 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder). The owner is happy with it, so the tool was removed (2026-11-04; git history, last version `9f800c5`, to rebuild or resize the wall). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab could be dropped into the tool (from git history) later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
@@ -56,9 +56,17 @@
       - The two freesound MP3s had ~60 ms of silence at the loop point, so `Art/Sounds/make_loops.py` makes trimmed, crossfaded mono WAVs in `Assets/Sounds/Loops` (originals unchanged). `Vehicle` got `SpeedKmh` and `Throttle` for the sound. Compiled outside Unity only; **not yet heard in Unity.**
       - Still missing (AUDIO_NOTES): engine start, shut-down and rev-up sounds.
 >
-> 8. **Other sounds (owner, 2026-11-04).** The game has no sound yet. Ask the owner which sounds and where they come from before starting. Likely list: button clicks in the menus, planting / harvesting / fertilizing, money in and out at the shops and sell stations, and maybe background music and ambient farm noise. A volume setting (pause menu) could come with it.
+> **Order set by the owner (2026-11-05):** save / load, touch rework, AI owners' fields, other sounds, fuel testing, street lamps, minimap.
 >
-> 9. **Fuel and the gas station (owner, 2026-11-05: "all vehicles share the same fuel amount like in the 2D game"). Built in GameScene (owner ran both tools, 2026-11-05); the tools were removed (git history: Gas Station Builder `ad4b1a4`, Fuel Gauge Builder `d7abd45`).**
+> 8. **Save / load (owner, 2026-11-05: first).** Save and load the farm: money, seeds, fertilizer, fuel, crops in stock, which fields you own and what grows on them (crop, stage, fertilizer), the vehicles you own and where they are parked. The main menu's LOAD GAME button (greyed out now) becomes live. Details: item 18 under Improvements needed.
+>
+> 9. **Touch controls rework (owner, 2026-11-05: second), including the new SETTINGS button.** See item 20 under Improvements needed: the buttons are a little confusing; move `TouchControls` into the scene hierarchy; the SETTINGS button below HELP (rounded buttons, other steering options such as a steering wheel with a pressing-down animation). The slide-off fix is done and tested.
+>
+> 10. **AI owners work their own fields (owner, 2026-11-05).** The AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it.
+>
+> 11. **Other sounds (owner, 2026-11-04; moved down 2026-11-05).** Only the engines have sound so far. Ask the owner which sounds and where they come from before starting. Likely list: button clicks in the menus, planting / harvesting / fertilizing, money in and out at the shops and sell stations, and maybe background music and ambient farm noise. A volume setting (pause menu) could come with it.
+>
+> 12. **Fuel and the gas station: owner testing** (owner, 2026-11-05: "all vehicles share the same fuel amount like in the 2D game"). Built in GameScene (owner ran both tools, 2026-11-05); the tools were removed (git history: Gas Station Builder `ad4b1a4`, Fuel Gauge Builder `d7abd45`).**
 >    - [ ] **Owner:** test the slow filling and the pump prices; tell Claude what to change on the fuel gauge's look.
 >    - **Fuel:** one diesel tank in `PlayerValues` (`Fuel`, capacity 100, start 100), shared by the tractor, van and harvester. Each `Vehicle` burns `fuelPerKm` (10) litres per km actually driven (1 world unit = 1 m, the map is ~1 km), so a full tank is ~10 km, ~6 min at the tractor's (now 45 km/h) top speed (2D: 1 unit per ~200 movement ticks). No fuel used standing still. "Low fuel" message once at 20%.
 >    - **Empty tank: the vehicle only crawls (`emptyTankSpeed`, 15% of top speed) instead of the 2D game over, so you can still reach the station. Owner, 2026-11-05: fine for now** (may become game over later).
@@ -67,10 +75,13 @@
 >    - **Jerrys Gas Station** (designed by a sub-agent): `Terrain > Buildings > Gas Station` (Model + Triggerbox with the Building, type Gas), lot X 6 to 56, Z 568 to the road edge (~631.5), open to the road. A 28 x 16 m canopy (6.2 m high, harvester fits) over 2 pump islands with 4 diesel pumps, a kiosk "JERRYS SHOP", a 10.5 m sign pylon by the road, drums, tyres. Colliders only on the kiosk, canopy posts, pumps, sign posts and the 5 cm slab. 14 Standard materials in `Assets/GasStation/`. **Owner changes (2026-11-05): the trigger is a bit bigger (Z scale 1.28), and the station's two street lamps were removed** (see the map lamps below).
 >    - **Fuel gauge** (`FuelGauge.cs`): `Fuel Gauge` canvas (sort 40, no raycaster): yellow-bordered brown box just above the speedometer (x 20, y 290, 260 x 64): "DIESEL" label, litres number, a bar green > 50%, yellow > 20%, red below; blinks when empty.
 >
+> 13. **Street lamps across the map (owner, 2026-11-05).** One street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this).
+>
+> 14. **Minimap (owner, 2026-11-05, last).** A small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers.
+>
 > ~~**To fix (owner, 2026-11-05): the tractor's camera is too close**~~ **Fixed (2026-11-05):** `cameraOffset` on `Tractor.prefab` `(0, 5.36, -6.53)` to `(0, 5.36, -8.5)`, the same distance back as the van (its `(0, 3.9, -6.64)` x its 1.28 scale = `(0, 5, -8.5)`); the harvester's is `(0, 8, -11)` (bigger vehicle). **Owner checked (2026-11-05): "solid, done".**
 >
-> **Later (not soon):** save/load (item 18), the touch buttons rework (item 20), a **minimap** (owner, 2026-11-05: low priority; a small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers), **AI owners work their own fields** (owner, 2026-11-05: the AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it).
-> **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage. **Map lamps (owner, 2026-11-05):** one street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this).
+> **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
 >
 > **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). **Shop amounts (owner, 2026-11-03): both shops sell 2,000 at a time, same price per unit:** 2,000 seeds for $900 to $1,100 and 2,000 fertilizer for $800 to $1,000. The `Building` fields were renamed (`seedsPerBuy`, `minSeedPrice`, `fertilizerPerBuy`, ...) so the old Inspector values in the scene are ignored.
@@ -334,7 +345,7 @@ There is **no collision**; the README says so ("there is no collision yet"). The
 - **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
 - **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
 - **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop, the dealer and vehicle switching (untested).
-- **Still not in the 3D game:** painting (dropped), save/load, AI owners planting fields (in the Later list, 2026-11-05). Diesel is in (item 9); compost is the fertilizer.
+- **Still not in the 3D game:** painting (dropped), save/load (item 8), AI owners planting fields (item 10). Diesel is in (item 12); compost is the fertilizer.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
 - **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; the owner now wants the dealer (7) before fuel (5) and fertilizer (6).
 
