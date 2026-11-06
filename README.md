@@ -3,18 +3,20 @@
 A small farming game built in Unity. Drive around the map, buy fields, plant crops, wait for them to grow, harvest them, and sell the harvest for money. It is a 3D remake of my finished 2D game, [Sim94](https://github.com/anthony3974/Sim94).
 
 ## Features
-- Main menu (Play > New Game; Load Game comes with save/load) with the version number, and a pause menu (Esc or PAUSE)
-- Three vehicles: a tractor, plus a van and a harvester bought at the car dealer
+- Main menu (Play > New Game; Load Game comes with save/load) with the version number (now 0.6), and a pause menu (Esc or PAUSE)
+- Three vehicles: a tractor (45 km/h), plus a van (56 km/h) and a harvester (34 km/h, +60% harvest) bought at the car dealer. The van is for the road: it can buy and sell fields but cannot plant, harvest or fertilize
 - Fields you can plant and harvest with one button; you pick the crop to plant
-- Three crops (wheat, barley, oat), each with growth stages shown by colour
+- Three crops (wheat, barley, oat), each with growth stages shown by colour (about 83 s from planting to ready)
 - Field ownership: buy a field from its AI owner, or sell yours back (80% of its price)
 - Sell stations for each crop; you have to drive there to sell
 - Money, seeds and fertilizer counters, a speedometer, and a field details pop-up
-- Tractor front wheels turn with the steering buttons
+- The wheels turn with the steering (the harvester steers with its back wheels, like a real combine)
 - Help menu with the controls list (H, or the HELP button on touch)
 - Planting costs seeds; the seed shop and the fertilizer shop sell more. Your own field starts planted with wheat
-- Engine sound for each vehicle (pitch follows the speed)
-- Diesel: one tank shared by all vehicles, a fuel gauge above the speedometer, and Jerrys Gas Station at the bottom of the map to fill up
+- Engine sound for each vehicle (pitch follows the speed; only the vehicle you drive is heard)
+- Diesel: one 100 L tank shared by all vehicles, used as you drive, with a fuel gauge above the speedometer and a low-fuel warning. An empty tank only crawls (15% speed) so you can still reach the station
+- Jerrys Gas Station at the bottom of the map, beside the main road: fills the tank slowly at $2 per litre (press again to stop); the price shows on the pumps
+- App icon (Android adaptive icon)
 - Android support with on-screen touch controls (runs on a real phone)
 
 ## Requirements
@@ -34,14 +36,14 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | W / A / S / D or arrow keys | Drive |
 | Mouse | Look around (click to lock the cursor) |
 | Esc | Pause menu (resume, or go back to the main menu); also frees the mouse |
-| E | Plant or harvest your field, sell at a sell station, buy seeds at the seed shop, fill up at the gas station, open the dealer's shop |
+| E | Plant or harvest your field, sell at a sell station, buy seeds or fertilizer at the shops, start / stop filling up at the gas station, open the dealer's shop |
 | B | Buy or sell the field you are standing in (press twice to confirm) |
 | C | Choose the crop to plant |
 | F | Fertilize your field while the crop grows (two levels, +50% harvest each) |
 | 1 / 2 / 3 | Drive the tractor / van / harvester (once you own them) |
 | H | Open or close the help menu (the controls list) |
 | F1 | Toggle debug (does nothing yet) |
-| On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `FERT` (same as F), `CAR` (next vehicle), `HELP` (same as H, top-left), `PAUSE` (same as Esc, top-left) |
+| On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE` (hold; sliding off and back on keeps working), drag the screen to look up / down, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `FERT` (same as F), `CAR` (next vehicle), `HELP` (same as H, top-left), `PAUSE` (same as Esc, top-left) |
 
 ## Roadmap
 The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, and fuel with the gas station. Next up (not in a fixed order):
@@ -49,17 +51,20 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - Other sounds (menus, farming, money)
 - Rework the touch buttons (and move them into the scene)
 - Save / load
-- Later: a minimap, street lamps across the map
+- Later: a minimap, street lamps across the map, AI owners working their own fields
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
 ## Project layout
-- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `EngineSound`, `FuelGauge`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`, `RoadTiling`)
+- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `EngineSound`, `FuelGauge`, `Speedometer`, `ScreenPrompt` (message box), `InputManager`, `TouchControls`, `TouchLook`, `FieldView`, `RoadTiling`)
 - `Assets/Scenes`: `MainMenu` (opens first) and `GameScene`
-- `Assets/Prefabs`: tractor, van, harvester, and `UI/UI Button` (every menu button is a copy of it, so they all match)
+- `Assets/Prefabs`: tractor, van, harvester (each with its `Vehicle` and `EngineSound`), and `UI/UI Button` (every menu button is a copy of it, so they all match)
+- `Assets/Sounds`: engine clips; `Loops/` holds the loop-ready copies the game uses (see `AUDIO_NOTES.md`)
+- Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
 - `Assets/Editor`: one-off editor tools while they are in use (none right now, so the folder is gone; a new tool recreates it). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge) were run and removed; they are in the git history
+- `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
 ## Status
