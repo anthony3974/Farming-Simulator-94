@@ -11,7 +11,7 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 | Steadiness | Very steady: varies by about 0.7 dB over time, with no revs or pitch changes |
 | Tone | Spectral centroid ~534 Hz. Energy: 34% below 120 Hz, 40% at 120-500 Hz, 23% at 500 Hz-2 kHz (diesel clatter), 3% above 2 kHz. Nothing above 12 kHz because of the 24 kHz sample rate |
 | Pulse | Steady ~10.7 Hz firing pulse (slow, lumpy idle) |
-| Looping | About 40 ms of MP3 padding (near-silence) at both ends, which makes a gap on each loop. Fix: Gapless Looping in Unity's import settings, or trim the ends |
+| Looping | About 40 ms of MP3 padding (near-silence) at both ends, which makes a gap on each loop. Fixed by trimming: see Loops below (Unity 6 has no gapless MP3 option) |
 | Use | Tractor idle; the long length hides repetition |
 
 ## se_vosj67tpgqy24tkw.wav: DRIVING / UNDER-LOAD LOOP
@@ -35,12 +35,15 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 | Steadiness | Steady: varies by about 0.6 dB |
 | Tone | Centroid ~354 Hz. Energy: 36% below 120 Hz, 41% at 120-500 Hz, 22% at 500 Hz-2 kHz. Punchier and less clattery than idle-1 |
 | Pulse | Faster idle, ~37 Hz dominant pulse |
-| Looping | Same MP3 padding gap as idle-1 (about 40 ms at the ends), so use Gapless Looping or trim |
+| Looping | Same MP3 padding gap as idle-1 (about 40 ms at the ends), fixed the same way (see Loops below) |
 | Use | Idle for a second vehicle, or a "working" layer between idle and driving |
 
+## Loops (what the game uses)
+`Assets/Sounds/Loops` has loop-ready copies made by `python3 Art/Sounds/make_loops.py` (the originals are unchanged): the padding is trimmed, the end crossfades into the start (0.15 s) and they are mono. `DieselIdle1Loop.wav` (from idle-1), `DieselIdle2Loop.wav` (from idle-2), `DieselDriveLoop.wav` (from vosj). Checked: no level dip at the seam, and the seam jump is the size of a normal sample step.
+
 ## Unity setup
-- Turn on **Force To Mono** for all three (they're effectively mono, and mono is best for 3D sounds).
-- Suggested chain: idle-1 loop, crossfaded into vosj as the throttle rises, with pitch following RPM.
+- Tools > Engine Sound Setup sets the loops to Force To Mono, Decompress On Load, Vorbis.
+- Chain (built, `EngineSound.cs`): the idle loop crossfades into the drive loop as the speed rises, with pitch following speed.
 - Missing sounds: engine start (cranking), shut-down, and rev-up/acceleration.
 
 ## The "maybe" folder, briefly
