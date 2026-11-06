@@ -13,6 +13,8 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 - Tractor front wheels turn with the steering buttons
 - Help menu with the controls list (H, or the HELP button on touch)
 - Planting costs seeds; the seed shop and the fertilizer shop sell more. Your own field starts planted with wheat
+- Engine sound for each vehicle (pitch follows the speed)
+- Diesel: one tank shared by all vehicles, a fuel gauge above the speedometer, and Jerrys Gas Station at the bottom of the map to fill up
 - Android support with on-screen touch controls (runs on a real phone)
 
 ## Requirements
@@ -32,7 +34,7 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | W / A / S / D or arrow keys | Drive |
 | Mouse | Look around (click to lock the cursor) |
 | Esc | Pause menu (resume, or go back to the main menu); also frees the mouse |
-| E | Plant or harvest your field, sell at a sell station, buy seeds at the seed shop, open the dealer's shop |
+| E | Plant or harvest your field, sell at a sell station, buy seeds at the seed shop, fill up at the gas station, open the dealer's shop |
 | B | Buy or sell the field you are standing in (press twice to confirm) |
 | C | Choose the crop to plant |
 | F | Fertilize your field while the crop grows (two levels, +50% harvest each) |
@@ -48,14 +50,12 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - Move the menus still built in code into the scene (help, dealer, message box, speedometer, touch buttons)
 - Tractor redesign
 - App icon
-- Fuel and a gas station
 - Save / load
-- Engine sound (look at what the Unity Asset Store has)
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
 ## Project layout
-- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`, `RoadTiling`)
+- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `EngineSound`, `FuelGauge`, `InputManager`, `TouchControls`, `FieldView`, `Speedometer`, `RoadTiling`)
 - `Assets/Scenes`: `MainMenu` (opens first) and `GameScene`
 - `Assets/Prefabs`: tractor, van, harvester, and `UI/UI Button` (every menu button is a copy of it, so they all match)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)

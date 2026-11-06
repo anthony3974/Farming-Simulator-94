@@ -30,6 +30,13 @@ public class Vehicle : MonoBehaviour
     public float speed = 10;
     public float gravity = 20f;
 
+    [Header("Fuel")]
+    [Tooltip("Diesel burned per km driven, in litres. The tank (100, shared by every vehicle) lasts 100 / this km. " +
+             "The map is about 1 km across. 10 = a full tank lasts 10 km, about 5.5 minutes at the tractor's top speed (like the 2D game).")]
+    public float fuelPerKm = 10f;
+    [Tooltip("With an empty tank the vehicle only crawls, at this part of its top speed (0.15 = 15%), so it can still reach the gas station.")]
+    [Range(0f, 1f)] public float emptyTankSpeed = 0.15f;
+
     [Header("Wheel steering (visual)")]
     [Tooltip("How far the steered tires turn at full steering, in degrees.")]
     public float maxSteerAngle = 20f;
@@ -162,9 +169,23 @@ public class Vehicle : MonoBehaviour
         SteerWheels();
 
         // applies the movement
+        Vector3 before = transform.position;
         Vector3 move = acceleration * speed * transform.forward;
         Controller.Move(Time.deltaTime * move);
+        BurnFuel(before);
     }
+
+    // fuel is for the ground actually covered (not for pushing against a wall). One world unit = 1 m (the map is 1 km across).
+    private void BurnFuel(Vector3 before)
+    {
+        var values = PlayerValues.Instance;
+        if (values == null) return;
+        Vector3 moved = transform.position - before;
+        moved.y = 0f;
+        values.UseFuel(moved.magnitude / 1000f * fuelPerKm);
+    }
+
+    private bool TankEmpty => PlayerValues.Instance != null && PlayerValues.Instance.FuelEmpty;
 
     /// <summary>Stops dead (used when the player switches to another vehicle).</summary>
     public void Stop()
@@ -204,13 +225,21 @@ public class Vehicle : MonoBehaviour
 
     private void AccelerationManager()
     {
-        if (direction.Up && acceleration < topSpeed * SpeedConverter)
+        // an empty tank only crawls: the speed limits shrink and anything faster slows down to them
+        float limit = TankEmpty ? emptyTankSpeed : 1f;
+        float forwardMax = topSpeed * SpeedConverter * limit;
+        float reverseMax = reverseSpeed * SpeedConverter * limit;
+
+        if (direction.Up && acceleration < forwardMax)
             Accelerate();
-        if (direction.Down && acceleration > reverseSpeed * SpeedConverter)
+        if (direction.Down && acceleration > reverseMax)
         {
             Decelerate();
             Decelerate();
         }
+
+        if (acceleration > forwardMax) acceleration = Mathf.Max(forwardMax, acceleration - 2f * accAmt * accelerationMultiplier * Time.deltaTime);
+        if (acceleration < reverseMax) acceleration = Mathf.Min(reverseMax, acceleration + 2f * accAmt * accelerationMultiplier * Time.deltaTime);
     }
 
     private void SteeringManager()

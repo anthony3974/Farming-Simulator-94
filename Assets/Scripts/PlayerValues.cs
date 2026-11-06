@@ -28,6 +28,17 @@ public class PlayerValues : MonoBehaviour
     [Tooltip("Optional. Shows the fertilizer in the Statistics panel.")]
     public TMP_Text txFertilizer;
 
+    // Diesel: one tank shared by every vehicle, like the 2D game (tank of 100, 2 dollars per unit at Jerrys Gas Station).
+    [Header("Fuel (shared by all vehicles)")]
+    [Tooltip("Size of the tank, in litres. Shared by the tractor, van and harvester.")]
+    [SerializeField] private float fuelCapacity = 100f;
+    [Tooltip("Diesel you start the game with (2D game: 100, a full tank).")]
+    [SerializeField] private float startFuel = 100f;
+    [Tooltip("At or below this part of the tank a 'Low fuel' message shows once (0.2 = 20%).")]
+    [Range(0f, 1f)] [SerializeField] private float lowFuelWarning = 0.2f;
+    private float fuel;
+    private bool lowFuelWarned, emptyWarned;
+
     private InputManager inputManager;
 
     /// <summary>The crop planted in your fields. Change it with the C key.</summary>
@@ -40,6 +51,7 @@ public class PlayerValues : MonoBehaviour
         seeds = startSeeds;
         money = startMoney;
         fertilizer = startFertilizer;
+        fuel = Mathf.Clamp(startFuel, 0f, fuelCapacity);
         UpdateUI();
     }
 
@@ -67,4 +79,59 @@ public class PlayerValues : MonoBehaviour
     public int Seeds { get => seeds; set { seeds = value; UpdateUI(); } }
     public int Fertilizer { get => fertilizer; set { fertilizer = value; UpdateUI(); } }
     public int InOat { get => inOat; set { inOat = value; UpdateUI(); } }
+
+    // ---- fuel ----
+
+    /// <summary>The first PlayerValues in the scene (the vehicles use it to burn fuel).</summary>
+    public static PlayerValues Instance
+    {
+        get
+        {
+            if (instance == null) instance = FindFirstObjectByType<PlayerValues>();
+            return instance;
+        }
+    }
+    private static PlayerValues instance;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics() { instance = null; }
+
+    public float FuelCapacity => fuelCapacity;
+    public bool FuelEmpty => fuel <= 0f;
+
+    /// <summary>Diesel in the tank (litres), kept between 0 and the capacity. Shared by every vehicle.</summary>
+    public float Fuel
+    {
+        get => fuel;
+        set
+        {
+            fuel = Mathf.Clamp(value, 0f, fuelCapacity);
+            FuelWarnings();
+        }
+    }
+
+    /// <summary>Burns fuel (from driving). Shows the low and empty messages once each time the level drops past them.</summary>
+    public void UseFuel(float litres)
+    {
+        if (litres > 0f) Fuel = fuel - litres;
+    }
+
+    private void FuelWarnings()
+    {
+        float low = lowFuelWarning * fuelCapacity;
+        if (fuel > low) { lowFuelWarned = emptyWarned = false; return; }
+        if (fuel > 0f) emptyWarned = false;
+
+        var prompt = ScreenPrompt.Instance;
+        if (fuel <= 0f && !emptyWarned)
+        {
+            emptyWarned = lowFuelWarned = true;
+            if (prompt != null) prompt.Flash("Out of fuel! You can only crawl.\nFill up at Jerrys Gas Station (bottom of the map)", 5f);
+        }
+        else if (!lowFuelWarned)
+        {
+            lowFuelWarned = true;
+            if (prompt != null) prompt.Flash("Low fuel! Fill up at Jerrys Gas Station (bottom of the map)", 4f);
+        }
+    }
 }

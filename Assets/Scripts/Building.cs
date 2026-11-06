@@ -42,6 +42,10 @@ public class Building : MonoBehaviour
     public float minFertilizerPrice = 800f;
     public float maxFertilizerPrice = 1000f;
 
+    [Header("Gas station (Gas type only)")]
+    [Tooltip("Dollars per litre of diesel (2D game: 2). E / USE fills the shared tank, or buys what the money allows.")]
+    public float fuelPrice = 2f;
+
     [Header("Dealer (Dealer type only)")]
     [Tooltip("The dealer that opens its shop menu here. Empty = the Dealer on this object or a parent.")]
     public Dealer dealer;
@@ -99,6 +103,7 @@ public class Building : MonoBehaviour
             case BuildingType.Buy: return $"Press {key} to buy {seedsPerBuy:N0} seeds (about $ {(minSeedPrice + maxSeedPrice) / 2f:N0})";
             case BuildingType.Dealer: return $"Press {key} to buy vehicles";
             case BuildingType.Fertilizer: return $"Press {key} to buy {fertilizerPerBuy:N0} fertilizer (about $ {(minFertilizerPrice + maxFertilizerPrice) / 2f:N0})";
+            case BuildingType.Gas: return $"Press {key} to fill up with diesel ($ {fuelPrice:0.##} per litre)";
             default: return $"{type} (coming soon)";
         }
     }
@@ -146,6 +151,7 @@ public class Building : MonoBehaviour
             case BuildingType.Buy: BuySeeds(); break;
             case BuildingType.Dealer: OpenDealer(); break;
             case BuildingType.Fertilizer: BuyFertilizer(); break;
+            case BuildingType.Gas: FillUp(); break;
             default: Debug.Log($"{type} building is not implemented yet."); break;
         }
     }
@@ -204,6 +210,30 @@ public class Building : MonoBehaviour
         playerValues.Money -= cost;
         playerValues.Fertilizer += fertilizerPerBuy;
         ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}");
+    }
+
+    // fills the shared tank (every vehicle uses the same diesel); with too little money, buys what it can
+    private void FillUp()
+    {
+        float space = playerValues.FuelCapacity - playerValues.Fuel;
+        if (space < 0.5f)
+        {
+            ShowMessage("The tank is already full");
+            return;
+        }
+
+        float litres = Mathf.Min(space, Mathf.Floor(playerValues.Money / fuelPrice));
+        if (litres < 1f)
+        {
+            ShowMessage($"Not enough money. Diesel costs $ {fuelPrice:0.##} per litre");
+            return;
+        }
+
+        float cost = litres * fuelPrice;
+        playerValues.Money -= cost;
+        playerValues.Fuel += litres;
+        bool full = playerValues.FuelCapacity - playerValues.Fuel < 0.5f;
+        ShowMessage($"{(full ? "Filled up" : "Bought")} {litres:N0} L of diesel for $ {cost:N0}");
     }
 
     private void ShowMessage(string text)
