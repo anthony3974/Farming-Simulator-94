@@ -1231,7 +1231,7 @@ MonoBehaviour:
   maxSteerAngle: 20
   steerAnglePerSecond: 120
   steerRearWheels: 0
-  cameraOffset: {x: 0, y: 5.36, z: -6.53}
+  cameraOffset: {x: 0, y: 5.36, z: -8.5}
   paintRenderers:
   - {fileID: 5504141276359142634}
   - {fileID: 217832097108788108}
