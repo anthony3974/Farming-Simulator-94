@@ -138,10 +138,10 @@ public static class TouchControlsBuilder
         Place((RectTransform)pedalBar.transform, bottomRight, new Vector2(-right, row1), new Vector2(btn, row2 + btn - row1));
         pedalBar.GetComponent<Image>().color = Yellow;
         MakeFill(pedalBar.transform);
-        var gasText = MakeText(pedalBar.transform, "Gas Label", "GAS", 30, Gold, true);
-        Place(gasText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -12), new Vector2(120, 40));
-        var brakeText = MakeText(pedalBar.transform, "Brake Label", "BRAKE", 30, Gold, true);
-        Place(brakeText.rectTransform, new Vector2(0.5f, 0f), new Vector2(0, 12), new Vector2(120, 40));
+        var gasText = MakeText(pedalBar.transform, "Gas Label", "GAS", 28, Gold, true);
+        Place(gasText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -10), new Vector2(120, 36));
+        var brakeText = MakeText(pedalBar.transform, "Brake Label", "BRAKE", 26, Gold, true);
+        Place(brakeText.rectTransform, new Vector2(0.5f, 0f), new Vector2(0, 8), new Vector2(120, 34));
         var pedalMiddle = new GameObject("Middle", typeof(RectTransform), typeof(Image));
         pedalMiddle.transform.SetParent(pedalBar.transform, false);
         Center((RectTransform)pedalMiddle.transform, Vector2.zero, new Vector2(100, 4));
@@ -149,13 +149,16 @@ public static class TouchControlsBuilder
         pedalMiddle.GetComponent<Image>().raycastTarget = false;
         var pedalKnob = new GameObject("Knob", typeof(RectTransform), typeof(Image));
         pedalKnob.transform.SetParent(pedalBar.transform, false);
-        Center((RectTransform)pedalKnob.transform, Vector2.zero, new Vector2(btn - 20, 80));
+        // 50 px: it rests 20% up (80% gas, 20% brake), so a taller knob would cover the BRAKE label
+        Center((RectTransform)pedalKnob.transform, Vector2.zero, new Vector2(btn - 20, 50));
         pedalKnob.GetComponent<Image>().color = Yellow;
         pedalKnob.GetComponent<Image>().raycastTarget = false; // the bar takes the touch, not the knob
         var pedalKnobFill = MakeFill(pedalKnob.transform);
         var pedalSlider = pedalBar.GetComponent<PedalSlider>();
         pedalSlider.knob = (RectTransform)pedalKnob.transform;
         pedalSlider.knobFill = pedalKnobFill;
+        pedalSlider.restPoint = 0.2f;
+        pedalSlider.restMark = (RectTransform)pedalMiddle.transform;
         shaped.Add(pedalBar.GetComponent<Image>());
         shaped.Add(pedalKnob.GetComponent<Image>());
         var actions = MakeGroup(controls.transform, "Actions");
