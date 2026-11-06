@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 /// This script only opens and closes it. Press H, or the HELP button on touch, to open and close it; a tap
 /// anywhere on it also closes it. There are two panels: <see cref="keyboardPanel"/> on PC and
 /// <see cref="touchPanel"/> when the touch controls are on (phones, or Show Touch Controls in the editor).
+/// The touch panel's steer and drive rows name the controls picked in SETTINGS (buttons, wheel or slider).
 /// </summary>
 public class HelpMenu : MonoBehaviour
 {
@@ -19,6 +21,10 @@ public class HelpMenu : MonoBehaviour
     public GameObject keyboardPanel;
     [Tooltip("Shown with touch controls: the controls with their buttons.")]
     public GameObject touchPanel;
+    [Tooltip("Optional: the touch panel's Control text for steering (found in \"Row Steer left / right\" if empty).")]
+    public TMP_Text touchSteerControl;
+    [Tooltip("Optional: the touch panel's Control text for driving (found in \"Row Drive forward / back\" if empty).")]
+    public TMP_Text touchDriveControl;
 
     private InputManager input;
 
@@ -41,12 +47,38 @@ public class HelpMenu : MonoBehaviour
         keyboardPanel.SetActive(!touch);
         touchPanel.SetActive(touch);
         if (closeButton != null) closeButton.onClick.AddListener(Close);
+        if (touchSteerControl == null) touchSteerControl = FindControl("Row Steer left / right");
+        if (touchDriveControl == null) touchDriveControl = FindControl("Row Drive forward / back");
         menuRoot.SetActive(false);
     }
 
     void Update()
     {
-        if (input.Help) menuRoot.SetActive(!menuRoot.activeSelf);
+        if (!input.Help) return;
+        if (!menuRoot.activeSelf) NameTouchControls();
+        menuRoot.SetActive(!menuRoot.activeSelf);
+    }
+
+    // the touch panel's Control text in the given row
+    private TMP_Text FindControl(string row)
+    {
+        foreach (var t in touchPanel.GetComponentsInChildren<Transform>(true))
+            if (t.name == row) return t.Find("Control")?.GetComponent<TMP_Text>();
+        return null;
+    }
+
+    // steer and drive show what SETTINGS has picked
+    private void NameTouchControls()
+    {
+        if (touchSteerControl != null)
+            touchSteerControl.text = TouchSettings.Steering switch
+            {
+                SteeringMode.Wheel => "WHEEL",
+                SteeringMode.Slider => "SLIDER",
+                _ => "< / >",
+            };
+        if (touchDriveControl != null)
+            touchDriveControl.text = TouchSettings.Pedals == PedalMode.Slider ? "PEDAL SLIDER" : "GAS / BRAKE";
     }
 
     public void Close()
