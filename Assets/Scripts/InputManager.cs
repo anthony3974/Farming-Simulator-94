@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>The on-screen buttons shown on touch devices.</summary>
-public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help, Vehicle, Fertilize }
+public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help, Vehicle }
 
 /// <summary>
 /// Single place the game reads input from. Keyboard/mouse always work; on Android (or when
@@ -22,7 +22,6 @@ public class InputManager : MonoBehaviour
     private bool interact;
     private bool trade;
     private bool cycleCrop;
-    private bool fertilize;
     private bool help;
     private int switchVehicle;
     private bool up;
@@ -38,7 +37,6 @@ public class InputManager : MonoBehaviour
     private bool touchInteractQueued;
     private bool touchTradeQueued;
     private bool touchCropQueued;
-    private bool touchFertilizeQueued;
     private bool touchHelpQueued;
     private bool touchVehicleQueued;
     // drag-to-look, set by TouchLook: summed since the last frame, in screen heights (up = positive)
@@ -91,7 +89,6 @@ public class InputManager : MonoBehaviour
             case TouchButton.Interact: if (pressed) touchInteractQueued = true; break;
             case TouchButton.Trade: if (pressed) touchTradeQueued = true; break;
             case TouchButton.CycleCrop: if (pressed) touchCropQueued = true; break;
-            case TouchButton.Fertilize: if (pressed) touchFertilizeQueued = true; break;
             case TouchButton.Help: if (pressed) touchHelpQueued = true; break;
             case TouchButton.Vehicle: if (pressed) touchVehicleQueued = true; break;
         }
@@ -122,8 +119,6 @@ public class InputManager : MonoBehaviour
         touchTradeQueued = false;
         cycleCrop = Input.GetKeyDown(KeyCode.C) || touchCropQueued;
         touchCropQueued = false;
-        fertilize = touchFertilizeQueued; // touch only: on PC, E fertilizes a growing field (no F key)
-        touchFertilizeQueued = false;
         help = Input.GetKeyDown(KeyCode.H) || touchHelpQueued;
         touchHelpQueued = false;
 
@@ -142,7 +137,7 @@ public class InputManager : MonoBehaviour
         {
             horizontal = vertical = 0f;
             up = down = left = right = false;
-            interact = trade = cycleCrop = fertilize = false;
+            interact = trade = cycleCrop = false;
             touchLookY = 0f;
             switchVehicle = 0;
         }
@@ -159,8 +154,6 @@ public class InputManager : MonoBehaviour
     public bool Trade { get => trade; set => trade = value; }
     /// <summary>C key: pick the next crop to plant.</summary>
     public bool CycleCrop { get => cycleCrop; set => cycleCrop = value; }
-    /// <summary>FERT touch button (on PC, E does it): fertilize the field you are in while its crop grows.</summary>
-    public bool Fertilize { get => fertilize; set => fertilize = value; }
     /// <summary>H key: open or close the help menu.</summary>
     public bool Help { get => help; set => help = value; }
     /// <summary>1 / 2 / 3 keys: drive the tractor, van or harvester (1 to 3). CAR touch button: -1 = next vehicle. 0 = no request.</summary>

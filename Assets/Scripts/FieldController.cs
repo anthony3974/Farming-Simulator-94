@@ -160,7 +160,7 @@ public class FieldController : MonoBehaviour
         // the van is for the road: it cannot plant, harvest or fertilize (owner, 2026-11-03)
         if (Vehicle.Active.kind == VehicleKind.Van)
         {
-            if (inputManager.Interact || inputManager.Fertilize)
+            if (inputManager.Interact)
                 ScreenPrompt.Instance.Flash(inputManager.TouchControlsActive
                     ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
                     : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
@@ -172,9 +172,6 @@ public class FieldController : MonoBehaviour
             if (IsPlayerField) Interact();
             else NotYours();
         }
-
-        if (inputManager.Fertilize)
-            Fertilize();
     }
 
     [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
@@ -309,7 +306,7 @@ public class FieldController : MonoBehaviour
 
     // ---- gameplay ----
 
-    // E / USE (or FERT) on someone else's field: say whose it is and how to buy it
+    // E / USE on someone else's field: say whose it is and how to buy it
     private void NotYours()
     {
         string buyKey = inputManager.TouchControlsActive ? "BUY/SELL" : "B";
@@ -320,7 +317,7 @@ public class FieldController : MonoBehaviour
     {
         if (stage == Stage.Empty) Plant();
         else if (stage == Stage.Ready) Harvest();
-        // growing: E / USE fertilizes (owner 2026-11-06: no F key; the FERT touch button goes in the touch rework)
+        // growing: E / USE fertilizes (owner 2026-11-06: no F key, no FERT touch button)
         else Fertilize();
     }
 
@@ -348,7 +345,7 @@ public class FieldController : MonoBehaviour
         ScreenPrompt.Instance.Flash($"Planted {CropName()} on {fieldName}. Used {used:N0} seeds.", 3f);
     }
 
-    // E / USE while growing (FERT too, until the touch rework removes it): one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
+    // E / USE while growing: one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
     private void Fertilize()
     {
         var box = ScreenPrompt.Instance;
