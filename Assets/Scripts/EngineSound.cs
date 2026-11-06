@@ -5,7 +5,7 @@ using UnityEngine;
 /// still; the drive loop fades in as the vehicle speeds up. Both pitches rise with the speed (km/h / top speed),
 /// and holding the gas adds a little pitch and volume (the engine under load).
 /// Only the vehicle you drive is heard; parked ones fade out. Paused (Time.timeScale 0) stops the sound.
-/// Added to the Tractor, Van and Harvester prefabs by Tools > Engine Sound Setup, which also picks the clips.
+/// On the Tractor, Van and Harvester prefabs (added by the one-off Engine Sound Setup tool, now in git history d58093e).
 /// </summary>
 [RequireComponent(typeof(Vehicle))]
 public class EngineSound : MonoBehaviour

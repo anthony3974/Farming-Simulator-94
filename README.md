@@ -44,12 +44,12 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | On-screen buttons (Android) | `<` `>` steer, `GAS`, `BRAKE`, `USE` (same as E), `BUY/SELL` (same as B), `CROP` (same as C), `FERT` (same as F), `CAR` (next vehicle), `HELP` (same as H, top-left), `PAUSE` (same as Esc, top-left) |
 
 ## Roadmap
-The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester, placeholder models), and the main and pause menus. Next up (not in a fixed order):
+The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, and fuel with the gas station. Next up (not in a fixed order):
 
-- Look around on phones (drag to turn the camera)
-- Move the menus still built in code into the scene (help, dealer, message box, speedometer, touch buttons)
-- Tractor redesign
+- Other sounds (menus, farming, money)
+- Rework the touch buttons (and move them into the scene)
 - Save / load
+- Later: a minimap, street lamps across the map
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 

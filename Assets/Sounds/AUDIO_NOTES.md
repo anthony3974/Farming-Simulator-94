@@ -42,7 +42,7 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 `Assets/Sounds/Loops` has loop-ready copies made by `python3 Art/Sounds/make_loops.py` (the originals are unchanged): the padding is trimmed, the end crossfades into the start (0.15 s) and they are mono. `DieselIdle1Loop.wav` (from idle-1), `DieselIdle2Loop.wav` (from idle-2), `DieselDriveLoop.wav` (from vosj). Checked: no level dip at the seam, and the seam jump is the size of a normal sample step.
 
 ## Unity setup
-- Tools > Engine Sound Setup sets the loops to Force To Mono, Decompress On Load, Vorbis.
+- The loops are imported as Force To Mono, Decompress On Load, Vorbis (set by the one-off Engine Sound Setup tool, git history `d58093e`).
 - Chain (built, `EngineSound.cs`): the idle loop crossfades into the drive loop as the speed rises, with pitch following speed.
 - Missing sounds: engine start (cranking), shut-down, and rev-up/acceleration.
 

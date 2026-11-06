@@ -33,7 +33,7 @@ public class FieldController : MonoBehaviour
     // Short list for now, add more names later.
     private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
 
-    // Was 7 s ("growTime"), then 9.45 s ("secondsPerStage"), doubled to 18.9 s ("growthStageSeconds") by the owner
+    // Was 7 s ("growTime"), then 9.45 s ("secondsPerStage"), doubled to 18.9 s ("secondsPerGrowthStage") by the owner
     // on 2026-11-03, then +10% to 20.79 s (about 83 s per crop) by the owner on 2026-11-05.
     // Each time the field was renamed so the value saved in the scene is ignored and this default applies.
     [Tooltip("Seconds each growth step takes (planted > stage 1 > stage 2 > stage 3 > ready). 4 steps in total.")]
