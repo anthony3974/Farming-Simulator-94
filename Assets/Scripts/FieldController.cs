@@ -28,7 +28,9 @@ public class FieldController : MonoBehaviour
         "Dahl Ranch", "Alpine Farming", "John Deer", "Erlengrat", "Welker Farms", "Goldcrest Valley",
         "Lone Oak", "Estancia Lapacho", "Felsbrunn", "Minibrunn", "No Man's Land", "Ravenport",
     };
+    // names handed out to the fields in the loaded scene; a field gives its name back when it is destroyed
     private static readonly List<string> usedNames = new();
+    private string pickedName; // the name this field took from usedNames (null = it keeps its scene name)
 
     // Short list for now, add more names later.
     private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
@@ -117,7 +119,7 @@ public class FieldController : MonoBehaviour
         }
 
         if (!IsPlayerField)
-            fieldName = PickAiFieldName();
+            fieldName = pickedName = PickAiFieldName();
 
         if (!IsPlayerField)
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
@@ -243,6 +245,13 @@ public class FieldController : MonoBehaviour
     private void OnEnable() => Vehicle.ActiveChanged += OnVehicleSwitched;
     private void OnDisable() => Vehicle.ActiveChanged -= OnVehicleSwitched;
 
+    // give the name back, so the next game (Main Menu > New Game again) can use the base names again
+    // instead of "Lone Oak 2": usedNames is static, so it outlives the scene
+    private void OnDestroy()
+    {
+        if (pickedName != null) usedNames.Remove(pickedName);
+    }
+
     // the player switched vehicles: show the pop-up for the field the new vehicle is parked in, or hide it
     private void OnVehicleSwitched()
     {
@@ -267,6 +276,8 @@ public class FieldController : MonoBehaviour
 
     // A random unused name from the 2D game's list. Once all of them are taken (12 AI fields), a random base
     // name gets the next free number ("Dahl Ranch 2", "Dahl Ranch 3", ...), so adding fields never runs out.
+    // A base name nobody uses yet; only when all of them are taken (more AI fields than names), a base name
+    // with the first free number: "Lone Oak 2", "Lone Oak 3", ...
     private static string PickAiFieldName()
     {
         var free = new List<string>(FieldNames);
