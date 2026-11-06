@@ -49,7 +49,6 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - Look around on phones (drag to turn the camera)
 - Move the menus still built in code into the scene (help, dealer, message box, speedometer, touch buttons)
 - Tractor redesign
-- App icon
 - Save / load
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
