@@ -58,11 +58,12 @@ public class MainMenu : MonoBehaviour
         newGameButton.onClick.AddListener(NewGame);
         backButton.onClick.AddListener(ShowHome);
         // TERMS OF SERVICE: nothing yet. When publishing: termsButton.onClick.AddListener(() => Application.OpenURL("https://..."));
-        // LOAD GAME: only with a save (the button's greyed-out look is its disabled colour)
+        // LOAD GAME: only with a save, greyed out otherwise
         if (loadGameButton != null)
         {
             loadGameButton.onClick.AddListener(LoadGame);
             loadGameButton.interactable = SaveGame.HasSave;
+            if (!SaveGame.HasSave) GreyOut(loadGameButton);
         }
 
         if (versionText != null) versionText.text = "v" + Application.version;
@@ -117,6 +118,24 @@ public class MainMenu : MonoBehaviour
             return;
         }
         StartGame(load: false);
+    }
+
+    // greyed-out button (UI colours, PLAN.md): grey border, the (70, 70, 70) fill like the dealer's OWNED, grey text.
+    // The prefab's disabled tint only dims its yellow border (it stayed yellow), so the colours are set here.
+    private static readonly Color BorderOff = new Color32(120, 120, 120, 255);
+    private static readonly Color FillOff = new Color32(70, 70, 70, 255);
+    private static readonly Color LabelOff = new Color32(150, 150, 150, 255);
+
+    private static void GreyOut(Button button)
+    {
+        var colors = button.colors;
+        colors.disabledColor = Color.white; // no extra tint on top of the grey
+        button.colors = colors;
+        if (button.targetGraphic != null) button.targetGraphic.color = BorderOff;
+        var fill = button.transform.Find("Fill");
+        if (fill != null && fill.TryGetComponent(out Graphic fillGraphic)) fillGraphic.color = FillOff;
+        var label = button.transform.Find("Label");
+        if (label != null && label.TryGetComponent(out Graphic labelGraphic)) labelGraphic.color = LabelOff;
     }
 
     private void LoadGame()
