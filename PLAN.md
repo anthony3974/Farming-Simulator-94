@@ -1,6 +1,6 @@
 # Farming Simulator 94: Improvement List and Initial Plan
 
-> ## >>> NEXT UP: AI owners' fields (item 10): built, owner testing; then other sounds (item 11) <<<
+> ## >>> NEXT UP: other sounds (item 11) <<<
 >
 > **When asked "what's next?", the answer is the first unfinished item in this list** (set by the owner, updated 2026-11-05: the app icon, the engine sound and the harvester are done; 2026-11-06: save / load and fuel tested and working (owner); the touch rework is done and merged, phone test pending). The seed shop is finished (the owner may revise the economy later).
 > 1. ~~**Map border.**~~ **DONE (2026-11-03).** Built with `Assets/Editor/MapBorderBuilder.cs` (Tools > Map Border Builder). The owner is happy with it, so the tool was removed (2026-11-04; git history, last version `9f800c5`, to rebuild or resize the wall). The scene has a `Map Border` object with 572 grey concrete blocks (scaled about 7.5 x 3.3 x 1.0 m, 0.3 m of it buried), each with a collider, 1 m inside the terrain edge. Nothing in the scene is near the wall. A real barrier prefab could be dropped into the tool (from git history) later. Checked by the owner in Play mode (2026-11-03): the truck cannot pass.
@@ -56,7 +56,7 @@
       - The two freesound MP3s had ~60 ms of silence at the loop point, so `Art/Sounds/make_loops.py` makes trimmed, crossfaded mono WAVs in `Assets/Sounds/Loops` (originals unchanged). `Vehicle` got `SpeedKmh` and `Throttle` for the sound. Compiled outside Unity only; **not yet heard in Unity.**
       - Still missing (AUDIO_NOTES): engine start, shut-down and rev-up sounds.
 >
-> **Order set by the owner (2026-11-05):** ~~save / load~~ (done), ~~touch rework~~ (done, phone test pending), AI owners' fields (built, owner testing), other sounds, ~~fuel testing~~ (done), street lamps, minimap.
+> **Order set by the owner (2026-11-05, updated 2026-11-06):** ~~save / load~~, ~~touch rework~~, ~~AI owners' fields~~, ~~fuel testing~~ (all done), other sounds, street lamps, minimap. **Soon after (owner, 2026-11-06):** working lights on the house and garage, vehicle mirrors (both below item 14). **Distant:** advanced crop harvesting.
 >
 > 8. ~~**Save / load.**~~ **DONE (2026-11-06): tested by the owner, "save and load works".** (Owner, 2026-11-05: first.) Save and load the farm: money, seeds, fertilizer, fuel, crops in stock, which fields you own and what grows on them (crop, stage, fertilizer), the vehicles you own and where they are parked. The main menu's LOAD GAME button is now live. Code only, no scene changes: the scripts compile outside Unity against stand-in Unity classes; **not yet run in Unity.**
 >    - [x] **Owner:** Play from `MainMenu`: NEW GAME, plant / fertilize a field, buy a field, buy the van, park it somewhere, drive off in it, sell some crop. Pause, MAIN MENU, LOAD GAME: everything should be as you left it, in the van. Also: close the app on the phone (swipe it away) and LOAD GAME. Then NEW GAME (asks "Press again to replace your saved farm") gives a fresh farm.
@@ -68,9 +68,9 @@
 >    - **NEW GAME** with a save: the first press shows "Press again to replace your saved farm" under the buttons; the new farm's first save replaces the old one.
 >    - **Editor note:** pressing Play in GameScene directly (not from `MainMenu`) starts a new farm, and its autosave replaces the editor's save (the phone's save is separate).
 >
-> 9. ~~**Touch controls rework.**~~ **DONE in the editor (2026-11-06, branch `touch-rework`, merged into main); phone test pending.**
+> 9. ~~**Touch controls rework.**~~ **DONE (2026-11-06, branch `touch-rework`, merged into main): tested on the phone by the owner.**
 >    - [x] Built in GameScene by the owner (2026-11-06, `3b61b22`), rebuilt after the layout and pedal changes.
->    - [x] **Owner:** ran Tools > Build Touch Controls (last rebuild 2026-11-06, `85746c5`), saved, deleted the builder (git history, `a94cdbb`); merged into main and pushed. **Still to do: try it on the phone** (WHEEL, SLIDER, pedal SLIDER, ROUNDED) and say what to change.
+>    - [x] **Owner:** ran Tools > Build Touch Controls (last rebuild 2026-11-06, `85746c5`), saved, deleted the builder (git history, `a94cdbb`); merged into main and pushed. **Tried on the phone by the owner (2026-11-06): done.**
 >    - [x] **Owner (done 2026-11-06):** Tools > **Help: Touch Settings Row** (`Assets/Editor/HelpTouchRowsFix.cs`), save, delete the file: adds a SETTINGS row to the help menu's touch panel (the panel grows one row) and the touch pause row says just "Pause". The touch steer and drive rows now name what SETTINGS picked (`< / >`, WHEEL or SLIDER; GAS / BRAKE or PEDAL SLIDER), set by `HelpMenu` when it opens.
 >    - **Touch buttons are scene objects now** (`Touch Controls` canvas, sort 50): every button is a `UI Button` prefab copy with `TouchButtonInput` (the old hold / slide logic, unchanged). `TouchControls.cs` no longer builds anything: it hides the canvas on PC (unless Show Touch Controls), shows the picked steering and sets the button shape. `InputManager` no longer adds it. **Layout (owner, 2026-11-06), right side:** `CROP | CAR` / `BUY SELL | GAS` / `USE | BRAKE` (bottom row lowest). BUY/SELL is now "BUY" over "SELL", no slash (messages and the help say BUY SELL). **The held buttons (`<` `>` GAS BRAKE) sink while pressed** (0.9 scale, `pressedScale` on `TouchButtonInput`; the touch area stays full size).
 >    - **Steering options** (STEERING column): `< >` buttons (as before); **Wheel** (`SteeringWheel.cs`: turn it with a finger around its centre, 120 degrees each way = full lock, springs back when let go; a plain picture that only turns, no shadow or press-down look (owner, 2026-11-06)); **Slider** (`SteeringSlider.cs`: the knob follows the finger, distance from the middle = how hard you steer, springs back to the middle when let go, small dead zone). The wheel and slider steer gently: `InputManager.Steer` (-1 to 1) and `Vehicle` turn by that fraction (the tires too); keys and buttons still give full steering.
@@ -80,8 +80,8 @@
 >
 >    Original notes: **Touch controls rework (owner, 2026-11-05: second), including the new SETTINGS button.** See item 20 under Improvements needed: the buttons are a little confusing; move `TouchControls` into the scene hierarchy; the SETTINGS button below HELP (rounded buttons, other steering options such as a steering wheel with a pressing-down animation). The slide-off fix is done and tested.
 >
-> 10. **AI owners work their own fields: built (2026-11-06, branch `ai-fields`), owner testing.**
->    - [ ] **Owner:** NEW GAME and drive around: the AI fields start in all states (empty, green, yellow, ready, some fertilized earlier). Watch one: an empty AI field gets planted after 15 to 60 s, grows at your speed, sometimes turns blue (fertilized), and is harvested 10 to 45 s after it is ready. Buy a growing one and harvest it yourself. Sell one of yours: the new AI owner keeps working it (a ready crop on it gets harvested by them).
+> 10. ~~**AI owners work their own fields.**~~ **DONE (2026-11-06, branch `ai-fields`): tested by the owner.**
+>    - [x] **Owner (tested 2026-11-06):** NEW GAME and drive around: the AI fields start in all states (empty, green, yellow, ready, some fertilized earlier). Watch one: an empty AI field gets planted after 15 to 60 s, grows at your speed, sometimes turns blue (fertilized), and is harvested 10 to 45 s after it is ready. Buy a growing one and harvest it yourself. Sell one of yours: the new AI owner keeps working it (a ready crop on it gets harvested by them).
 >    - Code only (`FieldController`): `AiRandomStart` (a new game puts each AI field at a random stage with a random crop and time into the stage, sometimes fertilized once in an earlier stage, so it does not start blue), `AiWork` (plant an empty field after Min / Max Ai Plant Delay, harvest a ready one after Min / Max Ai Harvest Delay, and in each growth stage fertilize with Ai Fertilize Chance 25%, two levels at most; game time, so it stops while paused). The AI harvest goes to the AI owner (nothing to your counters). Settings under "AI owners" on each field. Saved like your fields (crop, stage, time, fertilizer); the AI's wait starts again after loading. Compiled against the real Unity assemblies; **not yet run in Unity.**
 >
 >    Original note: **AI owners work their own fields (owner, 2026-11-05).** The AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it.
@@ -99,11 +99,15 @@
 >
 > 13. **Street lamps across the map (owner, 2026-11-05).** One street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this).
 >
-> 14. **Minimap (owner, 2026-11-05, last).** A small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers.
+> 14. **Minimap (owner, 2026-11-05).** A small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers.
+>
+> **Soon (owner, 2026-11-06), after the minimap:**
+> - **Working lights on the house and garage** (was distant, moved up 2026-11-06).
+> - **Vehicle mirrors** (see Phase 6 below: side mirrors, maybe a rear-view mirror; a small camera per mirror into a RenderTexture, kept cheap on phones).
 >
 > ~~**To fix (owner, 2026-11-05): the tractor's camera is too close**~~ **Fixed (2026-11-05):** `cameraOffset` on `Tractor.prefab` `(0, 5.36, -6.53)` to `(0, 5.36, -8.5)`, the same distance back as the van (its `(0, 3.9, -6.64)` x its 1.28 scale = `(0, 5, -8.5)`); the harvester's is `(0, 8, -11)` (bigger vehicle). **Owner checked (2026-11-05): "solid, done".**
 >
-> **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
+> **Distant, not a priority:** advanced crop harvesting (drive across the field to harvest it, see "Advanced crop harvesting" below; moved to distant by the owner, 2026-11-06). ~~Working lights on the house and garage~~ moved to Soon (2026-11-06).
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
 >
 > **Building and tractor redesigns (2026-11-03, built and saved in GameScene).** The tools were run, then removed (kept in git history): Tractor Builder `8c1c8b6` (truck renamed to tractor, new red tractor model, front wheel angle 30 to 20), Sell Station Builder `d60593b` (wheat / barley / oat grain elevators), Shop Builder `10298e7` (new seed shop look, and a new **fertilizer shop** at X 340, Z 601 next to the seed shop because the 2D spot is taken by fields). **Shop amounts (owner, 2026-11-03): both shops sell 2,000 at a time, same price per unit:** 2,000 seeds for $900 to $1,100 and 2,000 fertilizer for $800 to $1,000. The `Building` fields were renamed (`seedsPerBuy`, `minSeedPrice`, `fertilizerPerBuy`, ...) so the old Inspector values in the scene are ignored.
@@ -175,12 +179,12 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 **Phase 4: Fields and fertiliser**
 - ~~Buying fields~~ DONE (moved into Phase 3).
 - ~~Fertiliser~~ written (see item 15): F during growth, +50% yield per level, two levels.
-- **Advanced crop harvesting:** drive-over harvest cells with bonuses (see "Advanced crop harvesting" below).
+- **Advanced crop harvesting:** drive-over harvest cells with bonuses (see "Advanced crop harvesting" below). **Distant (owner, 2026-11-06).**
 
 **Phase 5: Polish**
 - ~~Save/load (18).~~ Built 2026-11-06 (owner testing). (Camera clamp (14) and input cleanup (13) are already done.)
 
-**Phase 6: Vehicle mirrors**
+**Phase 6: Vehicle mirrors** (soon, after the minimap: owner, 2026-11-06)
 - Add mirrors to the vehicle (left and right side mirrors, maybe a rear-view mirror).
 - Likely approach: a small extra camera per mirror drawing into a `RenderTexture`, shown on a quad on the mirror, or a small on-screen panel. Keep the cost low on phones (small texture, lower frame rate or resolution for mirror cameras, off when not needed).
 - Decide: real mirrors on the model, or a screen overlay. Check the Android frame rate after adding them.
@@ -286,7 +290,7 @@ Fixed (untested): stale B-key confirmation, building prompt overwriting other me
 - **Background:** the game was finished as a 2D version before. The 3D version should aim for the 2D feature set. The 2D version is a reference only (see "Direction").
 - **Money:** add money to `PlayerValues` and the counters panel; sell prices per crop; maybe price changes over time.
 
-## Advanced crop harvesting (design, not yet started)
+## Advanced crop harvesting (design, not yet started; distant, owner 2026-11-06)
 Today harvesting is instant: press E / USE on a Ready field and the whole field's yield (`Convert.ToInt32(size)`) goes into the counters at once (`FieldController.Harvest`). The new version makes harvesting something you **drive across the field to do**, like the real game.
 
 **Idea (carried over from the owner's earlier version):** split the field's area into many small hitboxes, created by a `for` loop. While the player is in **harvesting mode** and drives into a hitbox, that hitbox is harvested and pays out its share of the field's yield.

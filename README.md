@@ -53,6 +53,8 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - Other sounds (menus, farming, money)
 - Street lamps across the map
 - A minimap
+- Soon after: working lights on the house and garage, vehicle mirrors
+- Later: drive across a field to harvest it
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
