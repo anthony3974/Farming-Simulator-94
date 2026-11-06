@@ -145,11 +145,14 @@ public class FieldController : MonoBehaviour
         if (confirmTrade && Time.time > confirmUntil)
             confirmTrade = false;
 
-        // the van is for the road: it can sell crops and buy seeds and fertilizer at the buildings, but it cannot
-        // plant, harvest, fertilize, buy or sell fields (owner, 2026-11-03)
+        // buying and selling fields is paperwork: every vehicle can do it, the van too (owner, 2026-11-05)
+        if (inputManager.Trade)
+            Trade();
+
+        // the van is for the road: it cannot plant, harvest or fertilize (owner, 2026-11-03)
         if (Vehicle.Active.kind == VehicleKind.Van)
         {
-            if (inputManager.Interact || inputManager.Fertilize || inputManager.Trade)
+            if (inputManager.Interact || inputManager.Fertilize)
                 ScreenPrompt.Instance.Flash(inputManager.TouchControlsActive
                     ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
                     : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
@@ -161,9 +164,6 @@ public class FieldController : MonoBehaviour
 
         if (inputManager.Fertilize)
             Fertilize();
-
-        if (inputManager.Trade)
-            Trade();
     }
 
     [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
