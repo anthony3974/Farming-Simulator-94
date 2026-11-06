@@ -67,7 +67,7 @@
 >
 > **To fix (owner, 2026-11-05): the tractor's camera is too close** compared to the van and the harvester. Move it back to match (`cameraOffset` on the Tractor's `Vehicle`, or the camera's local position in `Tractor.prefab`; the van's is `(0, 3.9, -6.64)` after its 1.28 scale-up).
 >
-> **Later (not soon):** save/load (item 18), the touch buttons rework (item 20).
+> **Later (not soon):** save/load (item 18), the touch buttons rework (item 20), a **minimap** (owner, 2026-11-05: low priority; a small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers).
 > **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
 >
