@@ -7,7 +7,7 @@ public enum CropType { None, Wheat, Barley, Oat }
 
 /// <summary>
 /// One farm field. Press the interact key inside it to plant the selected crop, wait while it
-/// grows through three stages, then press again to harvest. While it grows, F (FERT on touch)
+/// grows through three stages, then press again to harvest. While it grows, E on PC (FERT on touch)
 /// fertilizes it: up to two levels, one per growth stage, each +50% harvest (like the 2D game).
 /// </summary>
 public class FieldController : MonoBehaviour
@@ -308,7 +308,8 @@ public class FieldController : MonoBehaviour
     {
         if (stage == Stage.Empty) Plant();
         else if (stage == Stage.Ready) Harvest();
-        // otherwise the crop is still growing, nothing to do
+        // growing: on PC, E fertilizes (the F key was removed, owner 2026-11-06); touch keeps its FERT button
+        else if (!inputManager.TouchControlsActive) Fertilize();
     }
 
     private void Plant()
@@ -333,7 +334,7 @@ public class FieldController : MonoBehaviour
         Changed();
     }
 
-    // F key: one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
+    // E while growing (FERT on touch): one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
     private void Fertilize()
     {
         var box = ScreenPrompt.Instance;

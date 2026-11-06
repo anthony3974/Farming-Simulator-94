@@ -122,7 +122,7 @@ public class InputManager : MonoBehaviour
         touchTradeQueued = false;
         cycleCrop = Input.GetKeyDown(KeyCode.C) || touchCropQueued;
         touchCropQueued = false;
-        fertilize = Input.GetKeyDown(KeyCode.F) || touchFertilizeQueued;
+        fertilize = touchFertilizeQueued; // touch only: on PC, E fertilizes a growing field (no F key)
         touchFertilizeQueued = false;
         help = Input.GetKeyDown(KeyCode.H) || touchHelpQueued;
         touchHelpQueued = false;
@@ -159,7 +159,7 @@ public class InputManager : MonoBehaviour
     public bool Trade { get => trade; set => trade = value; }
     /// <summary>C key: pick the next crop to plant.</summary>
     public bool CycleCrop { get => cycleCrop; set => cycleCrop = value; }
-    /// <summary>F key (FERT on touch): fertilize the field you are in while its crop grows.</summary>
+    /// <summary>FERT touch button (on PC, E does it): fertilize the field you are in while its crop grows.</summary>
     public bool Fertilize { get => fertilize; set => fertilize = value; }
     /// <summary>H key: open or close the help menu.</summary>
     public bool Help { get => help; set => help = value; }
