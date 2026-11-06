@@ -83,6 +83,8 @@ public class FieldController : MonoBehaviour
 
     private static readonly Color32 DirtColor = new(130, 90, 60, 255);
     private static readonly Color32 PlantedColor = new(50, 230, 30, 255);
+    // fertilized fields turn blue like the 2D game (Fert1 / Fert2), until the crop grows into its next stage
+    private static readonly Color32[] FertilizedColors = { new(100, 185, 235, 255), new(80, 155, 235, 255) };
 
     // Materials are shared between fields (one per base material + colour) instead of being created per field.
     private static readonly Dictionary<(Material, int), Material> materialCache = new();
@@ -474,6 +476,8 @@ public class FieldController : MonoBehaviour
     private Color32 CurrentColor()
     {
         if (stage == Stage.Empty) return DirtColor;
+        // fertilized in this stage: level 1 light blue, level 2 deeper blue (2D game); the next stage shows the crop again
+        if (fertStage > 0 && fertilizedAt == stage) return FertilizedColors[Mathf.Min(fertStage, FertilizedColors.Length) - 1];
         if (stage == Stage.Planted) return PlantedColor;
         return CropColors[(int)cropType - 1][stage - Stage.Growing1];
     }
