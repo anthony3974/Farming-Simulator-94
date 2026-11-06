@@ -100,6 +100,8 @@
 >
 > **Tested by the owner in Play mode (2026-11-03):** fertilizer (buy, F twice in two stages, harvest bonus), buying the van and harvester from Parking and driving them with 2 / 3, the 2,000-unit shops, mouse look on PC. Cleaned up in the scene by the owner: the turned-off old `House` and `Garage EX` and the dealer's old parking-spot objects are deleted (their prefabs were deleted 2026-11-04).
 >
+> **Added (owner, 2026-11-06), not yet in the order above:** fertilizer colour for fields; pressing FERT (F) changes the field's colour, so you can see it is fertilized. See item 15 under Unfinished features.
+>
 > **Also pending (owner, 2026-11-03):** rework the touch buttons (they are a little confusing, see item 20). Ask the owner when. The field sell confirmation text is fixed ("Press again to confirm").
 >
 > **To continue in a new chat:** "Read PLAN.md and start the NEXT UP task."
@@ -125,6 +127,7 @@ This is an initial plan from reading the code. It is not the plan from the earli
 
 ### Unfinished features
 15. **Fertilizer** (written and tested by the owner, 2026-11-03): press **F** (touch: **FERT**, a third button column beside CAR, temporary place) in your own field while the crop grows. Two levels, at most one per growth stage, each **+50% harvest** (2D game). Each use costs fertilizer of about 0.42 to 0.58 x the field's harvest (the 2D ratio, Inspector values on `FieldController`), rolled once per visit like the seed price. The field pop-up shows only the bonus: "Fertilized: +50%" (level 1) or "+100%" (level 2). Harvest adds the fertilizer bonus to the harvester's +60%. Start stock is `startFertilizer` on `PlayerValues` (0); buy it at the fertilizer shop. Fertilizing does not speed up growth.
+    - [ ] **Fertilizer colour for fields (owner, 2026-11-06).** A fertilized field gets its own colour, so you can see from the road which fields are fertilized (now only the pop-up shows it). **The FERT button (F) is what sets it:** pressing FERT now also changes the field's colour, so the button visibly does something. Level 1 and level 2 look different (for example a darker, richer shade of the crop's growth colour, deeper at level 2). The colour follows the crop through its growth stages and goes back to normal at harvest (when `fertStage` resets to 0). How: in `FieldController.CurrentColor()`, darken or tint the stage colour by `fertStage`; `GetMaterial` already caches one material per colour, so the extra colours cost only a few more shared materials. Save / load (item 18) already keeps the fertilizer level, so the colour comes back after loading. **Ask the owner:** which colour / how strong (darker crop colour, a green tint, or something else like stripes).
 16. ~~**Selling and money.**~~ **DONE** (sell stations for wheat, barley and oat, money in the counters panel, field `value` is the buy price).
 17. ~~**Field ownership and buying.**~~ **DONE** (B key to buy or sell, press twice to confirm; sell pays 80%; other fields get random AI owners and names).
 18. **Save/load** of crops, stock and money.
