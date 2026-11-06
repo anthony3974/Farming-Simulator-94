@@ -5776,6 +5776,7 @@ GameObject:
   - component: {fileID: 4540014198241184731}
   - component: {fileID: 6221358072935377955}
   - component: {fileID: 3463283250589905806}
+  - component: {fileID: 2914656273524504323}
   m_Layer: 0
   m_Name: Van
   m_TagString: Untagged
@@ -5952,6 +5953,31 @@ MonoBehaviour:
   - {fileID: 1538999095083187677}
   - {fileID: 6414700763735321014}
   - {fileID: 8512676464819013622}
+--- !u!114 &2914656273524504323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7479413325707620432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713160feffe3cd4f2a468c060b12db91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleClip: {fileID: 8300000, guid: 13db26698ecaf3e4e823fa4aa36a385d, type: 3}
+  driveClip: {fileID: 8300000, guid: e10eb262c0a3b32e58cffa151eb93f21, type: 3}
+  idlePitch: {x: 1.1, y: 1.6}
+  drivePitch: {x: 1, y: 1.9}
+  throttlePitch: 0.08
+  idleVolume: {x: 0.8, y: 0.25}
+  driveVolume: {x: 0, y: 0.9}
+  throttleVolume: 0.15
+  masterVolume: 0.85
+  response: 4
+  fadeTime: 0.4
+  showDebug: 1
+  debugPosition: {x: 0.01, y: 0.3}
 --- !u!1 &7505034640136611348
 GameObject:
   m_ObjectHideFlags: 0
