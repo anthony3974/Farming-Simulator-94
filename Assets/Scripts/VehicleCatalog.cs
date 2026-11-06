@@ -23,8 +23,8 @@ public static class VehicleCatalog
     private static readonly Info[] All =
     {
         new() { kind = VehicleKind.Tractor, name = "Tractor", price = 0, topSpeed = 45, description = "Your starting vehicle." },
-        new() { kind = VehicleKind.Van, name = "Van", price = 5000, topSpeed = 55.8f, description = "The fastest on the road." },
-        new() { kind = VehicleKind.Harvester, name = "Harvester", price = 5000, topSpeed = 34.2f, harvestBonus = 0.6f, description = "Harvests 60% more from every field." },
+        new() { kind = VehicleKind.Van, name = "Van", price = 5000, topSpeed = 56, description = "The fastest on the road." },
+        new() { kind = VehicleKind.Harvester, name = "Harvester", price = 5000, topSpeed = 34, harvestBonus = 0.6f, description = "Harvests 60% more from every field." },
     };
 
     public static Info Get(VehicleKind kind) => All[(int)kind];

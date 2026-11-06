@@ -10880,7 +10880,7 @@ MonoBehaviour:
   kind: 2
   displayName: Harvester
   harvestBonus: 0.6
-  topSpeed: 34.2
+  topSpeed: 34
   reverseSpeed: -10
   accelerationMultiplier: 20
   steeringMultiplier: 6
