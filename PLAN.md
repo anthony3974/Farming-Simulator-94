@@ -71,7 +71,7 @@
 >
 > ~~**To fix (owner, 2026-11-05): the tractor's camera is too close**~~ **Fixed (2026-11-05):** `cameraOffset` on `Tractor.prefab` `(0, 5.36, -6.53)` to `(0, 5.36, -8.5)`, the same distance back as the van (its `(0, 3.9, -6.64)` x its 1.28 scale = `(0, 5, -8.5)`); the harvester's is `(0, 8, -11)` (bigger vehicle). **Owner checked (2026-11-05): "solid, done".**
 >
-> **Later (not soon):** save/load (item 18), the touch buttons rework (item 20), a **minimap** (owner, 2026-11-05: low priority; a small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers).
+> **Later (not soon):** save/load (item 18), the touch buttons rework (item 20), a **minimap** (owner, 2026-11-05: low priority; a small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers), **AI owners work their own fields** (owner, 2026-11-05: the AI owners (Fred, Maria, Hank, Dolores, Gus) plant, grow and harvest the fields they own, like the 2D game's AI owners planting; the fields then look alive and change crop over time, and you buy a field with whatever is growing on it).
 > **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage. **Map lamps (owner, 2026-11-05):** one street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this).
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
 >
@@ -335,7 +335,7 @@ There is **no collision**; the README says so ("there is no collision yet"). The
 - **Economy numbers to reuse** (they were balanced for the 2D game): the prices above. Keep them as editable Inspector fields, not hard-coded.
 - **Selling needs a drive** (already decided). The 2D game had one station per crop; for the first 3D version one sell point that buys all crops is enough.
 - **Now in the 3D game:** money, sell stations, field ownership, buying and selling fields, seeds and the seed shop, the dealer and vehicle switching (untested).
-- **Still not in the 3D game:** compost, diesel, painting, save/load, AI owners planting fields.
+- **Still not in the 3D game:** painting (dropped), save/load, AI owners planting fields (in the Later list, 2026-11-05). Diesel is in (item 9); compost is the fertilizer.
 - **The harvester already exists in 2D as art** (`h/` folder, four colours). In 3D it still needs a model.
 - **Suggested order for Phase 3:** ~~(1) money, (2) a sell building, (4) field buying~~ done; (3) seeds and a seed shop, ~~done~~; the owner now wants the dealer (7) before fuel (5) and fertilizer (6).
 
