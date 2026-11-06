@@ -8,8 +8,9 @@ using UnityEngine.UI;
 /// and release to the <see cref="InputManager"/>. Held while any finger that is still down is on it: sliding off
 /// lets go, sliding back on (without lifting) presses it again, and a finger that slides onto it from another
 /// button presses it too (slide from &lt; to &gt; to steer). Only the held buttons (&lt; &gt; GAS BRAKE) do the
-/// sliding: the one-press buttons (USE, BUY/SELL, ...) act on the press, so a finger passing over them, or sliding
-/// off and back, must not press them again. While pressed, the Fill turns the pressed colour.
+/// sliding: the one-press buttons (USE, BUY SELL, ...) act on the press, so a finger passing over them, or sliding
+/// off and back, must not press them again. While pressed, the Fill turns the pressed colour, and the held
+/// buttons (&lt; &gt; GAS BRAKE) sink: they shrink a little and spring back when let go (owner, 2026-11-06).
 /// </summary>
 public class TouchButtonInput : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -18,17 +19,24 @@ public class TouchButtonInput : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [Tooltip("Optional: the brown Fill that shows the press (found by name \"Fill\" if empty).")]
     public Image fill;
     public Color pressedColor = new Color32(110, 85, 10, 255);
+    [Tooltip("Held buttons (< > GAS BRAKE) sink to this size while pressed. 1 = no sink.")]
+    [Range(0.7f, 1f)] public float pressedScale = 0.9f;
+    [Tooltip("Seconds the sink and the spring back take.")]
+    public float pressTime = 0.06f;
 
     private InputManager input;
     private readonly HashSet<int> fingers = new(); // pointers down and on this button
     private bool pressed;
     private bool slide; // a held button (steering, gas, brake)
     private Color normalColor;
+    private Image border;  // this button's own Image: it takes the touches
+    private float press;   // 0 = up, 1 = fully sunk
 
     void Awake()
     {
         if (fill == null) fill = transform.Find("Fill")?.GetComponent<Image>();
         if (fill != null) normalColor = fill.color;
+        border = GetComponent<Image>();
         slide = button is TouchButton.Left or TouchButton.Right or TouchButton.Gas or TouchButton.Brake;
     }
 
@@ -50,15 +58,37 @@ public class TouchButtonInput : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     // pressed: drop fingers that are no longer down, so the button never sticks
     void Update()
     {
-        if (fingers.Count == 0) return;
-        fingers.RemoveWhere(id => !IsDown(id));
-        Refresh();
+        if (fingers.Count > 0)
+        {
+            fingers.RemoveWhere(id => !IsDown(id));
+            Refresh();
+        }
+
+        if (!slide) return;
+        float target = pressed ? 1f : 0f;
+        if (press == target) return;
+        press = Mathf.MoveTowards(press, target, Time.unscaledDeltaTime / Mathf.Max(0.01f, pressTime));
+        Sink();
     }
 
     private void OnDisable()
     {
         fingers.Clear();
         Refresh();
+        press = 0f;
+        if (slide) Sink();
+    }
+
+    // shrink the button while it is held; the touch area is padded back out to full size, so a finger near
+    // the edge does not slip off the shrunk button (which would let go, grow, press again, ...)
+    private void Sink()
+    {
+        float scale = Mathf.Lerp(1f, pressedScale, press);
+        transform.localScale = new Vector3(scale, scale, 1f);
+        if (border == null) return;
+        var rect = ((RectTransform)transform).rect;
+        float grow = (1f / scale - 1f) / 2f;
+        border.raycastPadding = new Vector4(-rect.width * grow, -rect.height * grow, -rect.width * grow, -rect.height * grow);
     }
 
     internal static bool IsDown(int pointerId)

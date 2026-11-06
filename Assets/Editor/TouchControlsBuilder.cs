@@ -85,19 +85,15 @@ public static class TouchControlsBuilder
         wheelArea.transform.SetParent(controls.transform, false);
         Place((RectTransform)wheelArea.transform, bottomLeft, new Vector2(300, 20), new Vector2(320, 320));
         wheelArea.GetComponent<Image>().color = new Color(0, 0, 0, 0); // invisible, catches the touches
-        var wheelPic = new GameObject("Wheel", typeof(RectTransform), typeof(Image), typeof(Shadow));
+        var wheelPic = new GameObject("Wheel", typeof(RectTransform), typeof(Image));
         wheelPic.transform.SetParent(wheelArea.transform, false);
         Stretch((RectTransform)wheelPic.transform, 10);
         var wheelImage = wheelPic.GetComponent<Image>();
         wheelImage.sprite = wheelSprite;
         wheelImage.preserveAspect = true;
         wheelImage.raycastTarget = false;
-        var wheelShadow = wheelPic.GetComponent<Shadow>();
-        wheelShadow.effectColor = new Color(0, 0, 0, 0.55f);
-        wheelShadow.effectDistance = new Vector2(6, -8);
         var wheel = wheelArea.GetComponent<SteeringWheel>();
         wheel.wheel = wheelImage;
-        wheel.shadow = wheelShadow;
 
         // steering slider: yellow bar with a brown fill, a centre mark and a knob that follows the finger
         var slider = new GameObject("Steering Slider", typeof(RectTransform), typeof(Image), typeof(SteeringSlider));
@@ -125,16 +121,19 @@ public static class TouchControlsBuilder
         shaped.Add(slider.GetComponent<Image>());
         shaped.Add(knob.GetComponent<Image>());
 
-        // right side, unchanged from the code-built layout: 130 px buttons, two columns, three rows
-        const float col1 = 60, col2 = 200, row1 = 295, row2 = 435, row3 = 575, btn = 130;
+        // right side: 130 px buttons, two columns, three rows (owner, 2026-11-06):
+        //   CROP      CAR
+        //   BUY SELL  GAS
+        //   USE       BRAKE
+        const float right = 60, left = 200, row1 = 295, row2 = 435, row3 = 575, btn = 130;
         var pedals = MakeGroup(controls.transform, "Pedals");
-        shaped.Add(TouchBtn(pedals, "Gas Button", "GAS", TouchButton.Gas, bottomRight, new Vector2(-col1, row1), btn));
-        shaped.Add(TouchBtn(pedals, "Brake Button", "BRAKE", TouchButton.Brake, bottomRight, new Vector2(-col2, row1), btn));
+        shaped.Add(TouchBtn(pedals, "Gas Button", "GAS", TouchButton.Gas, bottomRight, new Vector2(-right, row2), btn));
+        shaped.Add(TouchBtn(pedals, "Brake Button", "BRAKE", TouchButton.Brake, bottomRight, new Vector2(-right, row1), btn));
         var actions = MakeGroup(controls.transform, "Actions");
-        shaped.Add(TouchBtn(actions, "Use Button", "USE", TouchButton.Interact, bottomRight, new Vector2(-col1, row2), btn));
-        shaped.Add(TouchBtn(actions, "Buy Sell Button", "BUY/SELL", TouchButton.Trade, bottomRight, new Vector2(-col2, row2), btn));
-        shaped.Add(TouchBtn(actions, "Crop Button", "CROP", TouchButton.CycleCrop, bottomRight, new Vector2(-col1, row3), btn));
-        shaped.Add(TouchBtn(actions, "Car Button", "CAR", TouchButton.Vehicle, bottomRight, new Vector2(-col2, row3), btn));
+        shaped.Add(TouchBtn(actions, "Use Button", "USE", TouchButton.Interact, bottomRight, new Vector2(-left, row1), btn));
+        shaped.Add(TouchBtn(actions, "Buy Sell Button", "BUY\nSELL", TouchButton.Trade, bottomRight, new Vector2(-left, row2), btn));
+        shaped.Add(TouchBtn(actions, "Crop Button", "CROP", TouchButton.CycleCrop, bottomRight, new Vector2(-left, row3), btn));
+        shaped.Add(TouchBtn(actions, "Car Button", "CAR", TouchButton.Vehicle, bottomRight, new Vector2(-right, row3), btn));
 
         // top-left: HELP (as before) and SETTINGS below it (PAUSE sits to the right of HELP, in the Pause Menu)
         shaped.Add(TouchBtn(controls.transform, "Help Button", "HELP", TouchButton.Help, topLeft, new Vector2(40, -40), 110));
@@ -212,6 +211,12 @@ public static class TouchControlsBuilder
         sm.squareOption = optSquare.GetComponent<Button>();
         sm.roundedOption = optRounded.GetComponent<Button>();
         menu.gameObject.SetActive(false); // like the help and dealer menus: tick Menu to work on it
+
+        // the help menu's touch panel names the button the way it is labelled now (no slash)
+        var help = Object.FindFirstObjectByType<HelpMenu>(FindObjectsInactive.Include);
+        if (help != null && help.touchPanel != null)
+            foreach (var t in help.touchPanel.GetComponentsInChildren<TMP_Text>(true))
+                if (t.text == "BUY/SELL") { Undo.RecordObject(t, "Build Touch Controls"); t.text = "BUY SELL"; EditorUtility.SetDirty(t); }
 
         Selection.activeGameObject = controls;
         EditorSceneManager.MarkSceneDirty(controls.scene);

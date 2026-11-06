@@ -309,7 +309,7 @@ public class FieldController : MonoBehaviour
     // E / USE on someone else's field: say whose it is and how to buy it
     private void NotYours()
     {
-        string buyKey = inputManager.TouchControlsActive ? "BUY/SELL" : "B";
+        string buyKey = inputManager.TouchControlsActive ? "BUY SELL" : "B";
         ScreenPrompt.Instance.Flash($"{fieldName} belongs to {ownerName}.\nBuy it ({buyKey}, $ {value:N0}) to use it.", 3f);
     }
 
