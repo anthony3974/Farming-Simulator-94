@@ -11870,6 +11870,7 @@ GameObject:
   - component: {fileID: 3502711588511993642}
   - component: {fileID: 8275516324087809035}
   - component: {fileID: 2302453513482270222}
+  - component: {fileID: 2264374157426340072}
   m_Layer: 0
   m_Name: Harvester
   m_TagString: Untagged
@@ -11990,6 +11991,31 @@ MonoBehaviour:
   - {fileID: 764532376409937879}
   - {fileID: 7502963261758222499}
   - {fileID: 6633392173766021132}
+--- !u!114 &2264374157426340072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9125833138215171333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713160feffe3cd4f2a468c060b12db91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleClip: {fileID: 8300000, guid: 1b2a1ab639e11705c8d821e7cbd30b0f, type: 3}
+  driveClip: {fileID: 8300000, guid: e10eb262c0a3b32e58cffa151eb93f21, type: 3}
+  idlePitch: {x: 0.85, y: 1.15}
+  drivePitch: {x: 0.7, y: 1.2}
+  throttlePitch: 0.08
+  idleVolume: {x: 0.8, y: 0.25}
+  driveVolume: {x: 0, y: 0.9}
+  throttleVolume: 0.15
+  masterVolume: 1
+  response: 4
+  fadeTime: 0.4
+  showDebug: 1
+  debugPosition: {x: 0.01, y: 0.3}
 --- !u!1 &9150349469372512127
 GameObject:
   m_ObjectHideFlags: 0
