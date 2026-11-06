@@ -452,7 +452,7 @@ MonoBehaviour:
   fieldName: Tony 1
   ownerName: Anthony
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 1
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -5341,7 +5341,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -7191,7 +7191,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -9192,7 +9192,7 @@ MonoBehaviour:
   fieldName: good to go fields
   ownerName: Fred
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 1
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -15560,7 +15560,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -16860,10 +16860,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 609466448}
     m_Modifications:
-    - target: {fileID: 3225808451700486425, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.599
-      objectReference: {fileID: 0}
     - target: {fileID: 3296102376618540951, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.97
@@ -16903,10 +16899,6 @@ PrefabInstance:
     - target: {fileID: 3296102376618540951, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8367624539438831107, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.799
       objectReference: {fileID: 0}
     - target: {fileID: 9125833138215171333, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
       propertyPath: m_Name
@@ -17886,6 +17878,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -20497,6 +20492,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -23797,6 +23795,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -25027,7 +25028,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -27270,7 +27271,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -33205,7 +33206,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -44175,7 +44176,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -63318,7 +63319,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -71712,6 +71713,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -75608,6 +75612,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -123795,7 +123802,7 @@ MonoBehaviour:
   fieldName: john hopkins
   ownerName: fred
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 1
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -127013,7 +127020,7 @@ MonoBehaviour:
   fieldName: Tony 2
   ownerName: Anthony
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -130121,6 +130128,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 0}
   messageText: {fileID: 0}
   messageSeconds: 3
@@ -159883,7 +159893,7 @@ MonoBehaviour:
   fieldName: 
   ownerName: 
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 0
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -163421,7 +163431,7 @@ MonoBehaviour:
   fieldName: john hopkins
   ownerName: fred
   playerName: Anthony
-  secondsPerGrowthStage: 18.9
+  growthStageSeconds: 20.79
   startCrop: 1
   sizeDivisor: 0.04302926
   minSeedsPerYield: 0.75
@@ -179511,6 +179521,9 @@ MonoBehaviour:
   minFertilizerPrice: 800
   maxFertilizerPrice: 1000
   fuelPrice: 2
+  fuelPerSecond: 4
+  pumpDisplays: []
+  pumpPriceFormat: $ {0:0.00} / L
   dealer: {fileID: 1234911827}
   messageText: {fileID: 0}
   messageSeconds: 3
