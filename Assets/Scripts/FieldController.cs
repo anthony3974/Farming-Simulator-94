@@ -167,8 +167,11 @@ public class FieldController : MonoBehaviour
             return;
         }
 
-        if (inputManager.Interact && IsPlayerField)
-            Interact();
+        if (inputManager.Interact)
+        {
+            if (IsPlayerField) Interact();
+            else NotYours();
+        }
 
         if (inputManager.Fertilize)
             Fertilize();
@@ -306,6 +309,13 @@ public class FieldController : MonoBehaviour
 
     // ---- gameplay ----
 
+    // E / USE (or FERT) on someone else's field: say whose it is and how to buy it
+    private void NotYours()
+    {
+        string buyKey = inputManager.TouchControlsActive ? "BUY/SELL" : "B";
+        ScreenPrompt.Instance.Flash($"{fieldName} belongs to {ownerName}.\nBuy it ({buyKey}, $ {value:N0}) to use it.", 3f);
+    }
+
     private void Interact()
     {
         if (stage == Stage.Empty) Plant();
@@ -342,7 +352,7 @@ public class FieldController : MonoBehaviour
     private void Fertilize()
     {
         var box = ScreenPrompt.Instance;
-        if (!IsPlayerField) { box.Flash($"{fieldName} belongs to {ownerName}. Buy it first (B) to fertilize it.", 3f); return; }
+        if (!IsPlayerField) { NotYours(); return; }
         if (stage == Stage.Empty) { box.Flash("Plant the field first, then fertilize it while it grows.", 3f); return; }
         if (stage == Stage.Ready) { box.Flash("The crop is ready. Harvest it first.", 3f); return; }
         if (fertStage >= MaxFertilizerLevel)
