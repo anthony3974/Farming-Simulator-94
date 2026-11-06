@@ -326,6 +326,7 @@ public class FieldController : MonoBehaviour
             return;
         }
         playerValues.Seeds -= seedQuote;
+        int used = seedQuote;
         seedQuote = 0;
 
         // plant whatever the player picked with the C key
@@ -334,6 +335,7 @@ public class FieldController : MonoBehaviour
         growSeconds = 0f;
 
         Changed();
+        ScreenPrompt.Instance.Flash($"Planted {CropName()} on {fieldName}. Used {used:N0} seeds.", 3f);
     }
 
     // E while growing (FERT on touch): one fertilizer level per growth stage, up to two. Costs fertilizer from the Statistics panel.
