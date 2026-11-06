@@ -190,6 +190,18 @@ public class Vehicle : MonoBehaviour
 
     private bool TankEmpty => PlayerValues.Instance != null && PlayerValues.Instance.FuelEmpty;
 
+    /// <summary>Moves the vehicle straight to a place (used when loading a save). It stops dead there.</summary>
+    public void PlaceAt(Vector3 position, Quaternion rotation)
+    {
+        Stop();
+        // a CharacterController puts the vehicle back where it was unless it is off while moving
+        bool wasOn = Controller.enabled;
+        Controller.enabled = false;
+        transform.SetPositionAndRotation(position, rotation);
+        Controller.enabled = wasOn;
+        Physics.SyncTransforms();
+    }
+
     /// <summary>Stops dead (used when the player switches to another vehicle).</summary>
     public void Stop()
     {

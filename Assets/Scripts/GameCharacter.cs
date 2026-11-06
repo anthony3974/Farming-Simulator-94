@@ -113,6 +113,18 @@ public class GameCharacter : MonoBehaviour
 
     public bool Owns(VehicleKind kind) => owned.TryGetValue(kind, out var v) && v != null;
 
+    /// <summary>The vehicles you own (for the save file).</summary>
+    public IEnumerable<Vehicle> OwnedVehicles
+    {
+        get { foreach (var v in owned.Values) if (v != null) yield return v; }
+    }
+
+    /// <summary>Drives this vehicle, without the "Driving the ..." message (used when loading a save).</summary>
+    public void Drive(Vehicle vehicle)
+    {
+        if (vehicle != null) DriveVehicle(vehicle);
+    }
+
     /// <summary>Adds a vehicle you now own (it stays parked until you switch to it).</summary>
     public void AddVehicle(Vehicle vehicle)
     {

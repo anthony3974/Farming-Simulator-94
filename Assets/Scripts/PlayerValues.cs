@@ -44,6 +44,18 @@ public class PlayerValues : MonoBehaviour
     /// <summary>The crop planted in your fields. Change it with the C key.</summary>
     public CropType SelectedCrop { get; private set; } = CropType.Wheat;
 
+    /// <summary>Sets the crop planted next (used when loading a save).</summary>
+    public void SelectCrop(CropType crop)
+    {
+        if (crop >= CropType.Wheat && crop <= CropType.Oat) SelectedCrop = crop;
+    }
+
+    void Awake()
+    {
+        // saving and loading (SaveGame.cs) lives on this object; add it if it was not added in the editor
+        if (GetComponent<SaveGame>() == null && FindFirstObjectByType<SaveGame>() == null) gameObject.AddComponent<SaveGame>();
+    }
+
     public void Start()
     {
         inputManager = GetComponent<InputManager>();
@@ -98,6 +110,8 @@ public class PlayerValues : MonoBehaviour
 
     public float FuelCapacity => fuelCapacity;
     public bool FuelEmpty => fuel <= 0f;
+    /// <summary>At or below the "Low fuel" warning level.</summary>
+    public bool FuelLow => fuel <= lowFuelWarning * fuelCapacity;
 
     /// <summary>Diesel in the tank (litres), kept between 0 and the capacity. Shared by every vehicle.</summary>
     public float Fuel

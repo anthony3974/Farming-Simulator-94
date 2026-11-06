@@ -9,7 +9,8 @@ using UnityEngine.UI;
 /// and restyled in the editor. This script only shows and hides it and runs the buttons.
 /// Esc (or the PAUSE button on touch, or the Android back button) opens and closes it. While paused the
 /// game time stops (Time.timeScale 0): crops stop growing and vehicles stop.
-/// MAIN MENU asks for a second press, because there is no saving yet and the farm is lost.
+/// Pausing saves the farm (SaveGame.cs). MAIN MENU saves it and goes to the home menu; only if the save fails
+/// does it ask for a second press, because the farm would then be lost.
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
@@ -28,7 +29,9 @@ public class PauseMenu : MonoBehaviour
     [Tooltip("Show the PAUSE button on PC too (it is always shown with touch controls).")]
     public bool showPauseButtonOnPC = false;
     public string mainMenuText = "MAIN MENU";
-    public string confirmText = "PRESS AGAIN: FARM NOT SAVED";
+    // was confirmText ("PRESS AGAIN: FARM NOT SAVED"); renamed so the old text saved in the scene is ignored
+    [Tooltip("MAIN MENU's text when the farm could not be saved (a second press leaves anyway).")]
+    public string saveFailedText = "NOT SAVED! PRESS AGAIN";
     public float confirmSeconds = 3f;
 
     private InputManager input;
@@ -85,6 +88,7 @@ public class PauseMenu : MonoBehaviour
         player.SetCursorLocked(false);
         Time.timeScale = 0f;
         ResetConfirm();
+        if (SaveGame.Instance != null) SaveGame.Instance.Save();
     }
 
     public void Resume()
@@ -99,10 +103,12 @@ public class PauseMenu : MonoBehaviour
 
     private void MainMenuPressed()
     {
-        if (confirmUntil < 0f)
+        // save first; if that fails, the second press (while the warning shows) leaves without saving
+        bool saved = SaveGame.Instance != null && SaveGame.Instance.Save();
+        if (!saved && confirmUntil < 0f)
         {
             confirmUntil = Time.unscaledTime + confirmSeconds;
-            if (mainMenuLabel != null) mainMenuLabel.text = confirmText;
+            if (mainMenuLabel != null) mainMenuLabel.text = saveFailedText;
             return;
         }
 

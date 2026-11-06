@@ -108,6 +108,7 @@ public class FieldController : MonoBehaviour
     private byte fertStage;               // fertilizer levels on the current crop (0 to MaxFertilizerLevel)
     private Stage fertilizedAt = Stage.Empty; // growth stage of the last fertilizing (one per stage)
     private int fertilizerQuote;
+    private float growSeconds;            // time spent in the current growth stage (saved, so loading keeps it)
 
     void Start()
     {
@@ -135,13 +136,15 @@ public class FieldController : MonoBehaviour
         {
             cropType = startCrop;
             stage = Stage.Planted;
-            StartCoroutine(Grow());
+            growSeconds = 0f;
             Changed();
         }
     }
 
     void Update()
     {
+        Grow();
+
         if (!IsActiveField()) return;
 
         // drop an old "press B again" before reading the key, so a stale confirmation can never be used
@@ -325,8 +328,8 @@ public class FieldController : MonoBehaviour
         // plant whatever the player picked with the C key
         cropType = playerValues.SelectedCrop;
         stage = Stage.Planted;
+        growSeconds = 0f;
 
-        StartCoroutine(Grow());
         Changed();
     }
 
@@ -366,12 +369,16 @@ public class FieldController : MonoBehaviour
         Changed();
     }
 
-    private IEnumerator Grow()
+    // planted > stage 1 > stage 2 > stage 3 > ready, one step every growthStageSeconds (game time: stops while paused)
+    private void Grow()
     {
-        yield return new WaitForSeconds(growthStageSeconds);
+        if (stage < Stage.Planted || stage >= Stage.Ready) return;
 
+        growSeconds += Time.deltaTime;
+        if (growSeconds < growthStageSeconds) return;
+
+        growSeconds = 0f;
         stage++;
-        if (stage < Stage.Ready) StartCoroutine(Grow());
         Changed();
     }
 
@@ -398,6 +405,58 @@ public class FieldController : MonoBehaviour
         cropType = CropType.None;
         fertStage = 0;
         fertilizedAt = Stage.Empty;
+        growSeconds = 0f;
+        Changed();
+    }
+
+    // ---- save / load (SaveGame.cs) ----
+
+    /// <summary>This field's state for the save file.</summary>
+    public FieldSave GetSave(string id)
+    {
+        return new FieldSave
+        {
+            id = id,
+            name = fieldName,
+            owner = ownerName,
+            crop = cropType,
+            stage = (int)stage,
+            growSeconds = growSeconds,
+            fertilizer = fertStage,
+            fertilizedAt = (int)fertilizedAt,
+        };
+    }
+
+    /// <summary>Puts the saved state back (after Start, which gave the field a new-game name, owner and crop).</summary>
+    public void ApplySave(FieldSave save)
+    {
+        if (save == null) return;
+
+        if (!string.IsNullOrEmpty(save.name) && save.name != fieldName)
+        {
+            // an AI field: swap the random name it took this game for the saved one, so new names stay unique
+            if (pickedName != null)
+            {
+                usedNames.Remove(pickedName);
+                usedNames.Add(save.name);
+                pickedName = save.name;
+            }
+            fieldName = save.name;
+        }
+        if (!string.IsNullOrEmpty(save.owner)) ownerName = save.owner;
+
+        stage = (Stage)Mathf.Clamp(save.stage, (int)Stage.Empty, (int)Stage.Ready);
+        cropType = save.crop >= CropType.Wheat && save.crop <= CropType.Oat ? save.crop : CropType.None;
+        if (cropType == CropType.None) stage = Stage.Empty;
+        if (stage == Stage.Empty) cropType = CropType.None;
+
+        growSeconds = Mathf.Clamp(save.growSeconds, 0f, growthStageSeconds);
+        fertStage = (byte)Mathf.Clamp(stage == Stage.Empty ? 0 : save.fertilizer, 0, MaxFertilizerLevel);
+        fertilizedAt = fertStage == 0 ? Stage.Empty : (Stage)Mathf.Clamp(save.fertilizedAt, (int)Stage.Empty, (int)Stage.Ready);
+
+        seedQuote = 0;
+        fertilizerQuote = 0;
+        confirmTrade = false;
         Changed();
     }
 

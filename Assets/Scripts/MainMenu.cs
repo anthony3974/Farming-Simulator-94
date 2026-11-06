@@ -9,7 +9,8 @@ using UnityEngine.UI;
 /// editor. This script only switches between the two screens and runs the buttons:
 ///   Home: background screenshot, title, PLAY, TERMS OF SERVICE (does nothing yet, a reminder for
 ///         publishing on Google Play), and the version number (Project Settings > Player > Version).
-///   Play: NEW GAME (loads the game scene), LOAD GAME (greyed out until save/load exists), BACK.
+///   Play: NEW GAME (a new farm; asks for a second press when a saved farm would be replaced),
+///         LOAD GAME (the saved farm, see SaveGame.cs; greyed out when there is no save), BACK.
 /// Background: drop the screenshot into Assets/Images and drag it into the Texture of the
 /// "Screenshot" object (Main Menu > Background > Screenshot). It fills the screen, cropped, not stretched.
 /// </summary>
@@ -25,7 +26,7 @@ public class MainMenu : MonoBehaviour
     public Button backButton;
     [Tooltip("Shows the version, e.g. v0.2, from Project Settings > Player > Version.")]
     public TMP_Text versionText;
-    [Tooltip("Shows 'Loading...' after NEW GAME.")]
+    [Tooltip("Shows 'Loading...' after NEW GAME or LOAD GAME, and the NEW GAME warning.")]
     public TMP_Text statusText;
     [Tooltip("The background screenshot. Hidden when it has no texture (the plain background shows).")]
     public RawImage screenshot;
@@ -34,8 +35,11 @@ public class MainMenu : MonoBehaviour
 
     [Header("Settings")]
     public string gameSceneName = "GameScene";
+    [Tooltip("Shown after the first NEW GAME press when there is a saved farm.")]
+    public string newGameWarning = "Press again to replace your saved farm";
 
     private bool loading;
+    private bool newGameAsked;
 
     void Start()
     {
@@ -54,7 +58,12 @@ public class MainMenu : MonoBehaviour
         newGameButton.onClick.AddListener(NewGame);
         backButton.onClick.AddListener(ShowHome);
         // TERMS OF SERVICE: nothing yet. When publishing: termsButton.onClick.AddListener(() => Application.OpenURL("https://..."));
-        // LOAD GAME: greyed out (not interactable) in the scene until save/load (PLAN.md item 18) exists.
+        // LOAD GAME: only with a save (the button's greyed-out look is its disabled colour)
+        if (loadGameButton != null)
+        {
+            loadGameButton.onClick.AddListener(LoadGame);
+            loadGameButton.interactable = SaveGame.HasSave;
+        }
 
         if (versionText != null) versionText.text = "v" + Application.version;
 
@@ -93,13 +102,33 @@ public class MainMenu : MonoBehaviour
     {
         homeScreen.SetActive(false);
         playScreen.SetActive(true);
+        newGameAsked = false;
         if (statusText != null) statusText.text = "";
     }
 
     private void NewGame()
     {
         if (loading) return;
+        // the new farm's first save replaces the old one, so ask once
+        if (SaveGame.HasSave && !newGameAsked)
+        {
+            newGameAsked = true;
+            if (statusText != null) statusText.text = newGameWarning;
+            return;
+        }
+        StartGame(load: false);
+    }
+
+    private void LoadGame()
+    {
+        if (loading || !SaveGame.HasSave) return;
+        StartGame(load: true);
+    }
+
+    private void StartGame(bool load)
+    {
         loading = true;
+        SaveGame.LoadRequested = load;
         if (statusText != null) statusText.text = "Loading...";
         SceneManager.LoadSceneAsync(gameSceneName);
     }
