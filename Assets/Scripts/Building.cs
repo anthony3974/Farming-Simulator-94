@@ -43,8 +43,16 @@ public class Building : MonoBehaviour
     public float maxFertilizerPrice = 1000f;
 
     [Header("Gas station (Gas type only)")]
-    [Tooltip("Dollars per litre of diesel (2D game: 2). E / USE fills the shared tank, or buys what the money allows.")]
+    [Tooltip("Dollars per litre of diesel (2D game: 2).")]
     public float fuelPrice = 2f;
+    [Tooltip("Litres pumped per second. E / USE starts filling the shared tank slowly, like the 2D game; E / USE again stops. " +
+             "It also stops when the tank is full, the money runs out, or the vehicle drives off.")]
+    public float fuelPerSecond = 4f;
+    [Tooltip("The pump displays: they show the price, and the litres while filling. Empty = every text named " +
+             "'Display Numbers' under the gas station (the Gas Station Builder's pump displays).")]
+    public List<TMP_Text> pumpDisplays = new();
+    [Tooltip("What the pump displays show when not filling. {0} = the price per litre.")]
+    public string pumpPriceFormat = "$ {0:0.00} / L";
 
     [Header("Dealer (Dealer type only)")]
     [Tooltip("The dealer that opens its shop menu here. Empty = the Dealer on this object or a parent.")]
@@ -53,6 +61,12 @@ public class Building : MonoBehaviour
     [Tooltip("Optional. Text object used for the short sale message.")]
     public TMP_Text messageText;
     public float messageSeconds = 3f;
+
+    // filling up at the gas station
+    private bool pumping;
+    private float pumpedLitres, pumpedCost;
+    private Vehicle pumpingVehicle;
+    private const float DriveOffKmh = 2f;
 
     private static ScreenPrompt prompt;
     private string promptText; // built once per visit, not every frame
@@ -73,12 +87,15 @@ public class Building : MonoBehaviour
         }
         if (messageText != null) messageText.text = "";
         if (prompt == null) prompt = ScreenPrompt.Instance;
+        if (type == BuildingType.Gas) SetupPumpDisplays();
     }
 
     void Update()
     {
         if (inputManager.Interact && IsCurrent)
             Interact();
+
+        if (pumping) { Pump(); return; } // the pump shows its own message while filling
 
         UpdatePrompt();
     }
@@ -103,7 +120,7 @@ public class Building : MonoBehaviour
             case BuildingType.Buy: return $"Press {key} to buy {seedsPerBuy:N0} seeds (about $ {(minSeedPrice + maxSeedPrice) / 2f:N0})";
             case BuildingType.Dealer: return $"Press {key} to buy vehicles";
             case BuildingType.Fertilizer: return $"Press {key} to buy {fertilizerPerBuy:N0} fertilizer (about $ {(minFertilizerPrice + maxFertilizerPrice) / 2f:N0})";
-            case BuildingType.Gas: return $"Press {key} to fill up with diesel ($ {fuelPrice:0.##} per litre)";
+            case BuildingType.Gas: return $"Press {key} to fill up with diesel ($ {fuelPrice:0.00} per litre)";
             default: return $"{type} (coming soon)";
         }
     }
@@ -127,6 +144,7 @@ public class Building : MonoBehaviour
     private void OnDisable()
     {
         Vehicle.ActiveChanged -= OnVehicleSwitched;
+        if (pumping) { pumping = false; SetPumpDisplays(PumpPriceText); }
         HideIfNone();
     }
 
@@ -151,7 +169,7 @@ public class Building : MonoBehaviour
             case BuildingType.Buy: BuySeeds(); break;
             case BuildingType.Dealer: OpenDealer(); break;
             case BuildingType.Fertilizer: BuyFertilizer(); break;
-            case BuildingType.Gas: FillUp(); break;
+            case BuildingType.Gas: if (pumping) StopPumping("Stopped"); else StartPumping(); break;
             default: Debug.Log($"{type} building is not implemented yet."); break;
         }
     }
@@ -212,28 +230,69 @@ public class Building : MonoBehaviour
         ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}");
     }
 
-    // fills the shared tank (every vehicle uses the same diesel); with too little money, buys what it can
-    private void FillUp()
+    // ---- gas station: fills the shared tank slowly (every vehicle uses the same diesel) ----
+
+    private string PumpPriceText => string.Format(pumpPriceFormat, fuelPrice);
+
+    private void SetupPumpDisplays()
     {
+        pumpDisplays.RemoveAll(t => t == null);
+        if (pumpDisplays.Count == 0)
+        {
+            var root = transform.parent != null ? transform.parent : transform;
+            foreach (var t in root.GetComponentsInChildren<TMP_Text>(true))
+                if (t.name == "Display Numbers") pumpDisplays.Add(t);
+        }
+        SetPumpDisplays(PumpPriceText);
+    }
+
+    private void SetPumpDisplays(string text)
+    {
+        foreach (var t in pumpDisplays)
+            if (t != null) t.text = text;
+    }
+
+    private void StartPumping()
+    {
+        if (playerValues.FuelCapacity - playerValues.Fuel < 0.05f) { ShowMessage("The tank is already full"); return; }
+        if (playerValues.Money < fuelPrice * 0.1f) { ShowMessage($"Not enough money. Diesel costs $ {fuelPrice:0.00} per litre"); return; }
+
+        pumping = true;
+        pumpingVehicle = Vehicle.Active;
+        pumpedLitres = pumpedCost = 0f;
+    }
+
+    // one frame of filling; ends itself when the tank is full, the money runs out or the vehicle leaves
+    private void Pump()
+    {
+        if (!IsCurrent || Vehicle.Active != pumpingVehicle) { StopPumping("Stopped"); return; }
+        if (Mathf.Abs(pumpingVehicle.SpeedKmh) > DriveOffKmh) { StopPumping("You drove off. Stopped"); return; }
+
         float space = playerValues.FuelCapacity - playerValues.Fuel;
-        if (space < 0.5f)
+        float affordable = playerValues.Money / fuelPrice;
+        float litres = Mathf.Min(fuelPerSecond * Time.deltaTime, space, affordable);
+        if (litres > 0f)
         {
-            ShowMessage("The tank is already full");
-            return;
+            playerValues.Fuel += litres;
+            playerValues.Money -= litres * fuelPrice;
+            pumpedLitres += litres;
+            pumpedCost += litres * fuelPrice;
         }
 
-        float litres = Mathf.Min(space, Mathf.Floor(playerValues.Money / fuelPrice));
-        if (litres < 1f)
-        {
-            ShowMessage($"Not enough money. Diesel costs $ {fuelPrice:0.##} per litre");
-            return;
-        }
+        if (space - litres <= 0.001f) { StopPumping("Tank full"); return; }
+        if (affordable - litres <= 0.001f) { StopPumping("Out of money"); return; }
 
-        float cost = litres * fuelPrice;
-        playerValues.Money -= cost;
-        playerValues.Fuel += litres;
-        bool full = playerValues.FuelCapacity - playerValues.Fuel < 0.5f;
-        ShowMessage($"{(full ? "Filled up" : "Bought")} {litres:N0} L of diesel for $ {cost:N0}");
+        string key = inputManager.TouchControlsActive ? "USE" : "E";
+        if (prompt != null) prompt.Show($"Filling up... {pumpedLitres:0.0} L   $ {pumpedCost:N2}\nPress {key} to stop");
+        SetPumpDisplays($"{pumpedLitres:0.0} L");
+    }
+
+    private void StopPumping(string reason)
+    {
+        pumping = false;
+        SetPumpDisplays(PumpPriceText);
+        promptText = null;
+        ShowMessage(pumpedLitres > 0.05f ? $"{reason}: {pumpedLitres:0.0} L of diesel for $ {pumpedCost:N2}" : reason);
     }
 
     private void ShowMessage(string text)
