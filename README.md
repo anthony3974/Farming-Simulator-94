@@ -64,7 +64,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon, `Touch`: the steering wheel and the rounded button shapes)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: one-off editor tools while they are in use (now: `HelpTouchRowsFix`, adds the SETTINGS row to the help menu; delete it once the scene is saved). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls) were run and removed; they are in the git history
+- `Assets/Editor`: one-off editor tools while they are in use (none right now, so the folder is gone; a new tool recreates it). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows) were run and removed; they are in the git history
 - `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops, `Touch/make_touch_sprites.py` draws the steering wheel and rounded button sprites
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
