@@ -1265,7 +1265,7 @@ MonoBehaviour:
   masterVolume: 1
   response: 4
   fadeTime: 0.4
-  showDebug: 1
+  showDebug: 0
   debugPosition: {x: 0.01, y: 0.3}
 --- !u!1 &3712454459385612929
 GameObject:
