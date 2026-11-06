@@ -5938,7 +5938,7 @@ MonoBehaviour:
   kind: 1
   displayName: Van
   harvestBonus: 0
-  topSpeed: 62
+  topSpeed: 55.8
   reverseSpeed: -10
   accelerationMultiplier: 20
   steeringMultiplier: 6

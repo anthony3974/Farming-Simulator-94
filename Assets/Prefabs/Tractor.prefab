@@ -1222,7 +1222,7 @@ MonoBehaviour:
   kind: 0
   displayName: Tractor
   harvestBonus: 0
-  topSpeed: 50
+  topSpeed: 45
   reverseSpeed: -10
   accelerationMultiplier: 20
   steeringMultiplier: 6

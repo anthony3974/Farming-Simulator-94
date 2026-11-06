@@ -22,17 +22,20 @@ public class Vehicle : MonoBehaviour
     // The defaults are the tractor's tuned values from the scene, so a tractor without saved values drives the same.
     [Header("Driving")]
     [Tooltip("Top speed, in the km/h shown on the speedometer.")]
-    public float topSpeed = 50;
+    public float topSpeed = 45;
     public float reverseSpeed = -10;
     public float accelerationMultiplier = 20;
     public float steeringMultiplier = 6;
+    [Tooltip("How hard BRAKE / S slows the vehicle while it rolls forward, as a multiple of its acceleration. " +
+             "Letting go of the gas slows it 1 more on top. Was 2 (3 in all); 2.45 = 15% stronger braking (owner, 2026-11-05).")]
+    public float brakeStrength = 2.45f;
     [Tooltip("Turns the speed numbers into world units per second.")]
     public float speed = 10;
     public float gravity = 20f;
 
     [Header("Fuel")]
     [Tooltip("Diesel burned per km driven, in litres. The tank (100, shared by every vehicle) lasts 100 / this km. " +
-             "The map is about 1 km across. 10 = a full tank lasts 10 km, about 5.5 minutes at the tractor's top speed (like the 2D game).")]
+             "The map is about 1 km across. 10 = a full tank lasts 10 km, about 6 minutes at the tractor's top speed (2D game: about 5.5).")]
     public float fuelPerKm = 10f;
     [Tooltip("With an empty tank the vehicle only crawls, at this part of its top speed (0.15 = 15%), so it can still reach the gas station.")]
     [Range(0f, 1f)] public float emptyTankSpeed = 0.15f;
@@ -234,8 +237,9 @@ public class Vehicle : MonoBehaviour
             Accelerate();
         if (direction.Down && acceleration > reverseMax)
         {
-            Decelerate();
-            Decelerate();
+            // braking (still rolling forward) is stronger than speeding up in reverse
+            float steps = acceleration > 0f ? brakeStrength : 2f;
+            acceleration -= steps * accAmt * accelerationMultiplier * Time.deltaTime;
         }
 
         if (acceleration > forwardMax) acceleration = Mathf.Max(forwardMax, acceleration - 2f * accAmt * accelerationMultiplier * Time.deltaTime);
