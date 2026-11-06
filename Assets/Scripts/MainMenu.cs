@@ -63,6 +63,9 @@ public class MainMenu : MonoBehaviour
         {
             loadGameButton.onClick.AddListener(LoadGame);
             loadGameButton.interactable = SaveGame.HasSave;
+            // the button kept a CanvasGroup at alpha 0.5 from its "coming soon" days, which made it look
+            // see-through and yellow even with a save: always fully visible, the grey colours show "no save"
+            if (loadGameButton.TryGetComponent(out CanvasGroup group)) group.alpha = 1f;
             if (!SaveGame.HasSave) GreyOut(loadGameButton);
         }
 
