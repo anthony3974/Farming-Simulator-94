@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// <summary>The on-screen buttons shown on touch devices.</summary>
 public enum TouchButton { Left, Right, Gas, Brake, Interact, Trade, CycleCrop, Help, Vehicle }
+// SETTINGS is a plain Button (SettingsMenu), not a TouchButton.
 
 /// <summary>
 /// Single place the game reads input from. Keyboard/mouse always work; on Android (or when
@@ -28,6 +29,7 @@ public class InputManager : MonoBehaviour
     private bool right;
     private bool down;
     private bool left;
+    private float steer;
 
     // touch state, set by TouchControls
     private bool touchLeft;
@@ -39,6 +41,7 @@ public class InputManager : MonoBehaviour
     private bool touchCropQueued;
     private bool touchHelpQueued;
     private bool touchVehicleQueued;
+    private float touchSteer; // the touch steering wheel or slider, -1 to 1
     // drag-to-look, set by TouchLook: summed since the last frame, in screen heights (up = positive)
     private float touchLookPending;
     private float touchLookY;
@@ -63,18 +66,20 @@ public class InputManager : MonoBehaviour
 
     void Awake()
     {
-        if (Application.isMobilePlatform || showTouchControls)
-        {
-            TouchControlsActive = true;
-            gameObject.AddComponent<TouchControls>();
-        }
-        // the help menu is a scene object now ("Help Menu", HelpMenu.cs), not added from here
+        // the touch buttons are a scene object ("Touch Controls", TouchControls.cs) that hides itself when this is false
+        TouchControlsActive = Application.isMobilePlatform || showTouchControls;
     }
 
     /// <summary>Called by <see cref="TouchLook"/> while a finger drags on the game view (dy in screen heights, up = positive).</summary>
     public void AddTouchLook(float dy)
     {
         touchLookPending += dy;
+    }
+
+    /// <summary>Called every frame by the touch steering wheel or slider: -1 full left, 0 straight, 1 full right.</summary>
+    public void SetSteer(float value)
+    {
+        touchSteer = Mathf.Clamp(value, -1f, 1f);
     }
 
     /// <summary>Called by the on-screen buttons.</summary>
@@ -111,6 +116,7 @@ public class InputManager : MonoBehaviour
         down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || touchBrake;
         right = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || touchRight;
         left = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || touchLeft;
+        steer = Mathf.Clamp((right ? 1f : 0f) - (left ? 1f : 0f) + touchSteer, -1f, 1f);
 
         interact = Input.GetKeyDown(KeyCode.E) || touchInteractQueued;
         touchInteractQueued = false;
@@ -137,6 +143,7 @@ public class InputManager : MonoBehaviour
         {
             horizontal = vertical = 0f;
             up = down = left = right = false;
+            steer = 0f;
             interact = trade = cycleCrop = false;
             touchLookY = 0f;
             switchVehicle = 0;
@@ -162,5 +169,7 @@ public class InputManager : MonoBehaviour
     public bool Right { get => right; set => right = value; }
     public bool Down { get => down; set => down = value; }
     public bool Left { get => left; set => left = value; }
+    /// <summary>Steering, -1 full left to 1 full right. Keys and the &lt; &gt; buttons give -1 / 0 / 1, the touch wheel and slider anything in between.</summary>
+    public float Steer => steer;
     public bool DebugMode { get => debug; set => debug = value; }
 }

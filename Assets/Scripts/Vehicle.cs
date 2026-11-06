@@ -77,6 +77,7 @@ public class Vehicle : MonoBehaviour
     // each steered tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
     private readonly List<Transform> steerPivots = new();
     private float steerAngle;
+    private float steer; // -1 full left to 1 full right; the touch wheel and slider give values in between
 
     private float acceleration = 0;
     private const float accAmt = 0.02f;
@@ -215,6 +216,7 @@ public class Vehicle : MonoBehaviour
         direction.Down = input.Down;
         direction.Right = input.Right;
         direction.Left = input.Left;
+        steer = input.Steer;
     }
 
     private void Accelerate()
@@ -269,11 +271,12 @@ public class Vehicle : MonoBehaviour
 
         float rotationAmount = Time.deltaTime * (steeringPower * steeringMultiplier);
 
-        if (direction.Right || direction.Left)
+        if (Mathf.Abs(steer) > 0.001f)
         {
             if (acceleration > minAccF || acceleration < minAccR)
             {
-                float rotation = direction.Right ? rotationAmount : -rotationAmount;
+                // half steering turns half as fast (touch wheel / slider); keys and buttons are always full
+                float rotation = rotationAmount * steer;
                 // in reverse the tractor turns the other way, like a real car (steer right = back swings right)
                 if (acceleration < 0) rotation = -rotation;
                 transform.Rotate(0, rotation, 0);
@@ -334,12 +337,12 @@ public class Vehicle : MonoBehaviour
         }
     }
 
-    /// <summary>Turns the steered tires toward the steering button (A / D, arrows or the on-screen buttons).</summary>
+    /// <summary>Turns the steered tires with the steering (A / D, arrows, or the touch buttons, wheel or slider).</summary>
     private void SteerWheels()
     {
         if (steerPivots.Count == 0) return;
 
-        float target = ((direction.Right ? 1f : 0f) - (direction.Left ? 1f : 0f)) * maxSteerAngle;
+        float target = steer * maxSteerAngle;
         steerAngle = Mathf.MoveTowards(steerAngle, target, steerAnglePerSecond * Time.deltaTime);
 
         // positive Y turns right, the same direction SteeringManager rotates the vehicle for Right.
