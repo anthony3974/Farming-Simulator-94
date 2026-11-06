@@ -124,27 +124,75 @@ public class TouchControls : MonoBehaviour
         hold.Init(input, button, fill);
     }
 
-    /// <summary>Reports press and release of one on-screen button to the InputManager.</summary>
-    private class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
+    /// <summary>
+    /// Reports press and release of one on-screen button to the InputManager. Held while any finger that is
+    /// still down is on it: sliding off lets go, sliding back on (without lifting) presses it again, and a
+    /// finger that slides onto it from another button presses it too (slide from &lt; to &gt; to steer).
+    /// Only the held buttons (&lt; &gt; GAS BRAKE) do the sliding: the one-press buttons (USE, BUY/SELL, ...) act
+    /// on the press, so a finger passing over them, or sliding off and back, must not press them again.
+    /// Before 2026-11-05 a slide off released a held button until the finger was lifted and put down again.
+    /// </summary>
+    private class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         private InputManager input;
         private TouchButton button;
         private Image fill;
+        private readonly System.Collections.Generic.HashSet<int> fingers = new(); // pointers down and on this button
+        private bool pressed;
+        private bool slide; // a held button (steering, gas, brake)
 
         public void Init(InputManager input, TouchButton button, Image fill)
         {
             this.input = input;
             this.button = button;
             this.fill = fill;
+            slide = button is TouchButton.Left or TouchButton.Right or TouchButton.Gas or TouchButton.Brake;
         }
 
-        public void OnPointerDown(PointerEventData eventData) => Set(true);
-        public void OnPointerUp(PointerEventData eventData) => Set(false);
-        public void OnPointerExit(PointerEventData eventData) => Set(false);
-        private void OnDisable() => Set(false);
+        public void OnPointerDown(PointerEventData eventData) { fingers.Add(eventData.pointerId); Refresh(); }
+        public void OnPointerUp(PointerEventData eventData) { fingers.Remove(eventData.pointerId); Refresh(); }
+        public void OnPointerExit(PointerEventData eventData) { fingers.Remove(eventData.pointerId); Refresh(); }
 
-        private void Set(bool pressed)
+        public void OnPointerEnter(PointerEventData eventData)
         {
+            // a mouse only hovering, or a finger that is lifting, must not press it
+            if (!slide || !IsDown(eventData.pointerId)) return;
+            fingers.Add(eventData.pointerId);
+            Refresh();
+        }
+
+        // a finger that slid on from another button is lifted here, but its "up" goes to the button it first
+        // pressed: drop fingers that are no longer down, so the button never sticks
+        void Update()
+        {
+            if (fingers.Count == 0) return;
+            fingers.RemoveWhere(id => !IsDown(id));
+            Refresh();
+        }
+
+        private void OnDisable()
+        {
+            fingers.Clear();
+            Refresh();
+        }
+
+        private static bool IsDown(int pointerId)
+        {
+            if (pointerId < 0) return Input.GetMouseButton(-1 - pointerId); // mouse: -1 left, -2 right, -3 middle
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                var touch = Input.GetTouch(i);
+                if (touch.fingerId == pointerId)
+                    return touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled;
+            }
+            return false;
+        }
+
+        private void Refresh()
+        {
+            bool now = fingers.Count > 0;
+            if (now == pressed) return;
+            pressed = now;
             // both can already be destroyed when the scene shuts down
             if (input != null) input.SetTouch(button, pressed);
             if (fill != null) fill.color = pressed ? FillPressed : Fill;
