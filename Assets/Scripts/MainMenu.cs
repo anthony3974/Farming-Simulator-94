@@ -10,7 +10,7 @@ using UnityEngine.UI;
 ///   Home: background screenshot, title, PLAY, TERMS OF SERVICE (does nothing yet, a reminder for
 ///         publishing on Google Play), and the version number (Project Settings > Player > Version).
 ///   Play: NEW GAME (a new farm; asks for a second press when a saved farm would be replaced),
-///         LOAD GAME (the saved farm, see SaveGame.cs; greyed out when there is no save), BACK.
+///         LOAD GAME (the saved farm, see SaveGame.cs; faded when there is no save), BACK.
 /// Background: drop the screenshot into Assets/Images and drag it into the Texture of the
 /// "Screenshot" object (Main Menu > Background > Screenshot). It fills the screen, cropped, not stretched.
 /// </summary>
@@ -23,6 +23,8 @@ public class MainMenu : MonoBehaviour
     public Button termsButton;
     public Button newGameButton;
     public Button loadGameButton;
+    [Tooltip("LOAD GAME's see-through-ness when there is no save (its CanvasGroup alpha). 1 = looks like it has a save.")]
+    [SerializeField, Range(0f, 1f)] private float noSaveAlpha = 0.5f;
     public Button backButton;
     [Tooltip("Shows the version, e.g. v0.2, from Project Settings > Player > Version.")]
     public TMP_Text versionText;
@@ -58,15 +60,14 @@ public class MainMenu : MonoBehaviour
         newGameButton.onClick.AddListener(NewGame);
         backButton.onClick.AddListener(ShowHome);
         // TERMS OF SERVICE: nothing yet. When publishing: termsButton.onClick.AddListener(() => Application.OpenURL("https://..."));
-        // LOAD GAME: only with a save, greyed out otherwise
+        // LOAD GAME: only with a save. With no save it is faded (half see-through, the yellow look the owner
+        // picked, 2026-11-06) by the button's CanvasGroup; with a save it looks like NEW GAME.
         if (loadGameButton != null)
         {
             loadGameButton.onClick.AddListener(LoadGame);
             loadGameButton.interactable = SaveGame.HasSave;
-            // the button kept a CanvasGroup at alpha 0.5 from its "coming soon" days, which made it look
-            // see-through and yellow even with a save: always fully visible, the grey colours show "no save"
-            if (loadGameButton.TryGetComponent(out CanvasGroup group)) group.alpha = 1f;
-            if (!SaveGame.HasSave) GreyOut(loadGameButton);
+            if (!loadGameButton.TryGetComponent(out CanvasGroup group)) group = loadGameButton.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = SaveGame.HasSave ? 1f : noSaveAlpha;
         }
 
         if (versionText != null) versionText.text = "v" + Application.version;
@@ -121,24 +122,6 @@ public class MainMenu : MonoBehaviour
             return;
         }
         StartGame(load: false);
-    }
-
-    // greyed-out button (UI colours, PLAN.md): grey border, the (70, 70, 70) fill like the dealer's OWNED, grey text.
-    // The prefab's disabled tint only dims its yellow border (it stayed yellow), so the colours are set here.
-    private static readonly Color BorderOff = new Color32(120, 120, 120, 255);
-    private static readonly Color FillOff = new Color32(70, 70, 70, 255);
-    private static readonly Color LabelOff = new Color32(150, 150, 150, 255);
-
-    private static void GreyOut(Button button)
-    {
-        var colors = button.colors;
-        colors.disabledColor = Color.white; // no extra tint on top of the grey
-        button.colors = colors;
-        if (button.targetGraphic != null) button.targetGraphic.color = BorderOff;
-        var fill = button.transform.Find("Fill");
-        if (fill != null && fill.TryGetComponent(out Graphic fillGraphic)) fillGraphic.color = FillOff;
-        var label = button.transform.Find("Label");
-        if (label != null && label.TryGetComponent(out Graphic labelGraphic)) labelGraphic.color = LabelOff;
     }
 
     private void LoadGame()
