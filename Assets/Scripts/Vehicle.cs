@@ -58,6 +58,12 @@ public class Vehicle : MonoBehaviour
     /// <summary>Top speed in world units per second.</summary>
     public float WorldTopSpeed => topSpeed * SpeedConverter * speed;
 
+    /// <summary>The speed the vehicle is driving at, in the km/h of <see cref="topSpeed"/> (negative in reverse).</summary>
+    public float SpeedKmh => acceleration / SpeedConverter;
+
+    /// <summary>The gas (or reverse) is held this frame. Used by <see cref="EngineSound"/> to sound under load.</summary>
+    public bool Throttle => IsActive && (direction.Up || direction.Down);
+
     // each steered tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
     private readonly List<Transform> steerPivots = new();
     private float steerAngle;
