@@ -16784,7 +16784,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3296102376618540951, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -99.26
+      value: -108.614
       objectReference: {fileID: 0}
     - target: {fileID: 3296102376618540951, guid: 2840945ef840315eda70e44bd35693b5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -176314,7 +176314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7185920637284468056, guid: d512b1365b444950098e2dd8e7cbad7a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -108.61
+      value: -99.07
       objectReference: {fileID: 0}
     - target: {fileID: 7185920637284468056, guid: d512b1365b444950098e2dd8e7cbad7a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -179234,7 +179234,7 @@ MonoBehaviour:
   mainMenuSceneName: MainMenu
   showPauseButtonOnPC: 0
   mainMenuText: MAIN MENU
-  confirmText: 'PRESS AGAIN: FARM NOT SAVED'
+  saveFailedText: NOT SAVED! PRESS AGAIN
   confirmSeconds: 3
 --- !u!114 &2105691266
 MonoBehaviour:
