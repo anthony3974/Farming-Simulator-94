@@ -33,10 +33,11 @@ public class FieldController : MonoBehaviour
     // Short list for now, add more names later.
     private static readonly string[] AiOwners = { "Fred", "Maria", "Hank", "Dolores", "Gus" };
 
-    // Was 7 s ("growTime"), then 9.45 s ("secondsPerStage"), doubled to 18.9 s by the owner on 2026-11-03.
+    // Was 7 s ("growTime"), then 9.45 s ("secondsPerStage"), doubled to 18.9 s ("growthStageSeconds") by the owner
+    // on 2026-11-03, then +10% to 20.79 s (about 83 s per crop) by the owner on 2026-11-05.
     // Each time the field was renamed so the value saved in the scene is ignored and this default applies.
     [Tooltip("Seconds each growth step takes (planted > stage 1 > stage 2 > stage 3 > ready). 4 steps in total.")]
-    [SerializeField] private float secondsPerGrowthStage = 18.9f;
+    [SerializeField] private float growthStageSeconds = 20.79f;
 
     [Tooltip("The player's own field starts the game planted with this crop (the Planted stage, just like after pressing E). None = starts empty.")]
     [SerializeField] private CropType startCrop = CropType.Wheat;
@@ -356,7 +357,7 @@ public class FieldController : MonoBehaviour
 
     private IEnumerator Grow()
     {
-        yield return new WaitForSeconds(secondsPerGrowthStage);
+        yield return new WaitForSeconds(growthStageSeconds);
 
         stage++;
         if (stage < Stage.Ready) StartCoroutine(Grow());

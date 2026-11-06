@@ -77,7 +77,7 @@
 >
 > **Tests and tidy (updated 2026-11-04).**
 > - [x] **Van in a field:** E, F and B only show "The van can't work fields" (owner, 2026-11-04). B (buy / sell the field) works in the van since 2026-11-05.
-> - [ ] **Test growth time:** about 75 s per crop (4 x 18.9 s).
+> - [ ] **Test growth time:** about 83 s per crop (4 x 20.79 s). **+10% (owner, 2026-11-05)**, was about 75 s (4 x 18.9 s). The field is now `growthStageSeconds` (renamed so the 18.9 saved in the scene is ignored).
 > - [x] **Van number plate:** Overrides > Apply All done by the owner, `VehiclePlate.mat` deleted (2026-11-04).
 > - [x] **Van scaled up** by the owner (scale 1.2808 on the scene copy). The camera then sat 1.28x further back (the camera is a child of the van, so it scales too); `cameraOffset` on `Van.prefab` was divided by 1.28 (`(0, 5, -8.5)` to `(0, 3.9, -6.64)`), so it sits as far away as before. **Owner to check it feels right**, adjust `cameraOffset` on the Van if not.
 > - [x] **Unused assets deleted:** `House.prefab`, `houseTop.fbx`, `Garage EX.prefab` (2026-11-04).
