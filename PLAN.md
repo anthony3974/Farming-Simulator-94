@@ -65,6 +65,8 @@
 >    - **Jerrys Gas Station** (designed by a sub-agent, `Assets/Editor/GasStationBuilder.cs`): `Terrain > Buildings > Gas Station` (Model + Triggerbox with the Building), lot X 6 to 56, Z 568 to the road edge (~631.5), open to the road. A 28 x 16 m canopy (6.2 m high, harvester fits) over 2 pump islands with 4 diesel pumps, a kiosk "JERRYS SHOP", a 10.5 m sign pylon by the road, lamps, drums, tyres. Trigger X 14 to 48, Z 601 to 623 (the pump area). Colliders only on the kiosk, canopy posts, pumps, sign posts and the 5 cm slab. 14 Standard materials in `Assets/GasStation/`. Running it again rebuilds only the Model (keeps the object, its place and the Triggerbox values). Checked outside Unity only (parts overlap, nothing floats, clear of the road, field and border).
 >    - **Fuel gauge** (`FuelGauge.cs`, Tools > Build Fuel Gauge, `FuelGaugeBuilder.cs`): `Fuel Gauge` canvas (sort 40, no raycaster): yellow-bordered brown box just above the speedometer (x 20, y 290, 260 x 64): "DIESEL" label, litres number, a bar green > 50%, yellow > 20%, red below; blinks when empty.
 >
+> **To fix (owner, 2026-11-05): the tractor's camera is too close** compared to the van and the harvester. Move it back to match (`cameraOffset` on the Tractor's `Vehicle`, or the camera's local position in `Tractor.prefab`; the van's is `(0, 3.9, -6.64)` after its 1.28 scale-up).
+>
 > **Later (not soon):** save/load (item 18), the touch buttons rework (item 20).
 > **Distant, not a priority (owner, 2026-11-04):** working lights on the house and garage.
 > **Dropped (owner, 2026-11-04):** the paint shop. Vehicle colour does not matter.
