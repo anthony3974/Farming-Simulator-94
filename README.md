@@ -37,7 +37,8 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | Input | Action |
 | --- | --- |
 | W / A / S / D or arrow keys | Drive |
-| Mouse | Look around (click to lock the cursor) |
+| Mouse | Turn the camera all the way around the vehicle and tilt it (click to lock the cursor); it stays where you leave it |
+| Mouse wheel | Zoom the camera in and out |
 | Esc | Pause menu (resume, or save and go back to the main menu); also frees the mouse |
 | E | Plant, fertilize (while it grows; two levels, +50% harvest each) or harvest your field, sell at a sell station, buy seeds or fertilizer at the shops, start / stop filling up at the gas station, open the dealer's shop |
 | B | Buy or sell the field you are standing in (press twice to confirm) |
@@ -45,7 +46,7 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | 1 / 2 / 3 | Drive the tractor / van / harvester (once you own them) |
 | H | Open or close the help menu (the controls list) |
 | F1 | Toggle debug (does nothing yet) |
-| On-screen controls (Android) | Steer with `<` `>`, the wheel or the slider, and drive with `GAS` / `BRAKE` or the pedal slider (picked in `SETTINGS`; held buttons sink while pressed, sliding off and back on keeps working); drag the screen to look up / down; `USE` (same as E), `BUY SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle); top-left: `HELP` (same as H), `PAUSE` (same as Esc), `SETTINGS` |
+| On-screen controls (Android) | Steer with `<` `>`, the wheel or the slider, and drive with `GAS` / `BRAKE` or the pedal slider (picked in `SETTINGS`; held buttons sink while pressed, sliding off and back on keeps working); drag the screen to turn the camera around the vehicle (full 360) and tilt it, pinch with two fingers to zoom, double-tap to bring the camera back behind the vehicle; `USE` (same as E), `BUY SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle); top-left: `HELP` (same as H), `PAUSE` (same as Esc), `SETTINGS` |
 
 ## Roadmap
 The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, fuel with the gas station, save / load, fertilized fields turning blue, the touch controls rework (steering wheel, sliders, rounded buttons, SETTINGS), and AI owners working their own fields. Next up, in order:

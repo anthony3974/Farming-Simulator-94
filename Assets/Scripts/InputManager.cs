@@ -47,6 +47,14 @@ public class InputManager : MonoBehaviour
     // drag-to-look, set by TouchLook: summed since the last frame, in screen heights (up = positive)
     private float touchLookPending;
     private float touchLookY;
+    private float touchLookPendingX;
+    private float touchLookX;
+    // pinch zoom (screen heights the two fingers moved apart) and double-tap recenter, set by TouchLook
+    private float touchZoomPending;
+    private float touchZoom;
+    private bool touchRecenterQueued;
+    private bool recenter;
+    private float mouseScroll;
 
     /// <summary>True when the on-screen buttons are active.</summary>
     public bool TouchControlsActive { get; private set; }
@@ -76,6 +84,24 @@ public class InputManager : MonoBehaviour
     public void AddTouchLook(float dy)
     {
         touchLookPending += dy;
+    }
+
+    /// <summary>Called by <see cref="TouchLook"/> for a horizontal drag (dx in screen heights, right = positive).</summary>
+    public void AddTouchLookX(float dx)
+    {
+        touchLookPendingX += dx;
+    }
+
+    /// <summary>Called by <see cref="TouchLook"/> while two fingers pinch (change of their distance in screen heights, apart = positive).</summary>
+    public void AddTouchZoom(float spread)
+    {
+        touchZoomPending += spread;
+    }
+
+    /// <summary>Called by <see cref="TouchLook"/> on a double tap: bring the camera back behind the vehicle.</summary>
+    public void RequestRecenter()
+    {
+        touchRecenterQueued = true;
     }
 
     /// <summary>Called every frame by the touch steering wheel or slider: -1 full left, 0 straight, 1 full right.</summary>
@@ -119,6 +145,7 @@ public class InputManager : MonoBehaviour
         vertical = Mathf.Clamp(Input.GetAxis("Vertical") + touchV, -1f, 1f);
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
+        mouseScroll = Input.mouseScrollDelta.y;
 
         up = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || touchGas;
         down = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || touchBrake;
@@ -148,6 +175,12 @@ public class InputManager : MonoBehaviour
 
         touchLookY = touchLookPending;
         touchLookPending = 0f;
+        touchLookX = touchLookPendingX;
+        touchLookPendingX = 0f;
+        touchZoom = touchZoomPending;
+        touchZoomPending = 0f;
+        recenter = touchRecenterQueued;
+        touchRecenterQueued = false;
 
         // a menu is open: the vehicle stops taking input (it rolls to a stop) and the game keys do nothing
         if (MenuOpen)
@@ -157,7 +190,9 @@ public class InputManager : MonoBehaviour
             steer = 0f;
             throttle = 0f;
             interact = trade = cycleCrop = false;
-            touchLookY = 0f;
+            touchLookY = touchLookX = touchZoom = 0f;
+            mouseScroll = 0f;
+            recenter = false;
             switchVehicle = 0;
         }
     }
@@ -168,6 +203,14 @@ public class InputManager : MonoBehaviour
     public float MouseY { get => mouseY; set => mouseY = value; }
     /// <summary>Drag-to-look on touch this frame, in screen heights (up = positive). 0 while a menu is open.</summary>
     public float TouchLookY => touchLookY;
+    /// <summary>Drag-to-look on touch this frame, in screen heights (right = positive). 0 while a menu is open.</summary>
+    public float TouchLookX => touchLookX;
+    /// <summary>Pinch this frame, in screen heights (fingers moving apart = positive). 0 while a menu is open.</summary>
+    public float TouchZoom => touchZoom;
+    /// <summary>Mouse wheel this frame (scroll up = positive). 0 while a menu is open.</summary>
+    public float MouseScroll => mouseScroll;
+    /// <summary>True on the frame of a double tap on the game view (touch): recenter the camera behind the vehicle.</summary>
+    public bool Recenter => recenter;
     public bool Interact { get => interact; set => interact = value; }
     /// <summary>B key: buy or sell the field you are standing in (press twice to confirm).</summary>
     public bool Trade { get => trade; set => trade = value; }
