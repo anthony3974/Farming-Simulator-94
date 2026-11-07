@@ -20,7 +20,7 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 - Diesel: one 100 L tank shared by all vehicles, used as you drive, with a fuel gauge above the speedometer and a low-fuel warning. An empty tank only crawls (15% speed) so you can still reach the station
 - Jerrys Gas Station at the bottom of the map, beside the main road: fills the tank slowly at $2 per litre (press again to stop); the price shows on the pumps
 - App icon (Android adaptive icon)
-- Android support with on-screen touch controls (runs on a real phone). A SETTINGS button (below HELP) picks how to steer (`<` `>` buttons, a steering wheel, or a slider), how to drive (GAS / BRAKE buttons, or a pedal slider: 80% gas, 20% brake) and square or rounded buttons; the wheel and sliders steer and drive gently, not just full on or off. The game keeps running while SETTINGS is open, unlike PAUSE
+- Android support with on-screen touch controls (runs on a real phone). A SETTINGS button (below HELP) picks how to steer (`<` `>` buttons, a steering wheel, or a slider), how to drive (GAS / BRAKE buttons, or a pedal slider: 80% gas, 20% brake) and square or rounded buttons; the wheel and sliders steer and drive gently, not just full on or off. A GAME tab in SETTINGS turns the mirrors, the minimap and the day / night cycle on or off and sets how long a day and a night last (default 10 and 5 minutes); street lamps light up at night. On PC, O opens SETTINGS. The game keeps running while SETTINGS is open, unlike PAUSE
 
 ## Requirements
 - Unity **6000.0.85f1** (Unity 6), installed through Unity Hub
@@ -59,14 +59,14 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
 
 ## Project layout
-- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `SaveGame`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `EngineSound`, `FuelGauge`, `Speedometer`, `ScreenPrompt` (message box), `InputManager`, `TouchControls`, `TouchButtonInput`, `TouchSettings`, `SettingsMenu`, `SteeringWheel`, `TouchSlider` (`SteeringSlider`, `PedalSlider`), `TouchLook`, `FieldView`, `RoadTiling`)
+- `Assets/Scripts`: game code (`FieldController`, `Building`, `Dealer`, `PlayerValues`, `HelpMenu`, `MainMenu`, `PauseMenu`, `SaveGame`, `GameCharacter`, `Vehicle`, `VehicleCatalog`, `EngineSound`, `FuelGauge`, `Speedometer`, `ScreenPrompt` (message box), `InputManager`, `TouchControls`, `TouchButtonInput`, `TouchSettings`, `SettingsMenu`, `GameSettings`, `DayNightCycle`, `NightLight`, `SteeringWheel`, `TouchSlider` (`SteeringSlider`, `PedalSlider`), `TouchLook`, `FieldView`, `RoadTiling`)
 - `Assets/Scenes`: `MainMenu` (opens first) and `GameScene`
 - `Assets/Prefabs`: tractor, van, harvester (each with its `Vehicle` and `EngineSound`), and `UI/UI Button` (every menu button is a copy of it, so they all match)
 - `Assets/Sounds`: engine clips; `Loops/` holds the loop-ready copies the game uses (see `AUDIO_NOTES.md`)
 - Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon, `Touch`: the steering wheel and the rounded button shapes)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: one-off editor tools while they are in use. **Now: Street Lamp Builder** (Tools > Street Lamp Builder: the street lamp prefab and one test lamp in the middle of the map, `StreetLampBuilder.cs` + `StreetLampModel.cs`). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows) were run and removed; they are in the git history
+- `Assets/Editor`: one-off editor tools while they are in use. **Now: Street Lamp Builder** (Tools > Street Lamp Builder: the street lamp prefab and one test lamp in the middle of the map, `StreetLampBuilder.cs` + `StreetLampModel.cs`) and **Settings: Game Tab** (Tools > Settings: Game Tab: the SETTINGS panel's GAME tab and the day / night cycle on the sun; delete after running). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows) were run and removed; they are in the git history
 - `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops, `Touch/make_touch_sprites.py` draws the steering wheel and rounded button sprites
 - `PLAN.md`: roadmap, 2D game analysis and notes
 

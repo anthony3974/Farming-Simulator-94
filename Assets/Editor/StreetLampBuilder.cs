@@ -12,7 +12,8 @@ using UnityEngine.SceneManagement;
 // - The test lamp: "Street Lamp 1" under Terrain > "Street Lamps". First run: on the farm side of the main road
 //   ("Road"), as close to the middle of the map as a free spot allows, arm out over the road. Later runs keep
 //   wherever it is (move it, run again, and it is set back on the ground; the prefab is rebuilt).
-// - The light is a warm spot light pointing down, on all the time for now (the day / night cycle will switch it).
+// - The light is a warm spot light pointing down. The prefab's NightLight turns it (and the glowing lens) on only at
+//   night, following the DayNightCycle on the sun; in a scene with no cycle it stays on.
 //   It is set to Important so it shows on phones too (Android Medium quality has 1 pixel light, the sun's). With
 //   many lamps that will need another plan (see PLAN, daylight cycle). No shadows, to keep it cheap.
 public class StreetLampBuilder : EditorWindow
@@ -121,6 +122,7 @@ public class StreetLampBuilder : EditorWindow
             StreetLampModel.Build(new SceneKit(model, new Mats()));
             foreach (var t in model.GetComponentsInChildren<Transform>(true))
                 if (t.GetComponent<Light>() == null) t.gameObject.isStatic = true;
+            temp.AddComponent<NightLight>(); // light and lens on only at night (DayNightCycle)
             var saved = PrefabUtility.SaveAsPrefabAsset(temp, PrefabPath, out bool ok);
             return ok ? saved : null;
         }
@@ -244,7 +246,6 @@ public class StreetLampBuilder : EditorWindow
             light.color = color;
             light.shadows = LightShadows.None;
             light.renderMode = LightRenderMode.ForcePixel; // "Important"
-            light.lightmapBakeType = LightmapBakeType.Realtime;
         }
 
         // all positions are local to the parent; only the parts asked for keep their collider (the pole you could drive into)
