@@ -56,7 +56,7 @@
       - The two freesound MP3s had ~60 ms of silence at the loop point, so `Art/Sounds/make_loops.py` makes trimmed, crossfaded mono WAVs in `Assets/Sounds/Loops` (originals unchanged). `Vehicle` got `SpeedKmh` and `Throttle` for the sound. Compiled outside Unity only; **not yet heard in Unity.**
       - Still missing (AUDIO_NOTES): engine start, shut-down and rev-up sounds.
 >
-> **Order set by the owner (2026-11-05, updated 2026-11-06):** ~~save / load~~, ~~touch rework~~, ~~AI owners' fields~~, ~~fuel testing~~ (all done), other sounds, street lamps, minimap. **Soon after (owner, 2026-11-06):** working lights on the house and garage, vehicle mirrors (both below item 14). **Distant:** advanced crop harvesting.
+> **Order set by the owner (2026-11-05, updated 2026-11-06):** ~~save / load~~, ~~touch rework~~, ~~AI owners' fields~~, ~~fuel testing~~ (all done), other sounds, street lamps, minimap. **Soon after (owner, 2026-11-06):** working lights on the house and garage, vehicle mirrors (both below item 14). **Added (owner, 2026-11-07):** a new settings tab (MIRRORS / MINIMAP / DAY / NIGHT toggles) and a daylight cycle, with the street lamps, house and garage lights and vehicle lights on at night (below item 14; place in the order not set yet). **Distant:** advanced crop harvesting.
 >
 > 8. ~~**Save / load.**~~ **DONE (2026-11-06): tested by the owner, "save and load works".** (Owner, 2026-11-05: first.) Save and load the farm: money, seeds, fertilizer, fuel, crops in stock, which fields you own and what grows on them (crop, stage, fertilizer), the vehicles you own and where they are parked. The main menu's LOAD GAME button is now live. Code only, no scene changes: the scripts compile outside Unity against stand-in Unity classes; **not yet run in Unity.**
 >    - [x] **Owner:** Play from `MainMenu`: NEW GAME, plant / fertilize a field, buy a field, buy the van, park it somewhere, drive off in it, sell some crop. Pause, MAIN MENU, LOAD GAME: everything should be as you left it, in the van. Also: close the app on the phone (swipe it away) and LOAD GAME. Then NEW GAME (asks "Press again to replace your saved farm") gives a fresh farm.
@@ -97,13 +97,23 @@
 >    - **Jerrys Gas Station** (designed by a sub-agent): `Terrain > Buildings > Gas Station` (Model + Triggerbox with the Building, type Gas), lot X 6 to 56, Z 568 to the road edge (~631.5), open to the road. A 28 x 16 m canopy (6.2 m high, harvester fits) over 2 pump islands with 4 diesel pumps, a kiosk "JERRYS SHOP", a 10.5 m sign pylon by the road, drums, tyres. Colliders only on the kiosk, canopy posts, pumps, sign posts and the 5 cm slab. 14 Standard materials in `Assets/GasStation/`. **Owner changes (2026-11-05): the trigger is a bit bigger (Z scale 1.28), and the station's two street lamps were removed** (see the map lamps below).
 >    - **Fuel gauge** (`FuelGauge.cs`): `Fuel Gauge` canvas (sort 40, no raycaster): yellow-bordered brown box just above the speedometer (x 20, y 290, 260 x 64): "DIESEL" label, litres number, a bar green > 50%, yellow > 20%, red below; blinks when empty.
 >
-> 13. **Street lamps across the map (owner, 2026-11-05).** One street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this).
+> 13. **Street lamps across the map (owner, 2026-11-05).** One street lamp design used across the whole map (roads, buildings, the gas station, whose own lamps were removed for this). **Owner (2026-11-07): the lamps come on at night** (see the day / night cycle below); build them with a real `Light` that can be switched on and off, not just a glowing material.
 >
-> 14. **Minimap (owner, 2026-11-05).** A small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers.
+> 14. **Minimap (owner, 2026-11-05).** A small map in a corner showing the vehicle you drive, the fields and the buildings, for example a top-down camera into a RenderTexture or a drawn map image with markers. **Owner (2026-11-07): it can be turned off in the new settings tab** (see below); when off, nothing of it should run (camera disabled), to save frame rate on phones.
 >
 > **Soon (owner, 2026-11-06), after the minimap:**
 > - **Working lights on the house and garage** (was distant, moved up 2026-11-06).
-> - **Vehicle mirrors** (see Phase 6 below: side mirrors, maybe a rear-view mirror; a small camera per mirror into a RenderTexture, kept cheap on phones).
+> - **Vehicle mirrors** (see Phase 6 below: side mirrors, maybe a rear-view mirror; a small camera per mirror into a RenderTexture, kept cheap on phones). **Owner (2026-11-07): can be turned off in the new settings tab** (mirror cameras off when off).
+> - **New settings tab: MIRRORS, MINIMAP, DAY / NIGHT (owner, 2026-11-07; place in the order not set yet, ask the owner).** A second tab in the `Settings Menu` panel (next to the current touch options, which become their own tab), with three ON / OFF toggles in the same option-button style (picked = pressed fill):
+>   - **MIRRORS**: shows or hides the vehicle mirrors (Phase 6) and turns their cameras off.
+>   - **MINIMAP**: shows or hides the minimap (item 14) and turns its camera off.
+>   - **DAY / NIGHT**: turns the daylight cycle on or off. **Off = always day** (as now).
+>   - Remembered on the device (PlayerPrefs, like `TouchSettings.cs`). Should it be in the save file instead? Ask the owner. The settings panel only opens from the touch SETTINGS button now, so PC needs a way in too (for example a SETTINGS button in the pause menu, or a key); ask the owner.
+> - **Daylight cycle (owner, 2026-11-07).** The sun (the scene's directional light) moves across the sky over a game day, the light colour and strength change for sunrise, day, sunset and night, and the sky darkens at night (the current skybox is `Epic_BlueSunset`; may need a second, night skybox or a tint / exposure change). Ask the owner how long a game day should be. Tied to the save file (time of day saved?) only if the owner wants it. **At night all the lights come on:**
+>   - the street lamps (item 13),
+>   - the working lights on the house and garage (above),
+>   - **a light on the vehicles if possible (owner: "maybe put a light in the car")**: headlights (a spot light at the front of the tractor, van and harvester; the harvester already has roof work lights on the model that could light up), and maybe a small cab light. Only the vehicle you drive needs a real light, to keep it cheap on phones; parked ones can just show lit materials.
+>   - Phones: many real lights at once are costly in URP (per-object light limits). Keep the number of lit lamps low, use short ranges, no shadows from lamps, and check the Android frame rate. Lamps could show a glowing (emissive) bulb from far away and only the nearest ones use a real `Light`.
 >
 > ~~**To fix (owner, 2026-11-05): the tractor's camera is too close**~~ **Fixed (2026-11-05):** `cameraOffset` on `Tractor.prefab` `(0, 5.36, -6.53)` to `(0, 5.36, -8.5)`, the same distance back as the van (its `(0, 3.9, -6.64)` x its 1.28 scale = `(0, 5, -8.5)`); the harvester's is `(0, 8, -11)` (bigger vehicle). **Owner checked (2026-11-05): "solid, done".**
 >
@@ -188,6 +198,7 @@ The owner is no longer cloning the 2D game one for one. The 3D game is its own n
 - Add mirrors to the vehicle (left and right side mirrors, maybe a rear-view mirror).
 - Likely approach: a small extra camera per mirror drawing into a `RenderTexture`, shown on a quad on the mirror, or a small on-screen panel. Keep the cost low on phones (small texture, lower frame rate or resolution for mirror cameras, off when not needed).
 - Decide: real mirrors on the model, or a screen overlay. Check the Android frame rate after adding them.
+- **Owner (2026-11-07):** a MIRRORS ON / OFF toggle in the new settings tab (see NEXT UP, below item 14).
 
 ## Waiting on the owner (decisions)
 - **Sky and terrain layers: decided (owner, 2026-11-03).** The current set is final for now (the owner may delete one or two later). See Repo housekeeping.
