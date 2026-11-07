@@ -41,8 +41,10 @@ public class GameCharacter : MonoBehaviour
     [Header("Camera")]
     [Tooltip("Pull the camera in when a building, tree or another vehicle is in the way.")]
     public bool cameraCollision = true;
-    [Tooltip("The camera never comes closer to the vehicle than this many metres because of an obstacle.")]
-    public float minCameraDistance = 1.5f;
+    [Tooltip("Size of the camera's 'bubble' in metres: walls stay at least this far from the camera, so the screen never shows through them.")]
+    public float cameraRadius = 0.6f;
+    [Tooltip("The camera never comes closer to the pivot than this many metres because of an obstacle.")]
+    public float minObstacleDistance = 0.4f;
     [Tooltip("Seconds the camera takes to swing back behind the vehicle after a double tap.")]
     public float recenterSeconds = 0.25f;
 
@@ -201,16 +203,17 @@ public class GameCharacter : MonoBehaviour
         float length = dir.magnitude;
         if (length < 0.01f) return 1f;
 
-        int count = Physics.RaycastNonAlloc(from, dir / length, hits, length, ~0, QueryTriggerInteraction.Ignore);
+        // a sphere, not a thin ray: the camera's near plane is wider than a point, so a ray would let it poke through a wall
+        int count = Physics.SphereCastNonAlloc(from, cameraRadius, dir / length, hits, length, ~0, QueryTriggerInteraction.Ignore);
         float nearest = length;
         for (int i = 0; i < count; i++)
         {
+            if (hits[i].distance <= 0f) continue; // already overlapping at the start (a wall right at the pivot): no direction to pull in
             if (Vehicle.Active != null && hits[i].transform.IsChildOf(Vehicle.Active.transform)) continue;
             if (hits[i].distance < nearest) nearest = hits[i].distance;
         }
         if (nearest >= length) return 1f;
-        // leave a little room before the surface and never come closer than minCameraDistance
-        float distance = Mathf.Min(length, Mathf.Max(nearest - 0.3f, minCameraDistance));
+        float distance = Mathf.Min(length, Mathf.Max(nearest, minObstacleDistance));
         return distance / length;
     }
 
