@@ -43,6 +43,8 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 | B | Buy or sell the field you are standing in (press twice to confirm) |
 | C | Choose the crop to plant |
 | 1 / 2 / 3 | Drive the tractor / van / harvester (once you own them) |
+| Tab | Next vehicle you own (same as the `CAR` touch button) |
+| O | Open / close SETTINGS |
 | H | Open or close the help menu (the controls list) |
 | F1 | Toggle debug (does nothing yet) |
 | On-screen controls (Android) | Steer with `<` `>`, the wheel or the slider, and drive with `GAS` / `BRAKE` or the pedal slider (picked in `SETTINGS`; held buttons sink while pressed, sliding off and back on keeps working); drag the screen to look up / down; `USE` (same as E), `BUY SELL` (same as B), `CROP` (same as C), `CAR` (next vehicle); top-left: `HELP` (same as H), `PAUSE` (same as Esc), `SETTINGS` |
