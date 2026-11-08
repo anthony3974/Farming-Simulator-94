@@ -59,7 +59,13 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 **Before publishing:**
 - [ ] No release keystore (`androidUseCustomKeystore: 0`), so builds are debug-signed. Google Play needs a release key.
-- [ ] "Farming Simulator" is the name of GIANTS Software's game series, and one AI field is called "John Deer" (`FieldController.FieldNames`). Check both names before going public.
+- [ ] **Rename the game to "Ace's Farm" (owner's pick, 2026-11-08).** "Farming Simulator" is GIANTS Software's trademark, and "Farming Simulator 94" looks like an entry in their numbered series (Farming Simulator 22, 25). A web search on 2026-11-08 found no other game called Ace's Farm (the nearest is Fiona's Farm, a puzzle game from a publisher called Ace Games; different enough). Search Google Play once more just before publishing. Places to change:
+  - The main menu title: `FARMING SIMULATOR 94` in `Assets/Scenes/MainMenu.unity`.
+  - Player Settings > Product Name (`FarmSim943D`), which is also the app's name on the phone. It can be `Ace's Farm` with the apostrophe.
+  - The Android package (`com.Tony3974.FarmSim943D`) can't have an apostrophe; use something like `com.Tony3974.AcesFarm`. Set it before the first Google Play upload: it can never change after that.
+  - Changing the Product Name or the package moves the save folder (`Application.persistentDataPath`), so test saves from the old name won't load, and on Android the renamed app installs beside the old one (uninstall the old one).
+  - The README and PLAN titles, and the comment at the top of `Art/Icon/make_icon.py`. The GitHub repo is also called Farming-Simulator-94 (can be renamed on GitHub; old links redirect).
+- [ ] **Field names (`FieldController.FieldNames`).** They came from the 2D game. "John Deer" is one letter off the John Deere trademark, and several others are map and expansion names from GIANTS' games (Felsbrunn, Ravenport, Goldcrest Valley, Erlengrat, Estancia Lapacho, No Man's Land, Alpine Farming). Swap them for made-up names, so Ace's Farm doesn't read as a Farming Simulator fan game. Saves store each field's name, so an old save keeps the old names until a new game.
 
 **Cleanup:**
 - [ ] README lines 57 and 61 still list the engine start sound and the zoom-out volume as upcoming; both are done.
