@@ -49,7 +49,11 @@ MonoBehaviour:
   menuClose: {fileID: 8300000, guid: 5dc54b802411d3bec834302fc323252b, type: 3}
   moneyIn: {fileID: 8300000, guid: ce7c24d569c10a396b1e3f5760f0d46f, type: 3}
   moneyOut: {fileID: 8300000, guid: 48bcb7db1143cae23ac9ab4cdce811a5, type: 3}
+  planting: {fileID: 8300000, guid: 7e9df22d415304ec4a4e9f8f09d3cb79, type: 3}
+  harvesting: {fileID: 8300000, guid: 5cc7ab8233d1a9ccfbfb273a744d8892, type: 3}
+  fertilizing: {fileID: 8300000, guid: 14c90d04148a681d3a426ae5997cc4ce, type: 3}
   masterVolume: 1
   clickVolume: 0.5
   menuVolume: 0.8
   moneyVolume: 1
+  farmVolume: 1
