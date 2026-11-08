@@ -74,6 +74,7 @@ public class SettingsMenu : MonoBehaviour
     public Color disabledTextColor = new Color32(140, 140, 140, 255);
 
     private InputManager input;
+    private GameCharacter player; // frees the mouse while open on PC, so the options can be clicked
     private bool showGameTab; // the tab last looked at, kept while the game runs
 
     public bool IsOpen => menuRoot != null && menuRoot.activeSelf;
@@ -81,6 +82,7 @@ public class SettingsMenu : MonoBehaviour
     void Start()
     {
         input = FindFirstObjectByType<InputManager>();
+        player = FindFirstObjectByType<GameCharacter>();
         if (menuRoot == null || input == null)
         {
             Debug.LogError($"Settings menu turned off: '{name}' is missing its Menu Root (or there is no InputManager). Run Tools > Build Touch Controls again.", this);
@@ -138,6 +140,7 @@ public class SettingsMenu : MonoBehaviour
         if (IsOpen || input.MenuOpen) return; // not over the pause menu or the dealer
         menuRoot.SetActive(true);
         input.MenuOpen = true;
+        if (player != null) player.SetCursorLocked(false); // like the pause menu and the dealer
         Refresh();
         GameSounds.Play(GameSounds.Sound.MenuOpen);
     }
@@ -147,6 +150,7 @@ public class SettingsMenu : MonoBehaviour
         if (!IsOpen) return;
         menuRoot.SetActive(false);
         input.MenuOpen = false;
+        if (player != null && !input.TouchControlsActive) player.SetCursorLocked(true);
         GameSounds.Play(GameSounds.Sound.MenuClose);
     }
 
