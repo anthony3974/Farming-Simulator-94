@@ -272,7 +272,7 @@ public class Building : MonoBehaviour
         if (Mathf.Abs(pumpingVehicle.SpeedKmh) > DriveOffKmh) { StopPumping("You drove off. Stopped"); return; }
 
         float space = playerValues.FuelCapacity - playerValues.Fuel;
-        float affordable = playerValues.Money / fuelPrice;
+        float affordable = (float)(playerValues.Money / fuelPrice);
         float litres = Mathf.Min(fuelPerSecond * Time.deltaTime, space, affordable);
         if (litres > 0f)
         {

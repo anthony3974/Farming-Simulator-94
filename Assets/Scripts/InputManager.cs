@@ -182,14 +182,15 @@ public class InputManager : MonoBehaviour
         recenter = touchRecenterQueued;
         touchRecenterQueued = false;
 
-        // a menu is open: the vehicle stops taking input (it rolls to a stop) and the game keys do nothing
+        // a menu is open: the vehicle stops taking input (it rolls to a stop) and the game keys do nothing,
+        // H / HELP included, so the help panel cannot open over the pause, dealer or settings menu
         if (MenuOpen)
         {
             horizontal = vertical = 0f;
             up = down = left = right = false;
             steer = 0f;
             throttle = 0f;
-            interact = trade = cycleCrop = false;
+            interact = trade = cycleCrop = help = false;
             touchLookY = touchLookX = touchZoom = 0f;
             mouseScroll = 0f;
             recenter = false;

@@ -54,6 +54,13 @@ public class HelpMenu : MonoBehaviour
 
     void Update()
     {
+        // a menu opened while the help was up (Esc, O, the dealer): hide the help so it is not drawn over the menu.
+        // No sound, the menu plays its own. H does nothing while the menu is open (InputManager clears it).
+        if (input.MenuOpen)
+        {
+            if (menuRoot.activeSelf) menuRoot.SetActive(false);
+            return;
+        }
         if (!input.Help) return;
         if (!menuRoot.activeSelf) NameTouchControls();
         menuRoot.SetActive(!menuRoot.activeSelf);
