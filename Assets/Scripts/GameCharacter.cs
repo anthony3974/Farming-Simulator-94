@@ -54,6 +54,9 @@ public class GameCharacter : MonoBehaviour
     // tilts the camera, two fingers zoom, a double tap brings it back behind the vehicle (TouchLook, "Touch Look" object).
     // Steering turns the vehicle and the camera turns with it (the camera pivot is a child of the vehicle).
 
+    /// <summary>How far the camera is zoomed out past its default distance: 0 = default or closer, 1 = all the way out.</summary>
+    public static float ZoomOut01 { get; private set; }
+
     private float pitch;
     private float yaw;          // degrees around the vehicle, 0 = behind it, -180..180
     private float yawVelocity;
@@ -181,6 +184,7 @@ public class GameCharacter : MonoBehaviour
         if (pivot == null || pivot.parent == null) return;
 
         zoom = Mathf.Lerp(zoom, zoomTarget, 1f - Mathf.Exp(-12f * Time.deltaTime));
+        ZoomOut01 = Mathf.InverseLerp(1f, maxZoom, zoom);
         pivot.localPosition = new Vector3(0f, camOffset.y, 0f);
         pivot.localRotation = Quaternion.Euler(0f, yaw, 0f);
 

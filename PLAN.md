@@ -23,7 +23,6 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Soon (owner, 2026-11-06 / 11-08), after the minimap:**
 - **Vehicle headlights (owner, 2026-11-08).** On at night with `NightLight.cs` like the lamps; **automatic only, no button** ("it's really dark in the nighttime"). Two glowing lenses on each vehicle; only the vehicle you drive gets one real forward Spot `Light` (no shadows, short range, Important). Maybe red rear lights and a work light on the tractor and harvester. Built into the three prefabs by a one-off tool.
 - **Working lights on the house and garage** (same `NightLight.cs`).
-- **Engine quieter when the camera is zoomed out (owner, 2026-11-08).** The engine is a 2D sound, so the zoom (`GameCharacter`, `minZoom` 0.4 to `maxZoom` 2.5) does not change it. Multiply both loops (and the start sound) by a zoom factor: full volume at the default distance and closer, down to `Far Volume` (about 40%) at full zoom out, eased. Settings on each Engine Sound; Show Debug shows the factor. (A 3D sound would pan as the camera orbits; ask the owner if that is wanted.)
 - **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
 
 **Possible later (owner, 2026-11-07); ask before starting:**
@@ -54,6 +53,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **Engine quieter when zoomed out (2026-11-08):** both loops and the start sound go down to `Far Volume` (40%) at full zoom out, full volume at the default distance and closer (`EngineSound.cs`, `GameCharacter.ZoomOut01`; Show Debug shows it). It follows the zoom, not the pull-in from walls, so the sound doesn't jump near obstacles. Owner: "volume good".
 - **Engine start sounds (2026-11-08):** a one-shot on getting in or switching (also when the game begins) that crossfades into the idle loop over its last 55% (`Start Blend`). Tractor and harvester share `Starts/EngineStartDiesel.wav` (harvester pitched 0.85), the van has `Starts/EngineStartVan.wav`; made by `Art/Sounds/make_starts.py`. Owner: "good enough".
 - **Help menu PC row for O (2026-11-08):** "Settings (mirrors, minimap, day / night) / O" below the pause row (Tools > Help: PC Settings Row, run by the owner, then deleted; not committed before deletion).
 - **Tried by the owner (2026-11-08):** fertilizer colour (blue at level 1, deeper blue at level 2, back to the crop colour at the next stage), camera orbit (full 360, zoom, double-tap recentre, no clipping into walls), Tab = next vehicle on PC. All good.

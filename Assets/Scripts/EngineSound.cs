@@ -5,6 +5,7 @@ using UnityEngine;
 /// still; the drive loop fades in as the vehicle speeds up. Both pitches rise with the speed (km/h / top speed),
 /// and holding the gas adds a little pitch and volume (the engine under load).
 /// Only the vehicle you drive is heard; parked ones fade out. Paused (Time.timeScale 0) stops the sound.
+/// Zooming the camera out past its default distance makes the engine quieter, down to farVolume at full zoom.
 /// Getting into a vehicle plays its start clip once (also when the game begins), and it crossfades into the loops over its end.
 /// On the Tractor, Van and Harvester prefabs (added by the one-off Engine Sound Setup tool, now in git history d58093e).
 /// </summary>
@@ -42,6 +43,9 @@ public class EngineSound : MonoBehaviour
     public float throttleVolume = 0.15f;
     [Tooltip("Everything above is multiplied by this.")]
     [Range(0f, 1f)] public float masterVolume = 1f;
+    [Tooltip("Volume with the camera zoomed all the way out, as a part of the normal volume. " +
+             "The engine is at full volume at the default camera distance and closer.")]
+    [Range(0f, 1f)] public float farVolume = 0.4f;
 
     [Header("Smoothing")]
     [Tooltip("How fast pitch and volume follow the speed (higher = quicker).")]
@@ -59,6 +63,7 @@ public class EngineSound : MonoBehaviour
     private Vehicle vehicle;
     private AudioSource idleSource, driveSource, startSource;
     private float speed01, load, pitchIdle, pitchDrive, volIdle, volDrive;
+    private float zoomVolume = 1f; // 1 at the default camera distance and closer, farVolume at full zoom out
     private float onOff; // 0 = engine silent (parked), 1 = running (driven), faded between
     private bool paused, wasActive, startPaused;
     private float startLeft, startLength; // seconds until the start clip ends (counts only while the game runs), and its length
@@ -120,6 +125,7 @@ public class EngineSound : MonoBehaviour
         if (paused) return;
 
         float dt = Time.deltaTime;
+        zoomVolume = Mathf.Lerp(1f, farVolume, Mathf.SmoothStep(0f, 1f, GameCharacter.ZoomOut01));
         UpdateStart(dt);
         float fadeStep = dt / Mathf.Max(0.01f, fadeTime);
         if (vehicle.IsActive && startLeft > 0f)
@@ -137,8 +143,8 @@ public class EngineSound : MonoBehaviour
 
         pitchIdle = Mathf.Lerp(idlePitch.x, idlePitch.y, speed01) + throttlePitch * load;
         pitchDrive = Mathf.Lerp(drivePitch.x, drivePitch.y, speed01) + throttlePitch * load;
-        volIdle = Mathf.Lerp(idleVolume.x, idleVolume.y, speed01) * masterVolume * onOff;
-        volDrive = Mathf.Clamp01(Mathf.Lerp(driveVolume.x, driveVolume.y, speed01) + throttleVolume * load) * masterVolume * onOff;
+        volIdle = Mathf.Lerp(idleVolume.x, idleVolume.y, speed01) * masterVolume * onOff * zoomVolume;
+        volDrive = Mathf.Clamp01(Mathf.Lerp(driveVolume.x, driveVolume.y, speed01) + throttleVolume * load) * masterVolume * onOff * zoomVolume;
 
         if (idleSource != null) { idleSource.pitch = pitchIdle; idleSource.volume = volIdle; }
         if (driveSource != null) { driveSource.pitch = pitchDrive; driveSource.volume = volDrive; }
@@ -161,7 +167,7 @@ public class EngineSound : MonoBehaviour
         if (startSource == null || !startSource.isPlaying) return;
         if (active)
         {
-            startSource.volume = startVolume * masterVolume * Mathf.Cos(StartBlend01() * Mathf.PI / 2f);
+            startSource.volume = startVolume * masterVolume * zoomVolume * Mathf.Cos(StartBlend01() * Mathf.PI / 2f);
             return;
         }
 
@@ -189,6 +195,7 @@ public class EngineSound : MonoBehaviour
             $"speed      {vehicle.SpeedKmh,6:0.0} km/h  ({speed01 * 100f,3:0}%)\n" +
             $"gas        {(vehicle.Throttle ? "ON " : "off")}  load {load,4:0.00}\n" +
             $"start      {startLeft,5:0.00} s left\n" +
+            $"zoom vol   {zoomVolume,4:0.00}\n" +
             $"idle  pitch {pitchIdle,5:0.00}  vol {volIdle,4:0.00}\n" +
             $"drive pitch {pitchDrive,5:0.00}  vol {volDrive,4:0.00}";
         var size = debugStyle.CalcSize(new GUIContent(text));
