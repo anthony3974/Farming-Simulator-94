@@ -20,6 +20,14 @@ using UnityEngine.SceneManagement;
 //   scaled. A Light's Range ignores scale, so the tool multiplies it too; the Intensity stays, because Unity's falloff
 //   depends on distance / Range, which scaling both leaves the same. Head Distance (in the window) sets the arm's
 //   length, with the brace following it. To keep a new value, change its default below.
+// - "Place lamps along the main road" adds copies of the prefab ("Road Lamp 01", ...) in line with Street Lamp 1, every
+//   Road Lamp Spacing metres, all on Street Lamp 1's side and stopping at a road that crosses the whole main road.
+//   A lamp whose spot is taken slides up to 12 m along the road and is left out if that is not free either.
+//   Running it again replaces those lamps, so hand moves to them are lost.
+// - "Add 3 spare lamps" adds "Spare Lamp 1" to "Spare Lamp 3" just along the road from Street Lamp 1, to move by hand.
+//   Running it again only adds the ones that are missing, and the road lamp button leaves them alone.
+// - "Even out lamp spacing" spreads every lamp in line with Street Lamp 1 equally along that line, moving X only. The
+//   two end lamps stay, and so does a lamp whose even spot is taken (the lamps either side of it are evened around it).
 public class StreetLampBuilder : EditorWindow
 {
     const string SceneName = "GameScene";
@@ -30,9 +38,17 @@ public class StreetLampBuilder : EditorWindow
     const string RoadName = "Road";
     const float RoadGap = 1.0f;   // pole centre this far back from the road edge
     const float Clearance = 1.5f; // free space wanted around the pole
+    const string RoadLampPrefix = "Road Lamp ";
+    const float EndGap = 5f;      // no lamp closer than this to the end of the road
+    const int RoadLampSlides = 8; // 3 m steps each way, so up to 12 m
+    const string SpareLampPrefix = "Spare Lamp ";
+    const int SpareLamps = 3;
+    const float SpareLampGap = 15f;
+    const float SameLine = 1f;    // a lamp this close to Street Lamp 1's Z counts as in line with it
 
     [SerializeField] float lampScale = 2.5f;
     [SerializeField] float headDistance = 10f; // real metres from the pole to the centre of the lamp head; keeps its length when Lamp Scale changes
+    [SerializeField] float roadLampSpacing = 70f; // the light reaches about 35 m each way at 2.5x, so the pools just touch
 
     [MenuItem("Tools/Street Lamp Builder")]
     static void Open() { GetWindow<StreetLampBuilder>("Street Lamp"); }
@@ -47,24 +63,71 @@ public class StreetLampBuilder : EditorWindow
         EditorGUILayout.LabelField($"Lamp height {StreetLampModel.Height * lampScale:0.0} m");
         headDistance = Mathf.Max(StreetLampModel.MinHeadOut * lampScale, EditorGUILayout.FloatField("Head Distance (m)", headDistance));
         if (GUILayout.Button("Build / rebuild street lamp")) Build(lampScale, headDistance);
+        EditorGUILayout.Space();
+        roadLampSpacing = Mathf.Max(20f, EditorGUILayout.FloatField("Road Lamp Spacing (m)", roadLampSpacing));
+        if (GUILayout.Button("Place lamps along the main road")) PlaceAlongRoad(roadLampSpacing);
+        if (GUILayout.Button("Add 3 spare lamps")) AddSpareLamps();
+        if (GUILayout.Button("Even out lamp spacing")) EvenOutLamps();
+    }
+
+    static bool FindMainRoad(string title, out Renderer roadRenderer)
+    {
+        var roads = GameObject.Find("Roads and paths");
+        var road = roads != null ? roads.transform.Find(RoadName) : null;
+        roadRenderer = road != null ? road.GetComponent<Renderer>() : null;
+        if (roadRenderer != null) return true;
+        EditorUtility.DisplayDialog(title, $"No '{RoadName}' object found under 'Roads and paths'.", "OK");
+        return false;
+    }
+
+    // Everything a pole must not stand in. Other roads count here (Blockers lets flat ones through); terrain trees are not Renderers.
+    static List<Bounds> PlacementBlockers(Terrain terrain, Renderer roadRenderer, Transform ignore = null)
+    {
+        var blockers = Blockers(roadRenderer, ignore);
+        foreach (var r in roadRenderer.transform.parent.GetComponentsInChildren<Renderer>())
+            if (r != roadRenderer) blockers.Add(r.bounds);
+        Vector3 terrainPos = terrain.transform.position, terrainSize = terrain.terrainData.size;
+        foreach (var tree in terrain.terrainData.treeInstances)
+            blockers.Add(new Bounds(terrainPos + Vector3.Scale(tree.position, terrainSize), Vector3.one));
+        return blockers;
+    }
+
+    static bool FindFirstLamp(string title, Terrain terrain, out GameObject prefab, out Transform group, out Transform first)
+    {
+        prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        group = terrain.transform.Find(GroupName);
+        first = group != null ? group.Find(LampName) : null;
+        if (prefab != null && first != null) return true;
+        EditorUtility.DisplayDialog(title, "Press \"Build / rebuild street lamp\" first, the other lamps line up with that lamp.", "OK");
+        return false;
+    }
+
+    static bool CanEdit(string title, out Scene scene, out Terrain terrain)
+    {
+        scene = SceneManager.GetActiveScene();
+        terrain = Terrain.activeTerrain;
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+            EditorUtility.DisplayDialog(title, "Stop Play mode first. Changes made in Play mode are lost.", "OK");
+            return false;
+        }
+        if (scene.name != SceneName)
+        {
+            EditorUtility.DisplayDialog(title, $"Open {SceneName} first (the open scene is '{scene.name}').", "OK");
+            return false;
+        }
+        if (terrain == null)
+        {
+            EditorUtility.DisplayDialog(title, "No terrain found in the open scene.", "OK");
+            return false;
+        }
+        return true;
     }
 
     static void Build(float scale, float headDistance)
     {
         const string title = "Street Lamp";
-        if (EditorApplication.isPlayingOrWillChangePlaymode)
-        {
-            EditorUtility.DisplayDialog(title, "Stop Play mode first. Changes made in Play mode are lost.", "OK");
-            return;
-        }
-        Scene scene = SceneManager.GetActiveScene();
-        if (scene.name != SceneName)
-        {
-            EditorUtility.DisplayDialog(title, $"Open {SceneName} first (the open scene is '{scene.name}').", "OK");
-            return;
-        }
-        Terrain terrain = Terrain.activeTerrain;
-        if (terrain == null) { EditorUtility.DisplayDialog(title, "No terrain found in the open scene.", "OK"); return; }
+        if (!CanEdit(title, out Scene scene, out Terrain terrain)) return;
 
         var prefab = BuildPrefab(scale, headDistance / scale);
         if (prefab == null) { EditorUtility.DisplayDialog(title, "Could not save the prefab, see the Console.", "OK"); return; }
@@ -119,6 +182,185 @@ public class StreetLampBuilder : EditorWindow
         Debug.Log($"Street lamp built: prefab {PrefabPath}, '{LampName}' at X {pos.x:0.0}, Z {pos.z:0.0}. Save the scene (Ctrl+S).", lamp);
     }
 
+    // Lamps along the main road, in line with Street Lamp 1 and keeping its height above the ground and its direction.
+    static void PlaceAlongRoad(float spacing)
+    {
+        const string title = "Road Lamps";
+        if (!CanEdit(title, out Scene scene, out Terrain terrain)) return;
+
+        if (!FindFirstLamp(title, terrain, out GameObject prefab, out Transform group, out Transform first)) return;
+        if (!FindMainRoad(title, out Renderer roadRenderer)) return;
+        Transform roads = roadRenderer.transform.parent;
+
+        var old = new List<GameObject>();
+        foreach (Transform child in group)
+            if (child.name.StartsWith(RoadLampPrefix)) old.Add(child.gameObject);
+        if (old.Count > 0 && !EditorUtility.DisplayDialog(title,
+                $"Replace the {old.Count} road lamps already there? Any you moved by hand are placed again.", "Replace", "Cancel"))
+            return;
+
+        Undo.SetCurrentGroupName("Place road lamps");
+        int undoGroup = Undo.GetCurrentGroup();
+        foreach (var lamp in old) Undo.DestroyObjectImmediate(lamp);
+
+        var blockers = PlacementBlockers(terrain, roadRenderer);
+        Vector3 terrainPos = terrain.transform.position;
+
+        Bounds rb = roadRenderer.bounds;
+        float z = first.position.z;
+        float minX = rb.min.x + EndGap, maxX = rb.max.x - EndGap;
+        foreach (var r in roads.GetComponentsInChildren<Renderer>())
+        {
+            Bounds b = r.bounds;
+            if (r == roadRenderer || b.min.z > rb.min.z || b.max.z < rb.max.z) continue; // only a road right across this one
+            if (b.center.x > first.position.x) maxX = Mathf.Min(maxX, b.min.x - EndGap);
+            else minX = Mathf.Max(minX, b.max.x + EndGap);
+        }
+
+        var spots = new List<Vector3>();
+        var missed = new List<float>();
+        for (int dir = -1; dir <= 1; dir += 2)
+            for (float x = first.position.x + dir * spacing; x >= minX && x <= maxX; x += dir * spacing)
+            {
+                if (FreeSpot(x, z, minX, maxX, blockers, out Vector3 p)) spots.Add(p);
+                else missed.Add(x);
+            }
+        spots.Sort((a, b) => a.x.CompareTo(b.x));
+
+        for (int i = 0; i < spots.Count; i++)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, group);
+            Undo.RegisterCreatedObjectUndo(go, "Place road lamps");
+            go.name = $"{RoadLampPrefix}{i + 1:00}";
+            Vector3 p = spots[i];
+            p.y = terrain.SampleHeight(p) + terrainPos.y;
+            go.transform.SetPositionAndRotation(p, first.rotation);
+            Debug.Log($"{go.name} at X {p.x:0.0}, Z {p.z:0.0}");
+        }
+
+        Undo.CollapseUndoOperations(undoGroup);
+        EditorSceneManager.MarkSceneDirty(scene);
+        Selection.activeGameObject = group.gameObject;
+        string left = missed.Count > 0 ? $" No free spot near X {string.Join(", ", missed)}." : "";
+        Debug.Log($"Placed {spots.Count} road lamps, {spacing:0} m apart.{left} Save the scene (Ctrl+S).", group);
+    }
+
+    // Lamps to move by hand, so one already there is never touched. All three end up selected.
+    static void AddSpareLamps()
+    {
+        const string title = "Spare Lamps";
+        if (!CanEdit(title, out Scene scene, out Terrain terrain)) return;
+        if (!FindFirstLamp(title, terrain, out GameObject prefab, out Transform group, out Transform first)) return;
+
+        Undo.SetCurrentGroupName("Add spare lamps");
+        int undoGroup = Undo.GetCurrentGroup();
+        var spares = new List<Object>();
+        int added = 0;
+        for (int i = 1; i <= SpareLamps; i++)
+        {
+            string lampName = SpareLampPrefix + i;
+            Transform spare = group.Find(lampName);
+            if (spare == null)
+            {
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, group);
+                Undo.RegisterCreatedObjectUndo(go, "Add spare lamps");
+                go.name = lampName;
+                spare = go.transform;
+                Vector3 p = first.position + Vector3.right * (SpareLampGap * i);
+                p.y = terrain.SampleHeight(p) + terrain.transform.position.y;
+                spare.SetPositionAndRotation(p, first.rotation);
+                added++;
+            }
+            spares.Add(spare.gameObject);
+        }
+
+        Undo.CollapseUndoOperations(undoGroup);
+        if (added > 0) EditorSceneManager.MarkSceneDirty(scene);
+        Selection.objects = spares.ToArray();
+        Debug.Log($"Added {added} spare lamps under {GroupName}. Save the scene (Ctrl+S).", group);
+    }
+
+    // Equal gaps along the line of lamps. Only X changes, and only for lamps that can go to their even spot.
+    static void EvenOutLamps()
+    {
+        const string title = "Even Lamp Spacing";
+        if (!CanEdit(title, out Scene scene, out Terrain terrain)) return;
+        if (!FindFirstLamp(title, terrain, out _, out Transform group, out Transform first)) return;
+        if (!FindMainRoad(title, out Renderer roadRenderer)) return;
+
+        float z = first.position.z;
+        var lamps = new List<Transform>();
+        foreach (Transform child in group)
+            if (Mathf.Abs(child.position.z - z) < SameLine) lamps.Add(child);
+        lamps.Sort((a, b) => a.position.x.CompareTo(b.position.x));
+        if (lamps.Count < 3)
+        {
+            EditorUtility.DisplayDialog(title, "There need to be at least 3 lamps in line with Street Lamp 1.", "OK");
+            return;
+        }
+
+        var blockers = PlacementBlockers(terrain, roadRenderer, group);
+        var stays = new bool[lamps.Count];
+        stays[0] = stays[lamps.Count - 1] = true;
+        float[] targets;
+        while (true)
+        {
+            targets = EvenTargets(lamps, stays);
+            int taken = -1;
+            for (int i = 0; i < lamps.Count && taken < 0; i++)
+                if (!stays[i] && Blocked(new Vector3(targets[i], 0f, z), blockers)) taken = i;
+            if (taken < 0) break;
+            stays[taken] = true; // stays where it is; the lamps either side are worked out again around it
+        }
+
+        Undo.SetCurrentGroupName("Even out lamp spacing");
+        int undoGroup = Undo.GetCurrentGroup();
+        var kept = new List<string>();
+        for (int i = 0; i < lamps.Count; i++)
+        {
+            if (stays[i]) { kept.Add(lamps[i].name); continue; }
+            Undo.RecordObject(lamps[i], "Even out lamp spacing");
+            Vector3 p = lamps[i].position;
+            p.x = targets[i];
+            p.y = terrain.SampleHeight(p) + terrain.transform.position.y;
+            lamps[i].position = p;
+            Debug.Log($"{lamps[i].name} at X {p.x:0.0}");
+        }
+
+        Undo.CollapseUndoOperations(undoGroup);
+        EditorSceneManager.MarkSceneDirty(scene);
+        Debug.Log($"Evened out {lamps.Count - kept.Count} lamps. Stayed where they were: {string.Join(", ", kept)}. Save the scene (Ctrl+S).", group);
+    }
+
+    // Each run of lamps between two that stay gets equal gaps.
+    static float[] EvenTargets(List<Transform> lamps, bool[] stays)
+    {
+        var targets = new float[lamps.Count];
+        int from = 0;
+        for (int to = 1; to < lamps.Count; to++)
+        {
+            if (!stays[to]) continue;
+            float a = lamps[from].position.x, b = lamps[to].position.x;
+            for (int i = from; i <= to; i++) targets[i] = Mathf.Lerp(a, b, (i - from) / (float)(to - from));
+            from = to;
+        }
+        return targets;
+    }
+
+    static bool FreeSpot(float x, float z, float minX, float maxX, List<Bounds> blockers, out Vector3 spot)
+    {
+        for (int step = 0; step <= RoadLampSlides; step++)
+        {
+            spot = new Vector3(x + SlideOffset(step), 0f, z);
+            if (spot.x >= minX && spot.x <= maxX && !Blocked(spot, blockers)) return true;
+        }
+        spot = default;
+        return false;
+    }
+
+    // 0, +3, -3, +6, -6, ...
+    static float SlideOffset(int step) => (step % 2 == 1 ? 1 : -1) * ((step + 1) / 2) * 3f;
+
     // Builds the lamp in a temporary object, saves it over the prefab (same file, so copies in the scene update), then
     // deletes the temporary object.
     static GameObject BuildPrefab(float scale, float headOut)
@@ -167,8 +409,7 @@ public class StreetLampBuilder : EditorWindow
         var blockers = Blockers(roadRenderer);
         for (int step = 0; step <= 40; step++)
         {
-            float dx = (step % 2 == 1 ? 1 : -1) * ((step + 1) / 2) * 3f; // 0, +3, -3, +6, -6, ...
-            var p = new Vector3(middle.x + dx, 0f, z);
+            var p = new Vector3(middle.x + SlideOffset(step), 0f, z);
             if (p.x < o.x + 5f || p.x > o.x + size.x - 5f) continue;
             if (!Blocked(p, blockers)) { pos = p; return; }
         }
@@ -176,12 +417,13 @@ public class StreetLampBuilder : EditorWindow
         pos = new Vector3(middle.x, 0f, z);
     }
 
-    static List<Bounds> Blockers(Renderer road)
+    static List<Bounds> Blockers(Renderer road, Transform ignore = null)
     {
         var list = new List<Bounds>();
         foreach (var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
         {
             if (r == road || r is ParticleSystemRenderer || r.GetComponent<Terrain>() != null) continue;
+            if (ignore != null && r.transform.IsChildOf(ignore)) continue;
             if (r.GetComponentInParent<Canvas>() != null) continue; // UI
             if (r.transform.IsChildOf(road.transform.parent) && r.bounds.size.y < 0.2f) continue; // other flat roads and paths are fine to stand beside, not on
             list.Add(r.bounds);
