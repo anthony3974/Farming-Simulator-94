@@ -4200,7 +4200,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f5aa2d7c06ed70aab9193e20ed186d2c, type: 2}
+  - {fileID: 2100000, guid: 535b08611aac3e4549b139a2eb8bcdf4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4802,7 +4802,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f5aa2d7c06ed70aab9193e20ed186d2c, type: 2}
+  - {fileID: 2100000, guid: 535b08611aac3e4549b139a2eb8bcdf4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9175,6 +9175,103 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6937849297758545598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5323742385871561236}
+  - component: {fileID: 8714519510741916260}
+  m_Layer: 0
+  m_Name: Headlight Beam
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5323742385871561236
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6937849297758545598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.05233596, y: 0, z: 0, w: 0.9986295}
+  m_LocalPosition: {x: 0, y: 1.15, z: 2.56}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7185920637284468056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &8714519510741916260
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6937849297758545598}
+  m_Enabled: 0
+  serializedVersion: 11
+  m_Type: 0
+  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Intensity: 5
+  m_Range: 50
+  m_SpotAngle: 60
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1 &6972637766946103897
 GameObject:
   m_ObjectHideFlags: 0
@@ -10134,6 +10231,7 @@ GameObject:
   - component: {fileID: 6221358072935377955}
   - component: {fileID: 3463283250589905806}
   - component: {fileID: 2914656273524504323}
+  - component: {fileID: 628923816246794679}
   m_Layer: 0
   m_Name: Van
   m_TagString: Untagged
@@ -10230,6 +10328,7 @@ Transform:
   - {fileID: 6035532286137467447}
   - {fileID: 8286376439377138903}
   - {fileID: 8451451730660677812}
+  - {fileID: 5323742385871561236}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &4540014198241184731
@@ -10329,7 +10428,7 @@ MonoBehaviour:
   startClip: {fileID: 8300000, guid: 5e8aef47ee97f20758d3fea1a2d24663, type: 3}
   startPitch: 1
   startVolume: 1
-  startOverlap: 0.4
+  startBlend: 0.55
   idlePitch: {x: 1.1, y: 1.6}
   drivePitch: {x: 1, y: 1.9}
   throttlePitch: 0.08
@@ -10337,10 +10436,27 @@ MonoBehaviour:
   driveVolume: {x: 0, y: 0.9}
   throttleVolume: 0.15
   masterVolume: 0.85
+  farVolume: 0.4
   response: 4
   fadeTime: 0.4
   showDebug: 0
   debugPosition: {x: 0.01, y: 0.3}
+--- !u!114 &628923816246794679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7479413325707620432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e30e05d75153238628087eeff35b96b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beam: {fileID: 8714519510741916260}
+  lenses:
+  - {fileID: 8278947103834661525}
+  - {fileID: 8857878688799846183}
 --- !u!1 &7505034640136611348
 GameObject:
   m_ObjectHideFlags: 0

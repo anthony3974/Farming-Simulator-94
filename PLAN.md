@@ -24,7 +24,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
    - **Decide with the owner:** a shared error look (for example a red or orange border, inside `ScreenPrompt.Error`); the same wording everywhere ("Not enough X. You need N, you have M.", money as "$ 1,234"; the crop sale still says "Profit (1,234$)"); whether E away from everything should say anything (could be noisy).
 
 **Soon (owner, 2026-11-06 / 11-08), after the minimap:**
-- **Vehicle headlights (owner, 2026-11-08).** On at night with `NightLight.cs` like the lamps; **automatic only, no button** ("it's really dark in the nighttime"). Two glowing lenses on each vehicle; only the vehicle you drive gets one real forward Spot `Light` (no shadows, short range, Important). Maybe red rear lights and a work light on the tractor and harvester. Built into the three prefabs by a one-off tool.
+- **Vehicle headlights (owner, 2026-11-08).** Built, to be tried: `VehicleLights.cs`, put on the three prefabs by the one-off Tools > Vehicle Lights Setup (`VehicleLightsSetup.cs`, delete it once the owner is happy). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
 - **Working lights on the house and garage** (same `NightLight.cs`).
 - **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
 
