@@ -31,7 +31,6 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Possible later (owner, 2026-11-07); ask before starting:**
 - **Trailers.** What for (carry grain, seeds / fertilizer, or looks), bought at the dealer, a hitch (physics joint or a simple follow-the-hitch trailer, steadier on phones), reversing, a capacity limit, saved in SaveGame.
 - **More tractors.** New `VehicleKind`s in `VehicleCatalog` plus prefabs (built like Tractor V2); keys 1 / 2 / 3 only cover three (Tab and CAR cycle); the dealer menu needs more rows.
-- **Vehicles on uneven ground (not asked for yet).** The floating is fixed (see Done), but the controller is still a ball (tractor radius 2.6 m, its lowest point 1.74 m behind the middle), so a bump or slope can lift a vehicle, and vehicles never tilt with the ground. If it shows up: real falling gravity (also for parked vehicles; today only the driven one is pushed down, at a constant 20 m/s), a flatter controller under the middle of the wheels, tilting only the `Model` from raycasts under the wheels. WheelColliders would change all the driving; not planned.
 
 **Distant:** advanced crop harvesting (drive across the field to harvest it; design below).
 
@@ -57,9 +56,6 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 - [ ] **A save can be lost if the app is killed mid-save.** `SaveGame.cs:108` deletes the old file before moving the new one in. A kill between those two lines leaves only `farm.json.tmp`, which Load Game ignores. Use `File.Replace`, and pick up a leftover `.tmp` when loading.
 - [ ] **H isn't blocked while menus are open.** `InputManager.cs:192` clears the other game keys but not `help`, so the help panel opens over the pause, dealer and settings menus.
 - [ ] **Money is a `float` (`PlayerValues.cs:14`).** Cents start to wobble above about $130,000. Above about $4 million the pump's per-frame charge at 60 fps rounds to nothing, so diesel is free. A `double` fixes it; the save field (`SaveData.money`) has to change too.
-
-**Decide with the owner:**
-- **Buying a ready field is as profitable as farming.** With the harvester, buying a Ready AI field, harvesting it and selling it back earns about $0.70 per unit (-2.10 + 1.12 + 1.68). Growing your own earns about $0.71 after seeds, but takes 83 s. Accept it, lower the sell-back price, or block resale for a while after buying.
 
 **Before publishing:**
 - [ ] No release keystore (`androidUseCustomKeystore: 0`), so builds are debug-signed. Google Play needs a release key.
