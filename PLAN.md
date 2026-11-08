@@ -10,6 +10,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 ## NEXT UP (in order)
 
 1. **Sounds (in progress).** Done and in the game (`GameSounds.cs`): button click, menu open / close, money in (double desk bell), money out (deep bell), planting, harvesting, fertilizing (one-shots, made by `Art/Sounds/make_*.py`). **Next: engine start sound (owner, 2026-11-08).** Today the engine loop just fades in when you get in (`EngineSound.cs`). Play a short starter crank + catch when you get into or switch to a vehicle, then hand over to the idle loop; maybe a shut-down sound when you get out. One sound per vehicle, or a shared one pitched per vehicle. **Owner: the sounds come from the same place as the engine loops ("Sound FX Engine", owner thinks;** the current files are `freesound_community-...`). Check the licence of each pick, then cut and level them like the loops (`Art/Sounds/make_loops.py`).
+   - [ ] **Planting is too quiet in the game (owner, 2026-11-08): make it louder or sharper.** Heard in Play; harvesting and fertilizing are fine. Ideas: a sharper, louder blade scrape at the start (more 2 to 5 kHz), a stronger "chk" as the edge bites, less soft low dirt bed (which uses up the peak level without sounding loud), or raise it in the game (a per-sound volume, or `farmVolume` on `GameSounds.prefab`). Generator: `Art/Sounds/make_farm_sounds.py` (planting is version 4).
    - Not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
    - Tidy: `Assets/Editor/GameSoundsSetup.cs` has been run; delete it when no more sounds are added to the prefab.
 2. **Street lamps across the map (owner, 2026-11-05).** One lamp is built (`Assets/Prefabs/Street Lamp.prefab`, `Street Lamp 1` under `Terrain > Street Lamps`, by Tools > Street Lamp Builder: `StreetLampBuilder.cs` + `StreetLampModel.cs`). It has a real Spot `Light` (no shadows, Render Mode Important) and `NightLight.cs` turns it on at night.
@@ -39,10 +40,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
-- **Fertilizer colour:** fertilizing turns the field light blue (100, 185, 235) at level 1, deeper blue (80, 155, 235) at level 2, until its next growth stage (`FieldController.CurrentColor()`; saved). Owner: check it turns blue and back.
-- **Camera orbit (built 2026-11-07):** full 360 orbit around the vehicle, zoom (wheel / pinch), double-tap recentres on touch, sphere cast so it does not clip into walls. Owner: test on PC and the phone; check the help rows' text fits.
-- **Tab = next vehicle on PC (2026-11-07):** like the CAR button; "You only own the tractor" if there is no other. Not yet tried.
-- **SETTINGS > GAME tab leftovers:** the help menu's PC panel has no row for O (SETTINGS) yet; check the night brightness on the phone; the time of day is not saved (ask if it should be).
+- **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.
 - **Old history backup:** `../Farming-Simulator-94-mirror-backup.git` (outside the project) can be deleted; the rewritten history was pushed and checked on 2026-11-03.
@@ -57,6 +55,8 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **Help menu PC row for O (2026-11-08):** "Settings (mirrors, minimap, day / night) / O" below the pause row (Tools > Help: PC Settings Row, run by the owner, then deleted; not committed before deletion).
+- **Tried by the owner (2026-11-08):** fertilizer colour (blue at level 1, deeper blue at level 2, back to the crop colour at the next stage), camera orbit (full 360, zoom, double-tap recentre, no clipping into walls), Tab = next vehicle on PC. All good.
 - **Vehicles no longer float when driven; van mud flaps removed (2026-11-08).** A CharacterController rests 8 cm (Skin Width) above the ground and the tractor's was set 5 cm low, so it rose 11 cm in Play. Tools > Vehicle Ground Fix (git `234fce5`) set each prefab's controller Center Y so the tire rubber sits 1 cm into flat ground with the lugs in it (owner: "lugs in the ground like the van and harvester"): tractor 2.69, van 2.59, harvester 3.49. Run it again after changing a tire size or the tread.
 - **Tire tread and rolling wheels (2026-11-08):** V-pattern cube lugs on every tire of all three vehicles (Tire Tread Builder, git `26cd78b`; lug colour `Assets/Vehicles/TireTread.mat`); the tires roll by the distance really driven (`Roll Wheels` on `Vehicle`).
 - **Farming sounds (2026-11-08):** planting (shovel scrape, then dirt), harvesting, fertilizing; only on your own fields.
