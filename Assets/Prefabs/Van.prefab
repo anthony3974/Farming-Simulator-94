@@ -10326,6 +10326,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleClip: {fileID: 8300000, guid: 13db26698ecaf3e4e823fa4aa36a385d, type: 3}
   driveClip: {fileID: 8300000, guid: e10eb262c0a3b32e58cffa151eb93f21, type: 3}
+  startClip: {fileID: 8300000, guid: 5e8aef47ee97f20758d3fea1a2d24663, type: 3}
+  startPitch: 1
+  startVolume: 1
+  startOverlap: 0.4
   idlePitch: {x: 1.1, y: 1.6}
   drivePitch: {x: 1, y: 1.9}
   throttlePitch: 0.08

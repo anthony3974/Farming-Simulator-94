@@ -44,7 +44,8 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 ## Unity setup
 - The loops are imported as Force To Mono, Decompress On Load, Vorbis (set by the one-off Engine Sound Setup tool, git history `d58093e`).
 - Chain (built, `EngineSound.cs`): the idle loop crossfades into the drive loop as the speed rises, with pitch following speed.
-- Missing sounds: engine start (cranking), shut-down, and rev-up/acceleration.
+- Engine start: `Assets/Sounds/Starts`, made by `python3 Art/Sounds/make_starts.py` from the owner's cuts (`freesound_community-engine-start-86242_3.mp3` for the tractor and harvester, `u_rq4ihf0g2m-volvo-engine-431665_1.mp3` for the van). Levelled to about -17 dBFS RMS, a short fade at each end; `EngineSound` crossfades the clip into the idle loop over its last 55% (`Start Blend`). The tractor and harvester clip is pitched up 1.3x and high-passed at 50 Hz, because it sounded deeper than the idle (it ran at an 8.3 Hz pulse with a 25 Hz rumble; the idle runs at 10.9 Hz).
+- Missing sounds: shut-down and rev-up/acceleration.
 
 ## The "maybe" folder, briefly
 - `se_lzglo57553gp6cgj.wav`: 15 s, very steady, ~19 Hz pulse. Peaks at 0 dBFS, so turn it down ~6 dB. It clicks at the loop point and needs a crossfade.

@@ -9,16 +9,13 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## NEXT UP (in order)
 
-1. **Sounds (in progress).** Done and in the game (`GameSounds.cs`): button click, menu open / close, money in (double desk bell), money out (deep bell), planting, harvesting, fertilizing (one-shots, made by `Art/Sounds/make_*.py`). **Next: engine start sound (owner, 2026-11-08).** Today the engine loop just fades in when you get in (`EngineSound.cs`). Play a short starter crank + catch when you get into or switch to a vehicle, then hand over to the idle loop; maybe a shut-down sound when you get out. One sound per vehicle, or a shared one pitched per vehicle. **Owner: the sounds come from the same place as the engine loops ("Sound FX Engine", owner thinks;** the current files are `freesound_community-...`). Check the licence of each pick, then cut and level them like the loops (`Art/Sounds/make_loops.py`).
-   - Not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
-   - Tidy: `Assets/Editor/GameSoundsSetup.cs` has been run; delete it when no more sounds are added to the prefab.
-2. **Street lamps across the map (owner, 2026-11-05).** One lamp is built (`Assets/Prefabs/Street Lamp.prefab`, `Street Lamp 1` under `Terrain > Street Lamps`, by Tools > Street Lamp Builder: `StreetLampBuilder.cs` + `StreetLampModel.cs`). It has a real Spot `Light` (no shadows, Render Mode Important) and `NightLight.cs` turns it on at night.
+1. **Street lamps across the map (owner, 2026-11-05).** One lamp is built (`Assets/Prefabs/Street Lamp.prefab`, `Street Lamp 1` under `Terrain > Street Lamps`, by Tools > Street Lamp Builder: `StreetLampBuilder.cs` + `StreetLampModel.cs`). It has a real Spot `Light` (no shadows, Render Mode Important) and `NightLight.cs` turns it on at night.
    - [ ] **Make the lamp bigger (owner, 2026-11-08).** At 8.1 m it is shorter than the house. Scale it up (the owner picks the size: clearly taller than the house roof) with one number in the builder (`Lamp Scale`). A `Light`'s Range ignores scale, so the tool multiplies Range (18 m at 1x) by the same factor; keep the 120 degree cone and check Intensity by eye so the ground is as bright as before.
    - [ ] Then place lamps along the roads (also in the builder), at the buildings and the gas station (its own lamps were removed for this).
    - Phones: many real lights are costly (Android Medium has 1 pixel light, the sun's). Few lit lamps, short ranges, no shadows; far lamps could show only the glowing lens. Check the Android frame rate.
    - The builder stays until the owner is happy with the lamps.
-3. **Minimap (owner, 2026-11-05).** A small map in a corner showing the vehicle you drive, the fields and the buildings (a top-down camera into a RenderTexture, or a drawn map image with markers). It reads `GameSettings.Minimap` (the SETTINGS > GAME switch exists already); when off, nothing of it runs (camera disabled).
-4. **Error messages (owner, 2026-11-08).** When something can't be done, say why. Most cases already flash a plain message in the centre box, so this is mostly making errors look and sound like errors and filling the gaps.
+2. **Minimap (owner, 2026-11-05).** A small map in a corner showing the vehicle you drive, the fields and the buildings (a top-down camera into a RenderTexture, or a drawn map image with markers). It reads `GameSettings.Minimap` (the SETTINGS > GAME switch exists already); when off, nothing of it runs (camera disabled).
+3. **Error messages (owner, 2026-11-08).** When something can't be done, say why. Most cases already flash a plain message in the centre box, so this is mostly making errors look and sound like errors and filling the gaps.
    - **Already shown:** field not yours (`FieldController.NotYours`); not enough seeds / fertilizer; fertilize an empty field / a ready crop / fully fertilized / already fertilized this stage; the van can't work fields; not enough money (field, seeds, fertilizer, diesel, vehicle); no crop to sell (`Building.Sell`); tank already full; pumping stopped (out of money, tank full, drove off); no vehicle of that kind on the map (dealer).
    - **Gaps (nothing happens now):** E / USE away from any field or building; B / BUY SELL away from a field; harvesting with no bonus (tractor, unfertilized) shows no message, so give it a plain "Harvested 1,234 Wheat"; buying a vehicle you already own (`Dealer.Buy` returns silently; check whether the row is already greyed out); C in the van (maybe fine).
    - **Decide with the owner:** a shared error look (for example a red or orange border, `ScreenPrompt.Error(text)` next to `Flash`); a short error sound (a soft low "bonk", `GameSounds.Sound.Error`, below money in importance); the same wording everywhere ("Not enough X. You need N, you have M.", money as "$ 1,234"; the crop sale still says "Profit (1,234$)"); whether E away from everything should say anything (could be noisy).
@@ -39,12 +36,15 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
+- **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.
 - **Old history backup:** `../Farming-Simulator-94-mirror-backup.git` (outside the project) can be deleted; the rewritten history was pushed and checked on 2026-11-03.
 
 ## Smaller open notes
+- Sounds not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
+- Tidy: `Assets/Editor/GameSoundsSetup.cs` and `Assets/Editor/EngineStartSetup.cs` have been run; delete them when no more sounds are added.
 - Android: check the touch layout against the field pop-up on phones with a notch / rounded corners (safe area); performance on a phone (terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`); sharing (APK for Android friends, maybe a WebGL build on itch.io); optional icons instead of `<` `>` `GAS` `BRAKE` `USE` labels, haptic feedback.
 - Help menu phase 2 (if wanted): icons instead of text, a gamepad layout.
 - One E press can act on a field and a building if their trigger zones overlap.
@@ -54,6 +54,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **Engine start sounds (2026-11-08):** a one-shot on getting in or switching (also when the game begins) that crossfades into the idle loop over its last 55% (`Start Blend`). Tractor and harvester share `Starts/EngineStartDiesel.wav` (harvester pitched 0.85), the van has `Starts/EngineStartVan.wav`; made by `Art/Sounds/make_starts.py`. Owner: "good enough".
 - **Help menu PC row for O (2026-11-08):** "Settings (mirrors, minimap, day / night) / O" below the pause row (Tools > Help: PC Settings Row, run by the owner, then deleted; not committed before deletion).
 - **Tried by the owner (2026-11-08):** fertilizer colour (blue at level 1, deeper blue at level 2, back to the crop colour at the next stage), camera orbit (full 360, zoom, double-tap recentre, no clipping into walls), Tab = next vehicle on PC. All good.
 - **Vehicles no longer float when driven; van mud flaps removed (2026-11-08).** A CharacterController rests 8 cm (Skin Width) above the ground and the tractor's was set 5 cm low, so it rose 11 cm in Play. Tools > Vehicle Ground Fix (git `234fce5`) set each prefab's controller Center Y so the tire rubber sits 1 cm into flat ground with the lugs in it (owner: "lugs in the ground like the van and harvester"): tractor 2.69, van 2.59, harvester 3.49. Run it again after changing a tire size or the tread.
@@ -61,7 +62,7 @@ One line each; tools named "(git `abc1234`)" were run and then removed, and can 
 - **Farming sounds (2026-11-08):** planting (shovel scrape, then dirt), harvesting, fertilizing; only on your own fields. Planting remade louder and sharper (version 5, peak -5 dBFS); owner: "planting sound is good".
 - **Money and UI sounds (2026-11-07 / 08):** click, menu open / close, money in, money out (`GameSounds.cs`, prefab `Assets/Resources/GameSounds.prefab`). Owner: "sounds are great".
 - **SETTINGS > GAME tab and day / night cycle (2026-11-07):** mirrors, minimap, cycle on / off, day and night length (default 10 and 5 min), remembered on the device (`GameSettings.cs`); O opens SETTINGS on PC. `DayNightCycle.cs` on the `Directional Light` (sun, moon, dimmed sky copy; skip to sunset / night from its menu); `NightLight.cs` lights the lamps at night. Settings Game Tab builder: git `baef95c`.
-- **First street lamp (2026-11-07):** see NEXT UP 2.
+- **First street lamp (2026-11-07):** see NEXT UP 1.
 - **Fuel and the gas station (2026-11-06):** one shared 100 L tank, 10 L per km, Jerrys Gas Station fills at 4 L/s for $2 / L (E / USE starts and stops), fuel gauge above the speedometer, low-fuel warning at 20% (Gas Station Builder git `ad4b1a4`, Fuel Gauge Builder git `d7abd45`).
 - **AI owners work their own fields (2026-11-06):** random start states, they plant, sometimes fertilize and harvest (`FieldController.AiWork`, settings under "AI owners").
 - **Touch controls rework (2026-11-06):** buttons are scene objects; SETTINGS panel picks steering (`< >`, wheel, slider), pedals (buttons or a pedal slider, 80% gas / 20% brake) and square or rounded buttons (`TouchSettings.cs`); held buttons sink; sliding off and back on works; FERT button removed, USE fertilizes (Build Touch Controls git `a94cdbb`).
