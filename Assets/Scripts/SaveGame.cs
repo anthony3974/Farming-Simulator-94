@@ -258,7 +258,7 @@ public class SaveData
     public string savedAt;
     public string gameVersion;
 
-    public float money;
+    public double money;        // a float until 2026-11-08; older saves load the same
     public int seeds;
     public int fertilizer;
     public float fuel;

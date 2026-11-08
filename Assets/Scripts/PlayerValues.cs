@@ -11,7 +11,9 @@ public class PlayerValues : MonoBehaviour
     public TMP_Text txBarley;
     private int inOat;
     public TMP_Text txOat;
-    private float money;
+    // double, not float: a float loses cents above about $130,000, and above about $4 million the pump's
+    // per-frame charge rounded to nothing, so diesel was free
+    private double money;
     [Tooltip("Optional. Shows the money in the counters panel.")]
     public TMP_Text txMoney;
 
@@ -87,7 +89,7 @@ public class PlayerValues : MonoBehaviour
 
     public int InWheat { get => inWheat; set { inWheat = value; UpdateUI(); } }
     public int InBarley { get => inBarley; set { inBarley = value; UpdateUI(); } }
-    public float Money { get => money; set { money = value; UpdateUI(); } }
+    public double Money { get => money; set { money = value; UpdateUI(); } }
     public int Seeds { get => seeds; set { seeds = value; UpdateUI(); } }
     public int Fertilizer { get => fertilizer; set { fertilizer = value; UpdateUI(); } }
     public int InOat { get => inOat; set { inOat = value; UpdateUI(); } }
