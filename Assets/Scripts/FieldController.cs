@@ -22,11 +22,11 @@ public class FieldController : MonoBehaviour
     [Tooltip("Fields owned by this name belong to the player and can be used. All other fields get a random AI owner.")]
     [SerializeField] private string playerName = "Anthony";
 
-    // Field names taken from the 2D game. Fields not owned by the player get a random unused one.
+    // Made-up field names. Fields not owned by the player get a random unused one.
     private static readonly string[] FieldNames =
     {
-        "Dahl Ranch", "Alpine Farming", "Deer Creek", "Erlengrat", "Welker Farms", "Goldcrest Valley",
-        "Lone Oak", "Estancia Lapacho", "Felsbrunn", "Minibrunn", "No Man's Land", "Ravenport",
+        "Willow Bend", "Crooked Fence", "Hayloft Hill", "Muddy Boots", "Pebble Brook", "Old Mill Road",
+        "Sparrow Meadow", "Two Gate Farm", "Bramble Patch", "Foxglove Flats", "Rusty Gate", "Turnip Hollow",
     };
     // names handed out to the fields in the loaded scene; a field gives its name back when it is destroyed
     private static readonly List<string> usedNames = new();
@@ -273,7 +273,7 @@ public class FieldController : MonoBehaviour
     private void OnDisable() => Vehicle.ActiveChanged -= OnVehicleSwitched;
 
     // give the name back, so the next game (Main Menu > New Game again) can use the base names again
-    // instead of "Lone Oak 2": usedNames is static, so it outlives the scene
+    // instead of "Willow Bend 2": usedNames is static, so it outlives the scene
     private void OnDestroy()
     {
         if (pickedName != null) usedNames.Remove(pickedName);
@@ -301,10 +301,10 @@ public class FieldController : MonoBehaviour
         else fieldView.UpdateUI(false);
     }
 
-    // A random unused name from the 2D game's list. Once all of them are taken (12 AI fields), a random base
-    // name gets the next free number ("Dahl Ranch 2", "Dahl Ranch 3", ...), so adding fields never runs out.
+    // A random unused name from FieldNames. Once all of them are taken (12 AI fields), a random base
+    // name gets the next free number ("Willow Bend 2", "Willow Bend 3", ...), so adding fields never runs out.
     // A base name nobody uses yet; only when all of them are taken (more AI fields than names), a base name
-    // with the first free number: "Lone Oak 2", "Lone Oak 3", ...
+    // with the first free number: "Willow Bend 2", "Willow Bend 3", ...
     private static string PickAiFieldName()
     {
         var free = new List<string>(FieldNames);

@@ -62,7 +62,6 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
   - The Android package (`com.Tony3974.FarmSim943D`) can't have an apostrophe; use something like `com.Tony3974.AcesFarm`. Set it before the first Google Play upload: it can never change after that.
   - Changing the Product Name or the package moves the save folder (`Application.persistentDataPath`), so test saves from the old name won't load, and on Android the renamed app installs beside the old one (uninstall the old one).
   - The README and PLAN titles, and the comment at the top of `Art/Icon/make_icon.py`. The GitHub repo is also called Farming-Simulator-94 (can be renamed on GitHub; old links redirect).
-- [ ] **Field names (`FieldController.FieldNames`).** They came from the 2D game. "John Deer" was one letter off the John Deere trademark and is now "Deer Creek" (see Done); several others are map and expansion names from GIANTS' games (Felsbrunn, Ravenport, Goldcrest Valley, Erlengrat, Estancia Lapacho, No Man's Land, Alpine Farming). Swap them for made-up names, so Ace's Farm doesn't read as a Farming Simulator fan game. Saves store each field's name, so an old save keeps the old names until a new game.
 
 **Cleanup:**
 - [ ] README lines 57 and 61 still list the engine start sound and the zoom-out volume as upcoming; both are done.
@@ -81,6 +80,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **All 12 AI field names replaced with made-up ones (2026-11-08)** in `FieldController.FieldNames`, away from the John Deere brand and the map and expansion names from GIANTS' games. A save puts its own field names back, so an old save keeps the old names until a new game.
 - **Money is a `double` (2026-11-08):** `PlayerValues.money` and the save's `SaveData.money` were floats, which lose cents above about $130,000, and above about $4 million the pump's per-frame charge rounded to nothing (free diesel). Older saves load unchanged (same JSON field, format still 1).
 - **H blocked while a menu is open (2026-11-08):** `InputManager` clears `help` with the other game keys while the pause, dealer or settings menu is open, and `HelpMenu` hides itself if one of those menus opens while the help is up.
 - **TMP Essentials tracked (2026-11-08):** `Assets/TextMesh Pro` was in `.gitignore`, so a fresh clone had no `LiberationSans SDF` and no text. The folder is now in git, taken from Unity's TextMeshPro 3.2.0-pre.15 package (the classic TMP that Unity 6's built-in `com.unity.ugui` 2.0.0 is based on; ugui 2.0.0 itself only ships inside the editor), plus the EmojiOne sprite asset that `TMP Settings` points to. Same GUIDs as Window > TextMeshPro > Import TMP Essential Resources. A working copy that already has the folder must move it away before pulling.
