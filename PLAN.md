@@ -5,7 +5,7 @@
 
 Cleaned up on 2026-11-08: finished work is one line each under "Done"; the long notes on it (how each tool worked, test steps, old decisions) are in the git history of this file (`git log -p PLAN.md`, last long version in `356ea6b`). Sound details are in `Assets/Sounds/AUDIO_NOTES.md`.
 
-Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.6.8.
+Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.6.8. **Releasing:** change only Project Settings > Player > Version; the Android version code is set from it on every Android build (`Assets/Editor/AndroidVersionCode.cs`: major x 10000 + minor x 100 + patch, 0.6.8 -> 608; it was the version without dots, 68, before).
 
 ## NEXT UP (in order)
 
