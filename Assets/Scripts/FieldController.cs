@@ -233,6 +233,7 @@ public class FieldController : MonoBehaviour
         if (IsPlayerField)
         {
             playerValues.Money += sellPrice;
+            GameSounds.Play(GameSounds.Sound.MoneyIn);
             // the crop keeps growing, so you can buy the field back and harvest it
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
             RefreshUI();
@@ -242,6 +243,7 @@ public class FieldController : MonoBehaviour
         {
             if (playerValues.Money < value) { box.Flash("Not enough money", 3f); return; }
             playerValues.Money -= value;
+            GameSounds.Play(GameSounds.Sound.MoneyOut);
             ownerName = playerName;
             RefreshUI();
             box.Flash($"Bought {fieldName} for $ {price}", 3f);

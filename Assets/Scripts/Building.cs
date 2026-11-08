@@ -199,6 +199,7 @@ public class Building : MonoBehaviour
 
         float profit = amount * Random.Range(minPrice, maxPrice);
         playerValues.Money += profit;
+        GameSounds.Play(GameSounds.Sound.MoneyIn);
         ShowMessage($"{crop} Sold, Profit ({profit:N0}$)");
     }
 
@@ -213,6 +214,7 @@ public class Building : MonoBehaviour
 
         playerValues.Money -= cost;
         playerValues.Seeds += seedsPerBuy;
+        GameSounds.Play(GameSounds.Sound.MoneyOut);
         ShowMessage($"Bought {seedsPerBuy:N0} seeds for $ {cost:N0}");
     }
 
@@ -227,6 +229,7 @@ public class Building : MonoBehaviour
 
         playerValues.Money -= cost;
         playerValues.Fertilizer += fertilizerPerBuy;
+        GameSounds.Play(GameSounds.Sound.MoneyOut);
         ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}");
     }
 
@@ -292,6 +295,7 @@ public class Building : MonoBehaviour
         pumping = false;
         SetPumpDisplays(PumpPriceText);
         promptText = null;
+        if (pumpedLitres > 0.05f) GameSounds.Play(GameSounds.Sound.MoneyOut); // paid once, when filling ends
         ShowMessage(pumpedLitres > 0.05f ? $"{reason}: {pumpedLitres:0.0} L of diesel for $ {pumpedCost:N2}" : reason);
     }
 

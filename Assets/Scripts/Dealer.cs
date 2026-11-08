@@ -110,6 +110,7 @@ public class Dealer : MonoBehaviour
 
         menuRoot.SetActive(true);
         openedFrame = Time.frameCount;
+        GameSounds.Play(GameSounds.Sound.MenuOpen);
         inputManager.MenuOpen = true;
         player.SetCursorLocked(false);
         Refresh();
@@ -118,6 +119,7 @@ public class Dealer : MonoBehaviour
     private void Close(bool relockMouse)
     {
         menuRoot.SetActive(false);
+        GameSounds.Play(GameSounds.Sound.MenuClose);
         inputManager.MenuOpen = false;
         if (relockMouse && !inputManager.TouchControlsActive) player.SetCursorLocked(true);
     }
@@ -149,6 +151,7 @@ public class Dealer : MonoBehaviour
         }
 
         playerValues.Money -= info.price;
+        GameSounds.Play(GameSounds.Sound.MoneyOut);
         player.AddVehicle(vehicle);
         Close(relockMouse: true);
 

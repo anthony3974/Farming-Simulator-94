@@ -95,7 +95,7 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 - Real coins are very complex, so a CC0 recording from freesound ("cash register", "coin pickup", "ka-ching") would probably still sound best.
 - Generator: `python3 Art/Sounds/make_money_in.py` writes `Assets/Sounds/MoneyIn.wav` (fixed random seed, so the same file every run). Versions 1 to 7 had no saved script, and versions 8 to 11 were replaced by the desk bell (rebuild them from the table if needed).
 - Desk bell lesson: equal-level split pairs cancel fully and make a deep ~20 dB pulse; a 65/35 split keeps the wobble gentle.
-- Final: version 17, in `Assets/Sounds/MoneyIn.wav`. Not played from code yet.
+- Final: version 17, in `Assets/Sounds/MoneyIn.wav`. Played by `GameSounds` (see In the game below).
 
 # Money-out sound: notes
 
@@ -113,7 +113,7 @@ A short, deep bell "dong" for spending money, the low partner of the bright mone
 
 # UI sounds: notes
 
-These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the generator wasn't saved, so these numbers come from measuring the files on 2026-11-07. None of them is played from code yet.
+These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the generator wasn't saved, so these numbers come from measuring the files on 2026-11-07. They are played by `GameSounds` (see In the game below).
 
 ## ButtonClick.wav
 | | |
@@ -132,3 +132,16 @@ These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the gen
 | Peak | -4.4 dBFS | -6.0 dBFS |
 | Shape | Swells in, loudest at about 100 ms, fades out | Swells in, loudest at about 70 ms, fades out |
 | Pitch | Rises, about 480 Hz to 1.4 kHz | Falls, about 1.15 kHz to 380 Hz |
+
+# In the game (`GameSounds.cs`)
+
+`Tools > Game Sounds Setup` sets the five short sounds to mono, PCM, Decompress On Load, and makes `Assets/Resources/GameSounds.prefab` with them in its slots. `GameSounds` loads that prefab when the game starts and keeps it across scenes, so no scene has a sounds object. Volumes are tuned on the prefab (click 0.5, because it peaks louder than the rest; menu 0.8; money 1).
+
+| Sound | When |
+|---|---|
+| Click | Any UI Button in the menus (not the touch driving controls) |
+| Menu open / close | Pause menu, SETTINGS, help (H), dealer |
+| Money in | Selling crops, selling a field |
+| Money out | Seeds, fertilizer, a vehicle, a field; diesel once, when filling stops |
+
+Only one sound plays per frame, the most important (money > menu > click), so pressing BUY in the dealer plays money out, not the click and the menu closing too. "Not enough money" only clicks (when it came from a button).

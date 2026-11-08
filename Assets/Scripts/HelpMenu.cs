@@ -57,6 +57,7 @@ public class HelpMenu : MonoBehaviour
         if (!input.Help) return;
         if (!menuRoot.activeSelf) NameTouchControls();
         menuRoot.SetActive(!menuRoot.activeSelf);
+        GameSounds.Play(menuRoot.activeSelf ? GameSounds.Sound.MenuOpen : GameSounds.Sound.MenuClose);
     }
 
     // the touch panel's Control text in the given row
@@ -83,6 +84,7 @@ public class HelpMenu : MonoBehaviour
 
     public void Close()
     {
+        if (menuRoot.activeSelf) GameSounds.Play(GameSounds.Sound.MenuClose);
         menuRoot.SetActive(false);
     }
 }

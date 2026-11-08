@@ -139,6 +139,7 @@ public class SettingsMenu : MonoBehaviour
         menuRoot.SetActive(true);
         input.MenuOpen = true;
         Refresh();
+        GameSounds.Play(GameSounds.Sound.MenuOpen);
     }
 
     public void Close()
@@ -146,6 +147,7 @@ public class SettingsMenu : MonoBehaviour
         if (!IsOpen) return;
         menuRoot.SetActive(false);
         input.MenuOpen = false;
+        GameSounds.Play(GameSounds.Sound.MenuClose);
     }
 
     void OnDisable()

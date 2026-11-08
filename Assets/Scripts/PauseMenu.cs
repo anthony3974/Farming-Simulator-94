@@ -87,6 +87,7 @@ public class PauseMenu : MonoBehaviour
         input.MenuOpen = true;
         player.SetCursorLocked(false);
         Time.timeScale = 0f;
+        GameSounds.Play(GameSounds.Sound.MenuOpen);
         ResetConfirm();
         if (SaveGame.Instance != null) SaveGame.Instance.Save();
     }
@@ -97,6 +98,7 @@ public class PauseMenu : MonoBehaviour
         menuRoot.SetActive(false);
         input.MenuOpen = false;
         Time.timeScale = 1f;
+        GameSounds.Play(GameSounds.Sound.MenuClose);
         if (!input.TouchControlsActive) player.SetCursorLocked(true);
         ResetConfirm();
     }
