@@ -16,6 +16,10 @@ using UnityEngine.SceneManagement;
 //   night, following the DayNightCycle on the sun; in a scene with no cycle it stays on.
 //   It is set to Important so it shows on phones too (Android Medium quality has 1 pixel light, the sun's). With
 //   many lamps that will need another plan (see PLAN, daylight cycle). No shadows, to keep it cheap.
+// - Lamp Scale (in the window) sizes the whole lamp: StreetLampModel stays the 1x design and its "Model" object is
+//   scaled. A Light's Range ignores scale, so the tool multiplies it too; the Intensity stays, because Unity's falloff
+//   depends on distance / Range, which scaling both leaves the same. Head Distance (in the window) sets the arm's
+//   length, with the brace following it. To keep a new value, change its default below.
 public class StreetLampBuilder : EditorWindow
 {
     const string SceneName = "GameScene";
@@ -27,6 +31,9 @@ public class StreetLampBuilder : EditorWindow
     const float RoadGap = 1.0f;   // pole centre this far back from the road edge
     const float Clearance = 1.5f; // free space wanted around the pole
 
+    [SerializeField] float lampScale = 2.5f;
+    [SerializeField] float headDistance = 10f; // real metres from the pole to the centre of the lamp head; keeps its length when Lamp Scale changes
+
     [MenuItem("Tools/Street Lamp Builder")]
     static void Open() { GetWindow<StreetLampBuilder>("Street Lamp"); }
 
@@ -36,10 +43,13 @@ public class StreetLampBuilder : EditorWindow
             "main road in the middle of the map. Run it with GameScene open, then save the scene (Ctrl+S).", MessageType.Info);
         EditorGUILayout.HelpBox("Running it again rebuilds the prefab and keeps the lamp where it is. The light is easier to see " +
             "with the Directional Light turned off for a moment (it is daytime in the scene).", MessageType.None);
-        if (GUILayout.Button("Build / rebuild street lamp")) Build();
+        lampScale = Mathf.Max(0.1f, EditorGUILayout.FloatField("Lamp Scale", lampScale));
+        EditorGUILayout.LabelField($"Lamp height {StreetLampModel.Height * lampScale:0.0} m");
+        headDistance = Mathf.Max(StreetLampModel.MinHeadOut * lampScale, EditorGUILayout.FloatField("Head Distance (m)", headDistance));
+        if (GUILayout.Button("Build / rebuild street lamp")) Build(lampScale, headDistance);
     }
 
-    static void Build()
+    static void Build(float scale, float headDistance)
     {
         const string title = "Street Lamp";
         if (EditorApplication.isPlayingOrWillChangePlaymode)
@@ -56,7 +66,7 @@ public class StreetLampBuilder : EditorWindow
         Terrain terrain = Terrain.activeTerrain;
         if (terrain == null) { EditorUtility.DisplayDialog(title, "No terrain found in the open scene.", "OK"); return; }
 
-        var prefab = BuildPrefab();
+        var prefab = BuildPrefab(scale, headDistance / scale);
         if (prefab == null) { EditorUtility.DisplayDialog(title, "Could not save the prefab, see the Console.", "OK"); return; }
 
         Undo.SetCurrentGroupName("Build street lamp");
@@ -105,13 +115,13 @@ public class StreetLampBuilder : EditorWindow
         Undo.CollapseUndoOperations(undoGroup);
         EditorSceneManager.MarkSceneDirty(scene);
         Selection.activeGameObject = lamp.gameObject;
-        SceneView.lastActiveSceneView?.Frame(new Bounds(pos + Vector3.up * 4f, new Vector3(8f, 10f, 8f)), false);
+        SceneView.lastActiveSceneView?.Frame(new Bounds(pos + Vector3.up * 4f * scale, new Vector3(8f, 10f, 8f) * scale), false);
         Debug.Log($"Street lamp built: prefab {PrefabPath}, '{LampName}' at X {pos.x:0.0}, Z {pos.z:0.0}. Save the scene (Ctrl+S).", lamp);
     }
 
     // Builds the lamp in a temporary object, saves it over the prefab (same file, so copies in the scene update), then
     // deletes the temporary object.
-    static GameObject BuildPrefab()
+    static GameObject BuildPrefab(float scale, float headOut)
     {
         if (!AssetDatabase.IsValidFolder("Assets/Prefabs")) AssetDatabase.CreateFolder("Assets", "Prefabs");
         var temp = new GameObject("Street Lamp");
@@ -119,7 +129,9 @@ public class StreetLampBuilder : EditorWindow
         {
             var model = new GameObject("Model").transform;
             model.SetParent(temp.transform, false);
-            StreetLampModel.Build(new SceneKit(model, new Mats()));
+            StreetLampModel.Build(new SceneKit(model, new Mats()), headOut);
+            model.localScale = Vector3.one * scale;
+            foreach (var light in model.GetComponentsInChildren<Light>(true)) light.range *= scale;
             foreach (var t in model.GetComponentsInChildren<Transform>(true))
                 if (t.GetComponent<Light>() == null) t.gameObject.isStatic = true;
             temp.AddComponent<NightLight>(); // light and lens on only at night (DayNightCycle)

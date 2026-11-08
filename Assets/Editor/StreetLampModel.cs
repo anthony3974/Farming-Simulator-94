@@ -18,14 +18,14 @@ public abstract class LampKit
 // a diagonal brace, and a flat "cobra head" lamp with a glowing lens and a warm spot light pointing down.
 //
 // Space: the origin is the ground at the foot of the pole, +Z points out over the road (the arm's direction).
-// About 8.1 m tall; the head hangs 2.0 m out from the pole, 7.8 m up (the harvester, 5.1 m, passes under it).
+// Sizes here are the 1x design (the builder's Lamp Scale multiplies them all). About 8.1 m tall; the head hangs
+// headOut from the pole, 7.8 m up (the harvester, 5.1 m, passes under it). The builder window sets headOut.
 // Like Tractor V2 and the gas station, every part reaches a little into the part it stands on or hangs on, so
 // nothing floats. Comments give each part's span (Y up, Z out) to show which part it overlaps.
 public static class StreetLampModel
 {
     public const float Height = 8.1f;      // top of the cap
-    public const float Reach = 2.475f;     // front of the head, from the pole
-    public static readonly Vector3 LightPos = new(0f, 7.72f, 2.05f);
+    public const float MinHeadOut = 0.6f;  // any closer and the head runs into the pole
 
     public static readonly Color LightColor = new Color32(255, 214, 160, 255); // warm white (sodium-ish, softer)
 
@@ -39,7 +39,8 @@ public static class StreetLampModel
         _ => ("Lamp Steel", Color.grey, 0.4f, false),
     };
 
-    public static void Build(LampKit k)
+    // headOut: centre of the head, from the pole
+    public static void Build(LampKit k, float headOut)
     {
         // base: footing Y -0.10..0.40 (0.1 m buried), plate 0.38..0.46, housing 0.42..1.62
         k.Cyl("Footing", new Vector3(0f, 0.15f, 0f), 0.70f, 0.50f, LampMat.Concrete);
@@ -53,21 +54,21 @@ public static class StreetLampModel
         k.Cyl("Pole Upper", new Vector3(0f, 6.20f, 0f), 0.15f, 3.60f, LampMat.PoleGreen);
         k.Ball("Top Cap", new Vector3(0f, 8.00f, 0f), 0.20f, LampMat.PoleGreen);
 
-        // arm: along +Z at Y 7.85, Z -0.05..1.90 (starts inside the pole, ends inside the head)
-        k.Cyl("Arm", new Vector3(0f, 7.85f, 0.925f), 0.09f, 1.95f, LampMat.PoleGreen, euler: new Vector3(90f, 0f, 0f));
-        // brace: from the pole at Y 7.0 up to the arm at Z 1.0; 49.6 degrees from upright, 0.1 m longer so both ends sink in
-        float bz = 1.0f, by = 0.85f;
+        // arm: along +Z at Y 7.85, Z -0.05..headOut - 0.15 (starts inside the pole, ends inside the head)
+        k.Cyl("Arm", new Vector3(0f, 7.85f, (headOut - 0.20f) / 2f), 0.09f, headOut - 0.10f, LampMat.PoleGreen, euler: new Vector3(90f, 0f, 0f));
+        // brace: from the pole up to the arm about halfway along it; 49.6 degrees from upright, 0.1 m longer so both ends sink in
+        float bz = headOut * 0.49f, by = bz * 0.85f;
         float len = Mathf.Sqrt(bz * bz + by * by) + 0.10f;
         float tilt = Mathf.Atan2(bz, by) * Mathf.Rad2Deg;
-        k.Cyl("Brace", new Vector3(0f, 7.0f + by / 2f, bz / 2f), 0.05f, len, LampMat.PoleGreen, euler: new Vector3(tilt, 0f, 0f));
+        k.Cyl("Brace", new Vector3(0f, 7.85f - by / 2f, bz / 2f), 0.05f, len, LampMat.PoleGreen, euler: new Vector3(tilt, 0f, 0f));
         k.Cyl("Arm Collar", new Vector3(0f, 7.85f, 0.03f), 0.18f, 0.14f, LampMat.PoleGreen, euler: new Vector3(90f, 0f, 0f)); // Z -0.04..0.10
 
-        // head: housing Y 7.77..7.93, Z 1.625..2.475; hood 7.91..7.99; lens 7.75..7.79 (glowing, under the housing)
-        k.Box("Head Housing", new Vector3(0f, 7.85f, 2.05f), new Vector3(0.42f, 0.16f, 0.85f), LampMat.Housing);
-        k.Box("Head Hood", new Vector3(0f, 7.95f, 2.02f), new Vector3(0.36f, 0.08f, 0.72f), LampMat.Housing);
-        k.Box("Lens", new Vector3(0f, 7.77f, 2.07f), new Vector3(0.32f, 0.04f, 0.58f), LampMat.Lens);
+        // head: housing Y 7.77..7.93, Z headOut +- 0.425; hood 7.91..7.99; lens 7.75..7.79 (glowing, under the housing)
+        k.Box("Head Housing", new Vector3(0f, 7.85f, headOut), new Vector3(0.42f, 0.16f, 0.85f), LampMat.Housing);
+        k.Box("Head Hood", new Vector3(0f, 7.95f, headOut - 0.03f), new Vector3(0.36f, 0.08f, 0.72f), LampMat.Housing);
+        k.Box("Lens", new Vector3(0f, 7.77f, headOut + 0.02f), new Vector3(0.32f, 0.04f, 0.58f), LampMat.Lens);
 
         // the light: just under the lens, pointing straight down (forward turned to -Y)
-        k.Spot("Lamp Light", LightPos, new Vector3(90f, 0f, 0f), range: 18f, angle: 120f, intensity: 2.5f, LightColor);
+        k.Spot("Lamp Light", new Vector3(0f, 7.72f, headOut), new Vector3(90f, 0f, 0f), range: 18f, angle: 120f, intensity: 2.5f, LightColor);
     }
 }
