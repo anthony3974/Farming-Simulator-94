@@ -3,7 +3,7 @@
 A small farming game built in Unity. Drive around the map, buy fields, plant crops, wait for them to grow, harvest them, and sell the harvest for money. It is a 3D remake of my finished 2D game, [Sim94](https://github.com/anthony3974/Sim94).
 
 ## Features
-- Main menu (Play > New Game or Load Game) with the version number (now 0.6.6), and a pause menu (Esc or PAUSE)
+- Main menu (Play > New Game or Load Game) with the version number (now 0.6.8), and a pause menu (Esc or PAUSE)
 - Save / load: the farm saves by itself (every minute, when you pause, go to the main menu or leave the app); Load Game puts it back
 - Three vehicles: a tractor (45 km/h), plus a van (56 km/h) and a harvester (34 km/h, +60% harvest) bought at the car dealer. The van is for the road: it can buy and sell fields but cannot plant, harvest or fertilize
 - Fields you plant, fertilize and harvest with one button (E / USE); you pick the crop to plant
