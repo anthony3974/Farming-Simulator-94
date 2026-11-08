@@ -363,6 +363,7 @@ public class FieldController : MonoBehaviour
         stage = Stage.Planted;
         growSeconds = 0f;
 
+        GameSounds.Play(GameSounds.Sound.Planting);
         Changed();
         ScreenPrompt.Instance.Flash($"Planted {CropName()} on {fieldName}. Used {used:N0} seeds.", 3f);
     }
@@ -399,6 +400,7 @@ public class FieldController : MonoBehaviour
         fertilizerQuote = 0;
         fertStage++;
         fertilizedAt = stage;
+        GameSounds.Play(GameSounds.Sound.Fertilizing);
         box.Flash($"Fertilized {fieldName} ({fertStage}/{MaxFertilizerLevel}): +{fertStage * fertilizerBonusPerLevel * 100f:0}% harvest. Used {used:N0} fertilizer.", 3f);
         Changed();
     }
@@ -510,6 +512,7 @@ public class FieldController : MonoBehaviour
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;
         else if (cropType == CropType.Oat) playerValues.InOat += amount;
 
+        GameSounds.Play(GameSounds.Sound.Harvesting);
         ClearCrop();
     }
 

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// One-off tool: Tools > Game Sounds Setup. Sets the import settings of the five short sounds and makes
+/// One-off tool: Tools > Game Sounds Setup. Sets the import settings of the short sounds and makes
 /// Assets/Resources/GameSounds.prefab with them in its slots, which <see cref="GameSounds"/> loads at the start of
 /// the game. No scene changes. Safe to run again: it only fills empty slots, so volumes tuned on the prefab stay.
 /// Delete this file after running it (it stays in git history).
@@ -12,7 +12,7 @@ public static class GameSoundsSetup
 {
     private const string Folder = "Assets/Sounds/";
     private const string PrefabPath = "Assets/Resources/GameSounds.prefab";
-    private static readonly string[] Clips = { "ButtonClick", "MenuOpen", "MenuClose", "MoneyIn", "MoneyOut" };
+    private static readonly string[] Clips = { "ButtonClick", "MenuOpen", "MenuClose", "MoneyIn", "MoneyOut", "Planting", "Harvesting", "Fertilizing" };
 
     [MenuItem("Tools/Game Sounds Setup")]
     public static void Run()
@@ -46,12 +46,15 @@ public static class GameSoundsSetup
         sounds.menuClose = Fill(sounds.menuClose, "MenuClose");
         sounds.moneyIn = Fill(sounds.moneyIn, "MoneyIn");
         sounds.moneyOut = Fill(sounds.moneyOut, "MoneyOut");
+        sounds.planting = Fill(sounds.planting, "Planting");
+        sounds.harvesting = Fill(sounds.harvesting, "Harvesting");
+        sounds.fertilizing = Fill(sounds.fertilizing, "Fertilizing");
         PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
         if (existing) PrefabUtility.UnloadPrefabContents(root);
         else Object.DestroyImmediate(root);
 
         AssetDatabase.SaveAssets();
-        Debug.Log($"Game Sounds Setup: done. {PrefabPath} has the five sounds; tune the volumes on it. " +
+        Debug.Log($"Game Sounds Setup: done. {PrefabPath} has the sounds; tune the volumes on it. " +
                   "Press Play to hear them (no scene save needed). You can delete Assets/Editor/GameSoundsSetup.cs now.");
     }
 

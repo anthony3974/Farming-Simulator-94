@@ -143,5 +143,18 @@ These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the gen
 | Menu open / close | Pause menu, SETTINGS, help (H), dealer |
 | Money in | Selling crops, selling a field |
 | Money out | Seeds, fertilizer, a vehicle, a field; diesel once, when filling stops |
+| Planting / Harvesting / Fertilizing | Doing that to your own field (AI owners are silent) |
 
-Only one sound plays per frame, the most important (money > menu > click), so pressing BUY in the dealer plays money out, not the click and the menu closing too. "Not enough money" only clicks (when it came from a button).
+Only one sound plays per frame, the most important (money > farming > menu > click), so pressing BUY in the dealer plays money out, not the click and the menu closing too. "Not enough money" only clicks (when it came from a button).
+
+# Farming sounds: notes
+
+One-shots for now (owner, 2026-11-08: "no looping, one shot for now"), made from scratch by `python3 Art/Sounds/make_farm_sounds.py`, which writes all three into `Assets/Sounds`. All shaped noise, no tones. Peak -8 dBFS, start and end at zero. Each sound has its own random seed, so changing one never changes the others (before that fix, remaking planting also shifted the other two's random detail).
+
+| Sound | Length | What it is |
+|---|---|---|
+| Planting.wav | 0.55 s | A shovel: a 150 ms rough metal scrape (noise through narrow bands at 1.85 / 3.1 / 4.65 kHz, wobbling like the blade catching on stones), a dull "chk", then ~320 tiny dull grain crunches over a soft low soil bed, kept below 2.8 kHz |
+| Harvesting.wav | 0.55 s | A swish that brightens as the blade swings (600 to 2600 Hz), 14 stalk-snap crackles in the middle, then a dry rustle |
+| Fertilizing.wav | 0.6 s | A short "pff" (400 to 1200 Hz), then a 2.5 to 8 kHz spray hiss with 22 pellets pattering through it |
+
+Planting versions: 1 a soft low "shff" with high seed ticks; 2 "more like dirt, no shovel noise" (grain crunches, everything above 2.8 kHz cut); 3 shovel noise wanted after all (50 ms scrape: "sounds the same", masked by the dirt); 4 a 150 ms scrape, louder and rougher, with the dirt only after it ("good enough"). Lesson: a short sound under a louder one is not heard; give it its own moment.
