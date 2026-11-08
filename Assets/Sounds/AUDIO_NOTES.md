@@ -97,6 +97,20 @@ These are the picks for a farming sim (tractor engine). The notes come from anal
 - Desk bell lesson: equal-level split pairs cancel fully and make a deep ~20 dB pulse; a 65/35 split keeps the wobble gentle.
 - Final: version 17, in `Assets/Sounds/MoneyIn.wav`. Not played from code yet.
 
+# Money-out sound: notes
+
+A short, deep bell "dong" for spending money, the low partner of the bright money-in "ding-ding". Made from scratch by `python3 Art/Sounds/make_money_out.py` (fixed random seed), which writes `Assets/Sounds/MoneyOut.wav`. Notes from 2026-11-07.
+
+- **Bell type:** church-bell partials, as ratios of the prime (330 Hz): hum 0.5 (165 Hz), prime 1, tierce 1.2 (minor third, the sad colour), quint 1.5, nominal 2, plus a weak 2.6. The hum rings longest, the high partials die first. Each partial is an uneven 65/35 pair a few Hz apart for a gentle wobble, like the desk bell.
+- **Strike:** a 10 ms noise tick at 0.8 to 4 kHz, duller than the desk bell's, like a heavier clapper.
+- **Level:** peak -8 dBFS, same as the money-in sound. The last 0.18 s fades to zero.
+- On phone speakers the 165 Hz hum may barely be heard; the prime and nominal carry it.
+
+| # | Version | Verdict | Why |
+|---|---|---|---|
+| 1 | Deep bell, 0.8 s, 1 ms attack, light saturation (1.2) | "shorter and punchier, but not deeper" | |
+| 2 | Same pitch; rings ~40% shorter, instant attack, tick ~2x louder, louder nominal, saturation 1.7. 0.55 s | "good for now" (final for now) | Punch from the attack and saturation, not from more bass |
+
 # UI sounds: notes
 
 These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the generator wasn't saved, so these numbers come from measuring the files on 2026-11-07. None of them is played from code yet.
