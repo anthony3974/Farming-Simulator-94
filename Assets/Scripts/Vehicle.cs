@@ -49,6 +49,10 @@ public class Vehicle : MonoBehaviour
              "combine harvester. The back tires turn the other way.")]
     public bool steerRearWheels = false;
 
+    [Header("Wheel rolling (visual)")]
+    [Tooltip("Spin the tires as the vehicle drives, so the tread (Tools > Tire Tread Builder) shows them rolling.")]
+    public bool rollWheels = true;
+
     [Header("Camera")]
     [Tooltip("Where the follow camera sits, in the vehicle's own space. Zero = where the camera already is (the tractor).")]
     public Vector3 cameraOffset;
@@ -77,6 +81,7 @@ public class Vehicle : MonoBehaviour
     // each steered tire gets an un-scaled pivot above it, so it can turn without the squashed axle shearing it
     private readonly List<Transform> steerPivots = new();
     private float steerAngle;
+    private readonly List<RollingTire> rollingTires = new();
     private float steer; // -1 full left to 1 full right; the touch wheel and slider give values in between
     private float gas;   // 0 to 1; the touch pedal slider gives values in between, keys and buttons 1
     private float brake; // 0 to 1, the same
@@ -106,6 +111,7 @@ public class Vehicle : MonoBehaviour
     void Start()
     {
         SetupSteeredWheels();
+        SetupRollingWheels();
     }
 
     void OnDestroy()
@@ -178,6 +184,7 @@ public class Vehicle : MonoBehaviour
         Vector3 before = transform.position;
         Vector3 move = acceleration * speed * transform.forward;
         Controller.Move(Time.deltaTime * move);
+        RollWheels(Vector3.Dot(transform.position - before, transform.forward));
         BurnFuel(before);
     }
 
@@ -367,6 +374,50 @@ public class Vehicle : MonoBehaviour
         // Back tires point the other way to turn the vehicle the same way (the back swings out).
         var rot = Quaternion.Euler(0f, steerRearWheels ? -steerAngle : steerAngle, 0f);
         foreach (var pivot in steerPivots) pivot.localRotation = rot;
+    }
+
+    // ---- rolling wheels (visual) ----
+
+    private class RollingTire
+    {
+        public Transform tire;
+        public Quaternion rest;  // its turn before any rolling (under its steering pivot, if it has one)
+        public float radius;     // in world units
+        public float direction;  // +1 or -1: which way around its own Y is rolling forward
+        public float angle;      // degrees rolled so far
+    }
+
+    /// <summary>The tire names the vehicles use: FlTire, FrTire (front), RlTire, RrTire or BlTire, BrTire (back).</summary>
+    public static bool IsTireName(string n) =>
+        n.Length == 6 && n.EndsWith("Tire") && (n[0] == 'F' || n[0] == 'R' || n[0] == 'B') && (n[1] == 'l' || n[1] == 'r');
+
+    /// <summary>
+    /// Finds every active tire. Runs after <see cref="SetupSteeredWheels"/>, so a steered tire rolls inside its pivot.
+    /// The tires are cylinders turned on their side: their own Y is the axle, their X / Z scale the diameter.
+    /// </summary>
+    private void SetupRollingWheels()
+    {
+        foreach (var t in GetComponentsInChildren<Transform>())
+        {
+            if (!IsTireName(t.name)) continue;
+            float radius = t.lossyScale.x * 0.5f;
+            if (radius <= 0.01f) continue;
+            // rolling forward turns the tire around the vehicle's right axis; the tire's Y points right or left
+            float dir = Vector3.Dot(t.rotation * Vector3.up, transform.right) >= 0f ? 1f : -1f;
+            rollingTires.Add(new RollingTire { tire = t, rest = t.localRotation, radius = radius, direction = dir });
+        }
+    }
+
+    /// <summary>Spins the tires for the distance driven this frame (negative in reverse). Pushing against a wall does not spin them.</summary>
+    private void RollWheels(float distance)
+    {
+        if (!rollWheels || rollingTires.Count == 0 || Mathf.Abs(distance) < 0.00001f) return;
+        foreach (var w in rollingTires)
+        {
+            if (w.tire == null) continue;
+            w.angle = Mathf.Repeat(w.angle + w.direction * distance / w.radius * Mathf.Rad2Deg, 360f);
+            w.tire.localRotation = w.rest * Quaternion.AngleAxis(w.angle, Vector3.up);
+        }
     }
 }
 
