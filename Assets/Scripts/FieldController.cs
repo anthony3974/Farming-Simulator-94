@@ -25,7 +25,7 @@ public class FieldController : MonoBehaviour
     // Field names taken from the 2D game. Fields not owned by the player get a random unused one.
     private static readonly string[] FieldNames =
     {
-        "Dahl Ranch", "Alpine Farming", "John Deer", "Erlengrat", "Welker Farms", "Goldcrest Valley",
+        "Dahl Ranch", "Alpine Farming", "Deer Creek", "Erlengrat", "Welker Farms", "Goldcrest Valley",
         "Lone Oak", "Estancia Lapacho", "Felsbrunn", "Minibrunn", "No Man's Land", "Ravenport",
     };
     // names handed out to the fields in the loaded scene; a field gives its name back when it is destroyed

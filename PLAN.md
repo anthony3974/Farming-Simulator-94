@@ -63,7 +63,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 **Before publishing:**
 - [ ] No release keystore (`androidUseCustomKeystore: 0`), so builds are debug-signed. Google Play needs a release key.
-- [ ] "Farming Simulator" is the name of GIANTS Software's game series, and one AI field is called "John Deer" (`FieldController.FieldNames`). Check both names before going public.
+- [ ] "Farming Simulator" is the name of GIANTS Software's game series. Check the name before going public. (The AI field "John Deer" was renamed "Deer Creek" on 2026-11-08.)
 
 **Cleanup:**
 - [ ] README lines 57 and 61 still list the engine start sound and the zoom-out volume as upcoming; both are done.
@@ -82,6 +82,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **AI field "John Deer" renamed "Deer Creek" (2026-11-08)** in `FieldController.FieldNames`, away from the John Deere brand. Old saves keep "John Deer" on that field, because a save puts its own field names back.
 - **Engine quieter when zoomed out (2026-11-08):** both loops and the start sound go down to `Far Volume` (40%) at full zoom out, full volume at the default distance and closer (`EngineSound.cs`, `GameCharacter.ZoomOut01`; Show Debug shows it). It follows the zoom, not the pull-in from walls, so the sound doesn't jump near obstacles. Owner: "volume good".
 - **Engine start sounds (2026-11-08):** a one-shot on getting in or switching (also when the game begins) that crossfades into the idle loop over its last 55% (`Start Blend`). Tractor and harvester share `Starts/EngineStartDiesel.wav` (harvester pitched 0.85), the van has `Starts/EngineStartVan.wav`; made by `Art/Sounds/make_starts.py`. Owner: "good enough".
 - **Help menu PC row for O (2026-11-08):** "Settings (mirrors, minimap, day / night) / O" below the pause row (Tools > Help: PC Settings Row, run by the owner, then deleted; not committed before deletion).
