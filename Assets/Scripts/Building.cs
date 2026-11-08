@@ -193,7 +193,7 @@ public class Building : MonoBehaviour
 
         if (amount <= 0)
         {
-            ShowMessage($"No {crop} to sell");
+            ShowError($"No {crop} to sell");
             return;
         }
 
@@ -208,7 +208,7 @@ public class Building : MonoBehaviour
         int cost = Mathf.RoundToInt(Random.Range(minSeedPrice, maxSeedPrice));
         if (playerValues.Money < cost)
         {
-            ShowMessage($"Not enough money. {seedsPerBuy:N0} seeds cost $ {cost:N0}");
+            ShowError($"Not enough money. {seedsPerBuy:N0} seeds cost $ {cost:N0}");
             return;
         }
 
@@ -223,7 +223,7 @@ public class Building : MonoBehaviour
         int cost = Mathf.RoundToInt(Random.Range(minFertilizerPrice, maxFertilizerPrice));
         if (playerValues.Money < cost)
         {
-            ShowMessage($"Not enough money. {fertilizerPerBuy:N0} fertilizer costs $ {cost:N0}");
+            ShowError($"Not enough money. {fertilizerPerBuy:N0} fertilizer costs $ {cost:N0}");
             return;
         }
 
@@ -257,8 +257,8 @@ public class Building : MonoBehaviour
 
     private void StartPumping()
     {
-        if (playerValues.FuelCapacity - playerValues.Fuel < 0.05f) { ShowMessage("The tank is already full"); return; }
-        if (playerValues.Money < fuelPrice * 0.1f) { ShowMessage($"Not enough money. Diesel costs $ {fuelPrice:0.00} per litre"); return; }
+        if (playerValues.FuelCapacity - playerValues.Fuel < 0.05f) { ShowError("The tank is already full"); return; }
+        if (playerValues.Money < fuelPrice * 0.1f) { ShowError($"Not enough money. Diesel costs $ {fuelPrice:0.00} per litre"); return; }
 
         pumping = true;
         pumpingVehicle = Vehicle.Active;
@@ -297,6 +297,12 @@ public class Building : MonoBehaviour
         promptText = null;
         if (pumpedLitres > 0.05f) GameSounds.Play(GameSounds.Sound.MoneyOut); // paid once, when filling ends
         ShowMessage(pumpedLitres > 0.05f ? $"{reason}: {pumpedLitres:0.0} L of diesel for $ {pumpedCost:N2}" : reason);
+    }
+
+    private void ShowError(string text)
+    {
+        GameSounds.Play(GameSounds.Sound.Error);
+        ShowMessage(text);
     }
 
     private void ShowMessage(string text)

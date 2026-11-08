@@ -70,6 +70,13 @@ public class ScreenPrompt : MonoBehaviour
         flashUntil = Time.time + seconds;
     }
 
+    /// <summary>Something can't be done: shows the reason like <see cref="Flash"/> and plays the error sound.</summary>
+    public void Error(string text, float seconds)
+    {
+        GameSounds.Play(GameSounds.Sound.Error);
+        Flash(text, seconds);
+    }
+
     void Update()
     {
         if (flashUntil > 0 && Time.time >= flashUntil) { flashUntil = 0; Hide(); }

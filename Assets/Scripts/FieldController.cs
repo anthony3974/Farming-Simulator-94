@@ -181,7 +181,7 @@ public class FieldController : MonoBehaviour
         if (Vehicle.Active.kind == VehicleKind.Van)
         {
             if (inputManager.Interact)
-                ScreenPrompt.Instance.Flash(inputManager.TouchControlsActive
+                ScreenPrompt.Instance.Error(inputManager.TouchControlsActive
                     ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
                     : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
             return;
@@ -215,7 +215,7 @@ public class FieldController : MonoBehaviour
         {
             if (!IsPlayerField && playerValues.Money < value)
             {
-                box.Flash($"Not enough money. {fieldName} costs $ {price}", 3f);
+                box.Error($"Not enough money. {fieldName} costs $ {price}", 3f);
                 return;
             }
 
@@ -241,7 +241,7 @@ public class FieldController : MonoBehaviour
         }
         else
         {
-            if (playerValues.Money < value) { box.Flash("Not enough money", 3f); return; }
+            if (playerValues.Money < value) { box.Error("Not enough money", 3f); return; }
             playerValues.Money -= value;
             GameSounds.Play(GameSounds.Sound.MoneyOut);
             ownerName = playerName;
@@ -331,7 +331,7 @@ public class FieldController : MonoBehaviour
     // E / USE on someone else's field: say whose it is and what it costs (no key listed, owner 2026-11-08)
     private void NotYours()
     {
-        ScreenPrompt.Instance.Flash($"{fieldName} belongs to {ownerName}.\nBuy it ($ {value:N0}) to use it.", 3f);
+        ScreenPrompt.Instance.Error($"{fieldName} belongs to {ownerName}.\nBuy it ($ {value:N0}) to use it.", 3f);
     }
 
     private void Interact()
@@ -350,7 +350,7 @@ public class FieldController : MonoBehaviour
             seedQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield)));
         if (playerValues.Seeds < seedQuote)
         {
-            ScreenPrompt.Instance.Flash($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}, you have {playerValues.Seeds:N0}", 3f);
+            ScreenPrompt.Instance.Error($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}, you have {playerValues.Seeds:N0}", 3f);
             return;
         }
         playerValues.Seeds -= seedQuote;
@@ -372,16 +372,16 @@ public class FieldController : MonoBehaviour
     {
         var box = ScreenPrompt.Instance;
         if (!IsPlayerField) { NotYours(); return; }
-        if (stage == Stage.Empty) { box.Flash("Plant the field first, then fertilize it while it grows.", 3f); return; }
-        if (stage == Stage.Ready) { box.Flash("The crop is ready. Harvest it first.", 3f); return; }
+        if (stage == Stage.Empty) { box.Error("Plant the field first, then fertilize it while it grows.", 3f); return; }
+        if (stage == Stage.Ready) { box.Error("The crop is ready. Harvest it first.", 3f); return; }
         if (fertStage >= MaxFertilizerLevel)
         {
-            box.Flash($"{fieldName} is fully fertilized ({MaxFertilizerLevel}/{MaxFertilizerLevel}).", 3f);
+            box.Error($"{fieldName} is fully fertilized ({MaxFertilizerLevel}/{MaxFertilizerLevel}).", 3f);
             return;
         }
         if (fertilizedAt == stage)
         {
-            box.Flash("Already fertilized in this growth stage. Wait for the next stage.", 3f);
+            box.Error("Already fertilized in this growth stage. Wait for the next stage.", 3f);
             return;
         }
 
@@ -390,7 +390,7 @@ public class FieldController : MonoBehaviour
             fertilizerQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minFertilizerPerYield, maxFertilizerPerYield)));
         if (playerValues.Fertilizer < fertilizerQuote)
         {
-            box.Flash($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}, you have {playerValues.Fertilizer:N0}.\nBuy more at the fertilizer shop.", 3f);
+            box.Error($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}, you have {playerValues.Fertilizer:N0}.\nBuy more at the fertilizer shop.", 3f);
             return;
         }
 

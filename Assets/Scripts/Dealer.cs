@@ -138,7 +138,7 @@ public class Dealer : MonoBehaviour
 
         if (playerValues.Money < info.price)
         {
-            box.Flash($"Not enough money. The {info.name} costs $ {info.price:N0}", 3f);
+            box.Error($"Not enough money. The {info.name} costs $ {info.price:N0}", 3f);
             return;
         }
         var vehicle = FindParked(info.kind);
@@ -146,7 +146,7 @@ public class Dealer : MonoBehaviour
         {
             Debug.LogError($"Dealer: there is no {info.name} in the scene to sell. Drag " +
                            $"Assets/Prefabs/{info.name}.prefab into the scene.", this);
-            box.Flash($"Sorry, there is no {info.name} on the map right now.", 3f);
+            box.Error($"Sorry, there is no {info.name} on the map right now.", 3f);
             return;
         }
 

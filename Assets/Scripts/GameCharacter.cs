@@ -258,14 +258,14 @@ public class GameCharacter : MonoBehaviour
                 var next = (VehicleKind)(((int)current + i) % count);
                 if (Owns(next)) { SwitchTo(next); return; }
             }
-            ScreenPrompt.Instance.Flash("You only own the tractor. Buy more vehicles at the dealer.", 3f);
+            ScreenPrompt.Instance.Error("You only own the tractor. Buy more vehicles at the dealer.", 3f);
             return;
         }
 
         var kind = (VehicleKind)(request - 1);
         if (!System.Enum.IsDefined(typeof(VehicleKind), kind)) return;
         if (Owns(kind)) SwitchTo(kind);
-        else ScreenPrompt.Instance.Flash($"You don't own a {VehicleCatalog.Get(kind).name} yet. Buy one at the dealer.", 3f);
+        else ScreenPrompt.Instance.Error($"You don't own a {VehicleCatalog.Get(kind).name} yet. Buy one at the dealer.", 3f);
     }
 
     private void SwitchTo(VehicleKind kind)

@@ -12,7 +12,7 @@ public static class GameSoundsSetup
 {
     private const string Folder = "Assets/Sounds/";
     private const string PrefabPath = "Assets/Resources/GameSounds.prefab";
-    private static readonly string[] Clips = { "ButtonClick", "MenuOpen", "MenuClose", "MoneyIn", "MoneyOut", "Planting", "Harvesting", "Fertilizing" };
+    private static readonly string[] Clips = { "ButtonClick", "MenuOpen", "MenuClose", "MoneyIn", "MoneyOut", "Planting", "Harvesting", "Fertilizing", "ErrorKnock" };
 
     [MenuItem("Tools/Game Sounds Setup")]
     public static void Run()
@@ -49,6 +49,7 @@ public static class GameSoundsSetup
         sounds.planting = Fill(sounds.planting, "Planting");
         sounds.harvesting = Fill(sounds.harvesting, "Harvesting");
         sounds.fertilizing = Fill(sounds.fertilizing, "Fertilizing");
+        sounds.error = Fill(sounds.error, "ErrorKnock");
         PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
         if (existing) PrefabUtility.UnloadPrefabContents(root);
         else Object.DestroyImmediate(root);

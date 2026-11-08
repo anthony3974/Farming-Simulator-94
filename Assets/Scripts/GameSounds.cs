@@ -3,20 +3,20 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// The short one-shot sounds: button click, menu open / close, planting / harvesting / fertilizing, money in / out. Call
+/// The short one-shot sounds: button click, menu open / close, planting / harvesting / fertilizing, error, money in / out. Call
 /// <c>GameSounds.Play(GameSounds.Sound.MoneyIn)</c> from anywhere; it does nothing if the sounds are missing.
 ///
 /// It sets itself up: at start the prefab <c>Assets/Resources/GameSounds.prefab</c> (made by Tools > Game Sounds
 /// Setup) is loaded and kept for the whole game (main menu and game scene), so nothing has to be added to a scene.
 /// Every UI Button in each loaded scene clicks when pressed, except the touch driving controls.
 ///
-/// Only one sound plays per frame, the most important one (money &gt; farming &gt; menu &gt; click), so pressing BUY plays
+/// Only one sound plays per frame, the most important one (money &gt; error &gt; farming &gt; menu &gt; click), so pressing BUY plays
 /// money out and not also the click and the menu closing. Sounds are 2D and still play while paused.
 /// </summary>
 public class GameSounds : MonoBehaviour
 {
     /// <summary>In order of importance: a later one wins when two are asked for in the same frame.</summary>
-    public enum Sound { Click, MenuClose, MenuOpen, Planting, Fertilizing, Harvesting, MoneyOut, MoneyIn }
+    public enum Sound { Click, MenuClose, MenuOpen, Planting, Fertilizing, Harvesting, Error, MoneyOut, MoneyIn }
 
     [Header("Clips")]
     public AudioClip click;
@@ -27,6 +27,7 @@ public class GameSounds : MonoBehaviour
     public AudioClip planting;
     public AudioClip harvesting;
     public AudioClip fertilizing;
+    public AudioClip error;
 
     [Header("Volume (0 to 1)")]
     [Tooltip("Everything below is multiplied by this.")]
@@ -36,6 +37,7 @@ public class GameSounds : MonoBehaviour
     [Range(0f, 1f)] public float menuVolume = 0.8f;
     [Range(0f, 1f)] public float moneyVolume = 1f;
     [Range(0f, 1f)] public float farmVolume = 1f;
+    [Range(0f, 1f)] public float errorVolume = 1f;
 
     private const string PrefabPath = "GameSounds"; // Assets/Resources/GameSounds.prefab
 
@@ -109,6 +111,7 @@ public class GameSounds : MonoBehaviour
             Sound.Planting => (planting, farmVolume),
             Sound.Harvesting => (harvesting, farmVolume),
             Sound.Fertilizing => (fertilizing, farmVolume),
+            Sound.Error => (error, errorVolume),
             _ => (moneyOut, moneyVolume),
         };
         if (clip != null) source.PlayOneShot(clip, volume * masterVolume);
