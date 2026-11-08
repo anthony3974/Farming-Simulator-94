@@ -12,8 +12,9 @@ All three are shaped noise (no tones, so nothing sounds like a bell or a game "b
   Fertilizing: a short "pff" as the spreader opens, then a bright spray hiss with pellets pattering through it.
 Each is normalised to PEAK_DB, starts at zero and fades to zero at the end.
 
-Planting is version 4 (v2: "more like dirt, no shovel noise"; v3: shovel noise wanted after all; v4: v3 "sounds
-the same", so the scrape is longer, rougher and louder); the others are version 1. Needs numpy. Run from the project folder:  python3 Art/Sounds/make_farm_sounds.py
+Planting is version 5 (v2: "more like dirt, no shovel noise"; v3: shovel noise wanted after all; v4: v3 "sounds
+the same", so the scrape is longer, rougher and louder; v5: v4 too quiet in the game, so a faster, brighter scrape,
+a harder "chk", less low soil bed and a higher peak); the others are version 1. Needs numpy. Run from the project folder:  python3 Art/Sounds/make_farm_sounds.py
 """
 import os
 import wave
@@ -97,10 +98,10 @@ def grains(out, count, start, end, low, high, gain):
         out[i:i + m] += g * grain / np.abs(grain).max() * np.hanning(m)
 
 
-def finish(out, name):
+def finish(out, name, peak_db=PEAK_DB):
     out = out / np.abs(out).max()
     out = np.tanh(1.3 * out)
-    out *= 10 ** (PEAK_DB / 20) / np.abs(out).max()
+    out *= 10 ** (peak_db / 20) / np.abs(out).max()
     f = int(FADE_OUT * SR)
     out[-f:] *= np.cos(np.linspace(0, np.pi / 2, f)) ** 2
     out[0] = 0.0
@@ -119,23 +120,23 @@ n = int(0.55 * SR)
 t = np.arange(n) / SR
 BLADE = 0.15  # s: the scrape lasts this long; the dirt starts as the blade stops
 bed = band_noise(n, 120, 900) * env(n, 0.02, 0.09)          # soft low push of the soil
-dirt = 0.5 * bed
+dirt = 0.2 * bed                                             # low, so it does not use up the peak level
 grains(dirt, 320, 0.01, 0.34, 300, 2200, 0.35)              # the crunch and crumble
 dirt = lowpass(dirt, 2800)                                   # dull: dirt has no sparkle
 out = np.zeros(n)
 out[int(BLADE * SR):] = dirt[:n - int(BLADE * SR)]
 # the blade: a scrape through the steel's ringing frequencies, rising in then cut off as it stops in the soil
-scrape_env = np.clip(t / BLADE, 0, 1) ** 1.5 * np.exp(-np.maximum(t - BLADE, 0) / 0.02)
+scrape_env = np.clip(t / BLADE, 0, 1) ** 0.6 * np.exp(-np.maximum(t - BLADE, 0) / 0.02)
 grit = lowpass(rng.standard_normal(n), 60)                  # the blade catching on little stones
 scrape_env *= 0.55 + 0.45 * np.abs(grit) / np.abs(grit).max()
 blade = np.zeros(n)
-for f, level in ((1850, 1.0), (3100, 0.7), (4650, 0.4)):
+for f, level in ((1850, 0.6), (3100, 1.0), (4650, 0.8)):  # most at 2 to 5 kHz, where the ear is most sensitive
     blade += level * band_noise(n, f * 0.96, f * 1.04)  # narrow bands: metal, not hiss
 blade = blade / np.abs(blade).max() * scrape_env
-chk = band_noise(n, 300, 1500) * env(n, 0.001, 0.012)        # tiny dull bite as the edge hits the soil
+chk = band_noise(n, 800, 4000) * env(n, 0.001, 0.015)        # the bite as the edge hits the soil
 out += 1.6 * blade
-out[int((BLADE - 0.005) * SR):] += 0.5 * chk[:n - int((BLADE - 0.005) * SR)]
-finish(out, "Planting.wav")
+out[int((BLADE - 0.005) * SR):] += 1.0 * chk[:n - int((BLADE - 0.005) * SR)]
+finish(out, "Planting.wav", peak_db=-5.0)                   # 3 dB above the others: it still sounded quiet at -8
 
 # --- harvesting: rising swish + stalk crackles + rustle ---------------------------------------
 rng = np.random.default_rng(2)
