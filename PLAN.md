@@ -93,22 +93,6 @@ One line each; tools named "(git `abc1234`)" were run and then removed, and can 
 - **Touch controls rework (2026-11-06):** buttons are scene objects; SETTINGS panel picks steering (`< >`, wheel, slider), pedals (buttons or a pedal slider, 80% gas / 20% brake) and square or rounded buttons (`TouchSettings.cs`); held buttons sink; sliding off and back on works; FERT button removed, USE fertilizes (Build Touch Controls git `a94cdbb`).
 - **Save / load (2026-11-06):** `SaveGame.cs`, `farm.json` in `persistentDataPath`; saves every 60 s, on pause, main menu and app close. Saves money, stock, fuel, selected crop, every field (matched by hierarchy path), owned vehicles and their places. Pressing Play in GameScene directly starts a new farm and its autosave replaces the editor's save.
 - **Engine sound (2026-11-05):** idle + drive loops per vehicle, pitch follows speed, only the driven vehicle is heard (`EngineSound.cs`, loops in `Assets/Sounds/Loops`; Engine Sound Setup git `d58093e`).
-- **App icon (2026-11-05):** red tractor on a field (`Art/Icon/make_icon.py`; App Icon Setter git `77c80f2`; `Art/Icon/PlayStoreIcon.png` for the store).
-- **Harvester redesign (2026-11-05):** 122-part combine, steers with the back wheels (Harvester Builder V2 git `0c610f7`).
-- **Speeds cut 10% (2026-11-05):** tractor 45, van 56, harvester 34 km/h; braking 15% stronger. Tractor camera moved back to `(0, 5.36, -8.5)`.
-- **Tractor redesign (2026-11-04):** connected Model V2 (Tractor Builder V2 git `1cfcae2`).
-- **UI moved into the scene (2026-11-04):** help menu (git `58fad2d`), dealer menu (git `47e5a43`), message box and speedometer (HUD Builder git `8fdfbc3`; run again to redraw the dial).
-- **Look around on phones (2026-11-04):** drag to look (Build Touch Look Area git `58931f8`).
-- **Main menu and pause menu (2026-11-04):** `MainMenu` scene with PLAY > NEW GAME / LOAD GAME, TERMS OF SERVICE (does nothing yet; link it when publishing), version number; pause menu with RESUME and MAIN MENU (Main Menu Builder git `8ae0ee6`, Pause Menu Builder git `a4b97f9`). To change the background: the **Texture** of `Main Menu > Background > Screenshot`.
-- **UI Button prefab (2026-11-04):** every button is a copy (git `d203505`).
-- **Grass looked like water on phones (fixed 2026-11-04):** terrain layers `Grass_B` and `Pebbles_B` set to Smoothness Source: Constant (0).
-- **Car dealer and vehicles (2026-11-03):** red L-shaped dealer top-left; van and harvester $5,000 each, parked by the house; keys 1 / 2 / 3, CAR button; the van can't work fields but can buy and sell them (Dealer Builder git `3340302`, Vehicle Prefabs git `530c871`).
-- **Map border (2026-11-03):** 572 concrete blocks 1 m inside the terrain edge (Map Border Builder git `9f800c5`).
-- **Buildings (2026-11-03):** tractor model (git `8c1c8b6`), grain elevator sell stations (git `d60593b`), seed shop and new fertilizer shop (git `10298e7`), house (git `b572742`), garage (git `e605aa2`), road look (git `48d5ead`), field layout (git `d5b10c0`), counters layout (git `bb1cd99`), seed shop setup (git `2632790`).
-- **Fertilizer (2026-11-03):** two levels, one per growth stage, +50% harvest each; E / USE on a growing field (the F key was removed 2026-11-06).
-- **Economy:** sell stations per crop, money, field buying and selling (B, press twice; sell pays 80%), seeds and shops, AI owners with random names (numbered once the 12 names run out).
-- **Early fixes (2026-10-31 to 11-03):** Unity 6 upgrade, field pop-up redesign, "TypeOat" text, camera pitch clamp and cursor lock, `FieldController` refactor, reverse steering, crop selection with C, help menu, dial speedometer, Android build running on a real phone (landscape, API 23+, IL2CPP, ARM64).
-- **Repo housekeeping (2026-11-03):** history rewritten to start at the Unity 6 upgrade (`.git` 2 GB to 527 MB), skyboxes trimmed to 4, terrain layers trimmed to 6, `UserSettings/`, `.utmp/` and Android build output untracked. Ask before shrinking anything else.
 
 ## Rules and look
 - **UI colours (owner, 2026-11-04):** brown fill `(60, 45, 20)`, yellow border `(255, 204, 0)`, gold text `(255, 201, 51)`. Pop-up panels dark grey `(31, 31, 31)`. Pressed `(110, 85, 10)`, greyed out `(70, 70, 70)`. **Every button is a copy of `Assets/Prefabs/UI/UI Button.prefab`**: change only the name, place, size and text on a copy; restyle in the prefab.
