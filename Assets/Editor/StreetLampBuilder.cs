@@ -30,6 +30,9 @@ using UnityEngine.SceneManagement;
 //   two end lamps stay, and so does a lamp whose even spot is taken (the lamps either side of it are evened around it).
 // - "Place lamps along the sub road" adds "Sub Road Lamp 01", ... on the west side of SubRoad, stepping south from the
 //   junction every Road Lamp Spacing metres, arms out over the road. Same sliding and replacing as the main road button.
+// - "Place lamps at the buildings" adds the lamps listed in BuildingLamps: 1 at each selling station and the seed shop,
+//   2 at the fertilizer shop and the gas station, 3 at the dealer. Running it again only adds the ones that are missing,
+//   so a lamp moved by hand stays where it is. To place one again, delete it and run it.
 public class StreetLampBuilder : EditorWindow
 {
     const string SceneName = "GameScene";
@@ -49,6 +52,23 @@ public class StreetLampBuilder : EditorWindow
     const int SpareLamps = 3;
     const float SpareLampGap = 15f;
     const float SameLine = 1f;    // a lamp this close to Street Lamp 1's Z counts as in line with it
+
+    // World X / Z of each pole and the point its arm reaches towards. The poles stand just off the edge of each lot, or
+    // tight against the dealer's building, so they are out of the way when driving in. Arms miss the silos.
+    static readonly (string name, Vector2 pole, Vector2 armTowards)[] BuildingLamps =
+    {
+        ("Wheat Selling Lamp", new Vector2(907.4f, 45f), new Vector2(917.4f, 45f)),
+        ("Barley Selling Lamp", new Vector2(430f, 93.2f), new Vector2(430f, 83.2f)),
+        ("Oat Selling Lamp", new Vector2(946.2f, 732.6f), new Vector2(946.2f, 722.6f)),
+        ("Seed Buying Lamp", new Vector2(387.6f, 612f), new Vector2(397.6f, 612f)),
+        ("Fertilizer Buying Lamp 1", new Vector2(432f, 1051.6f), new Vector2(432f, 1061.6f)),
+        ("Fertilizer Buying Lamp 2", new Vector2(474f, 1051.6f), new Vector2(474f, 1061.6f)),
+        ("Gas Station Lamp 1", new Vector2(4f, 590f), new Vector2(14f, 590f)),
+        ("Gas Station Lamp 2", new Vector2(58f, 612f), new Vector2(48f, 612f)),
+        ("Dealer Lamp 1", new Vector2(825f, 1128.5f), new Vector2(832f, 1121.4f)),
+        ("Dealer Lamp 2", new Vector2(896f, 1128.5f), new Vector2(889f, 1121.4f)),
+        ("Dealer Lamp 3", new Vector2(905f, 1055.2f), new Vector2(905f, 1065.2f)),
+    };
 
     [SerializeField] float lampScale = 2.5f;
     [SerializeField] float headDistance = 10f; // real metres from the pole to the centre of the lamp head; keeps its length when Lamp Scale changes
@@ -71,6 +91,7 @@ public class StreetLampBuilder : EditorWindow
         roadLampSpacing = Mathf.Max(20f, EditorGUILayout.FloatField("Road Lamp Spacing (m)", roadLampSpacing));
         if (GUILayout.Button("Place lamps along the main road")) PlaceAlongRoad(roadLampSpacing);
         if (GUILayout.Button("Place lamps along the sub road")) PlaceAlongSubRoad(roadLampSpacing);
+        if (GUILayout.Button("Place lamps at the buildings")) PlaceAtBuildings();
         if (GUILayout.Button("Add 3 spare lamps")) AddSpareLamps();
         if (GUILayout.Button("Even out lamp spacing")) EvenOutLamps();
     }
@@ -91,10 +112,17 @@ public class StreetLampBuilder : EditorWindow
         var blockers = Blockers(roadRenderer, ignore);
         foreach (var r in roadRenderer.transform.parent.GetComponentsInChildren<Renderer>())
             if (r != roadRenderer) blockers.Add(r.bounds);
+        blockers.AddRange(TreeBounds(terrain));
+        return blockers;
+    }
+
+    static List<Bounds> TreeBounds(Terrain terrain)
+    {
+        var trees = new List<Bounds>();
         Vector3 terrainPos = terrain.transform.position, terrainSize = terrain.terrainData.size;
         foreach (var tree in terrain.terrainData.treeInstances)
-            blockers.Add(new Bounds(terrainPos + Vector3.Scale(tree.position, terrainSize), Vector3.one));
-        return blockers;
+            trees.Add(new Bounds(terrainPos + Vector3.Scale(tree.position, terrainSize), Vector3.one));
+        return trees;
     }
 
     static bool FindFirstLamp(string title, Terrain terrain, out GameObject prefab, out Transform group, out Transform first)
@@ -298,6 +326,42 @@ public class StreetLampBuilder : EditorWindow
             if (child.name.StartsWith(prefix)) old.Add(child.gameObject);
         return old.Count == 0 || EditorUtility.DisplayDialog(title,
             $"Replace the {old.Count} lamps already there? Any you moved by hand are placed again.", "Replace", "Cancel");
+    }
+
+    // Fixed spots, so one already there is never touched. All of them end up selected.
+    static void PlaceAtBuildings()
+    {
+        const string title = "Building Lamps";
+        if (!CanEdit(title, out Scene scene, out Terrain terrain)) return;
+        if (!FindFirstLamp(title, terrain, out GameObject prefab, out Transform group, out _)) return;
+
+        Undo.SetCurrentGroupName("Place building lamps");
+        int undoGroup = Undo.GetCurrentGroup();
+        var trees = TreeBounds(terrain);
+        var lamps = new List<Object>();
+        int added = 0;
+        foreach (var (lampName, pole, armTowards) in BuildingLamps)
+        {
+            Transform lamp = group.Find(lampName);
+            if (lamp == null)
+            {
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, group);
+                Undo.RegisterCreatedObjectUndo(go, "Place building lamps");
+                go.name = lampName;
+                lamp = go.transform;
+                var p = new Vector3(pole.x, 0f, pole.y);
+                p.y = terrain.SampleHeight(p) + terrain.transform.position.y;
+                lamp.SetPositionAndRotation(p, Quaternion.LookRotation(new Vector3(armTowards.x - pole.x, 0f, armTowards.y - pole.y)));
+                added++;
+                if (Blocked(p, trees)) Debug.LogWarning($"{lampName} is standing in a tree. Move it a little.", go);
+            }
+            lamps.Add(lamp.gameObject);
+        }
+
+        Undo.CollapseUndoOperations(undoGroup);
+        if (added > 0) EditorSceneManager.MarkSceneDirty(scene);
+        Selection.objects = lamps.ToArray();
+        Debug.Log($"Added {added} building lamps under {GroupName}, {lamps.Count - added} were already there. Save the scene (Ctrl+S).", group);
     }
 
     // Lamps to move by hand, so one already there is never touched. All three end up selected.
