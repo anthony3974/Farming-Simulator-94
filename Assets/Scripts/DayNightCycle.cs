@@ -89,8 +89,9 @@ public class DayNightCycle : MonoBehaviour
             if (sky.HasProperty("_Tint")) baseTint = sky.GetColor("_Tint");
         }
 
-        night = false;
-        part = startDayPart;
+        // TEMP (lamp testing): start at night. Put back: night = false; part = startDayPart;
+        night = true;
+        part = 0.1f;
         LampsOn = false;
         Apply();
     }
