@@ -5,13 +5,14 @@
 
 Cleaned up on 2026-11-08: finished work is one line each under "Done"; the long notes on it (how each tool worked, test steps, old decisions) are in the git history of this file (`git log -p PLAN.md`, last long version in `356ea6b`). Sound details are in `Assets/Sounds/AUDIO_NOTES.md`.
 
-Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.6.8. **Releasing:** change only Project Settings > Player > Version; the Android version code is set from it on every Android build (`Assets/Editor/AndroidVersionCode.cs`: major x 10000 + minor x 100 + patch, 0.6.8 -> 608; it was the version without dots, 68, before).
+Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.6.10. **Releasing:** change only Project Settings > Player > Version; the Android version code is set from it on every Android build (`Assets/Editor/AndroidVersionCode.cs`: major x 10000 + minor x 100 + patch, 0.6.8 -> 608; it was the version without dots, 68, before).
 
 ## NEXT UP (in order)
 
-1. **Street lamps across the map (owner, 2026-11-05).** One lamp is built (`Assets/Prefabs/Street Lamp.prefab`, `Street Lamp 1` under `Terrain > Street Lamps`, by Tools > Street Lamp Builder: `StreetLampBuilder.cs` + `StreetLampModel.cs`). It has a real Spot `Light` (no shadows, Render Mode Important) and `NightLight.cs` turns it on at night.
-   - [ ] **Make the lamp bigger (owner, 2026-11-08).** The owner picked 2.5x (8.1 m becomes 20.3 m, Range 18 m becomes 45 m), set by `Lamp Scale` in the builder (default 2.5), and a longer arm (`Head Distance` in the builder, default 10 m from the pole to the head). Intensity is unchanged at 2.5, 120 degree cone.
-   - [ ] Then place lamps along the roads (also in the builder), at the buildings and the gas station (its own lamps were removed for this).
+1. **Street lamps across the map (owner, 2026-11-05).** 22 lamps are in GameScene under `Terrain > Street Lamps`, copies of `Assets/Prefabs/Street Lamp.prefab` placed by Tools > Street Lamp Builder (`StreetLampBuilder.cs` + `StreetLampModel.cs`): 15 along the main road (3 of them spares to move by hand) and 7 along the sub road, about 70 m apart. Each has a real Spot `Light` (no shadows, Render Mode Important) and `NightLight.cs` turns it on at night.
+   - [x] **Make the lamp bigger (owner, 2026-11-08).** The owner picked 2.5x (8.1 m becomes 20.3 m, Range 18 m becomes 45 m), set by `Lamp Scale` in the builder (default 2.5), and a longer arm (`Head Distance` in the builder, default 10 m from the pole to the head). Intensity is unchanged at 2.5, 120 degree cone.
+   - [x] Place lamps along the main road and the sub road (buttons in the builder).
+   - [ ] Place lamps at the buildings and the gas station (its own lamps were removed for this).
    - Phones: many real lights are costly (Android Medium has 1 pixel light, the sun's). Few lit lamps, short ranges, no shadows; far lamps could show only the glowing lens. Check the Android frame rate. PC can keep real lights on every lamp. Plan (owner, 2026-11-08):
      - [ ] **Fake light pool on every lamp (biggest saving).** A soft, warm, see-through circle lying on the ground under the lamp, plus the glowing lens it already has. One simple extra draw per lamp, however many lamps there are, and it looks about the same from the driver's seat. Needs fairly flat ground, which the road is, and it won't light up vehicles or walls.
      - [ ] **One real light, on the nearest lamp only.** A small script turns on the real light for the lamp closest to the player and leaves the rest fake. Vehicles still get lit as you pass under a lamp, and the phone only ever pays for one light.
@@ -24,7 +25,6 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
    - **Decide with the owner:** a shared error look (for example a red or orange border, inside `ScreenPrompt.Error`); the same wording everywhere ("Not enough X. You need N, you have M.", money as "$ 1,234"; the crop sale still says "Profit (1,234$)"); whether E away from everything should say anything (could be noisy).
 
 **Soon (owner, 2026-11-06 / 11-08), after the minimap:**
-- **Vehicle headlights (owner, 2026-11-08).** Built, to be tried: `VehicleLights.cs`, put on the three prefabs by the one-off Tools > Vehicle Lights Setup (`VehicleLightsSetup.cs`, delete it once the owner is happy). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
 - **Working lights on the house and garage** (same `NightLight.cs`).
 - **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
 
@@ -38,6 +38,8 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
+- **TEMPORARY, put back before a release: the game starts at night** for lamp testing (`DayNightCycle.cs:92`). Put back `night = false; part = startDayPart;` when testing is done.
+- **Vehicle headlights (owner, 2026-11-08):** built and on the three prefabs, not yet confirmed in the game. `VehicleLights.cs`, set up by the one-off Tools > Vehicle Lights Setup (`VehicleLightsSetup.cs`, delete it once the owner is happy). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
 - **Sun rotation (owner, 2026-11-08):** check in the game that the sun (`Directional Light`) turns over the day. If it is not turning, make it rotate. `DayNightCycle.cs` already rotates it while the cycle is on, and holds it still when SETTINGS > GAME has the cycle off, so check that setting first.
 - **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
@@ -50,7 +52,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 **To fix, most important first:**
 - [ ] **A fresh clone is missing its fonts.** `.gitignore:21` excludes `Assets/TextMesh Pro`, and all 169 font references in GameScene point to `LiberationSans SDF` inside it. Text is missing until someone imports TMP Essentials, and the README doesn't say to. Either track the folder or add the step to Getting started.
-- [ ] **Measure the lamp cost before placing more lamps.** At 2.5x each lamp lights a circle about 33 m in radius, 6.25 times the area of the 1x design, and everything inside gets an extra draw per lamp (`StreetLampBuilder.cs:134`). Check the Android frame rate with a few lamps; the phone lighting plan in NEXT UP 1 is the fix if it is too slow.
+- [ ] **Measure the lamp cost before placing more lamps.** At 2.5x each lamp lights a circle about 33 m in radius, 6.25 times the area of the 1x design, and everything inside gets an extra draw per lamp (`StreetLampBuilder.cs:559`). 22 lamps are placed now and the driven vehicle's headlight adds one more real light at night. Check the Android frame rate; the phone lighting plan in NEXT UP 1 is the fix if it is too slow.
 - [ ] **Walls don't reduce the vehicle's speed.** `Vehicle.Drive` (`Vehicle.cs:185`) keeps `acceleration` while the vehicle is blocked. The engine stays at full pitch, the vehicle leaps away at top speed once it is free, and reversing has to count down from full speed first. Bring `acceleration` down to the ground really covered.
 - [ ] **A save can be lost if the app is killed mid-save.** `SaveGame.cs:108` deletes the old file before moving the new one in. A kill between those two lines leaves only `farm.json.tmp`, which Load Game ignores. Use `File.Replace`, and pick up a leftover `.tmp` when loading.
 - [ ] **H isn't blocked while menus are open.** `InputManager.cs:192` clears the other game keys but not `help`, so the help panel opens over the pause, dealer and settings menus.
