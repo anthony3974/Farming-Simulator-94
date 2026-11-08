@@ -37,11 +37,35 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
+- **Sun rotation (owner, 2026-11-08):** check in the game that the sun (`Directional Light`) turns over the day. If it is not turning, make it rotate. `DayNightCycle.cs` already rotates it while the cycle is on, and holds it still when SETTINGS > GAME has the cycle off, so check that setting first.
 - **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.
 - **Old history backup:** `../Farming-Simulator-94-mirror-backup.git` (outside the project) can be deleted; the rewritten history was pushed and checked on 2026-11-03.
+
+## Code review findings (2026-11-08)
+Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project settings and the newest APK. No crash or save-corrupting bug found. The game was not run for it, a clean clone was not tried, phone performance was not measured, and the seven Python art scripts were not read. Not ordered against NEXT UP; ask the owner when to do these.
+
+**To fix, most important first:**
+- [ ] **A fresh clone is missing its fonts.** `.gitignore:21` excludes `Assets/TextMesh Pro`, and all 169 font references in GameScene point to `LiberationSans SDF` inside it. Text is missing until someone imports TMP Essentials, and the README doesn't say to. Either track the folder or add the step to Getting started.
+- [ ] **Measure the lamp cost before placing more lamps.** At 2.5x each lamp lights a circle about 33 m in radius, 6.25 times the area of the 1x design, and everything inside gets an extra draw per lamp (`StreetLampBuilder.cs:134`). Check the Android frame rate with a few lamps; the phone lighting plan in NEXT UP 1 is the fix if it is too slow.
+- [ ] **Walls don't reduce the vehicle's speed.** `Vehicle.Drive` (`Vehicle.cs:185`) keeps `acceleration` while the vehicle is blocked. The engine stays at full pitch, the vehicle leaps away at top speed once it is free, and reversing has to count down from full speed first. Bring `acceleration` down to the ground really covered.
+- [ ] **A save can be lost if the app is killed mid-save.** `SaveGame.cs:108` deletes the old file before moving the new one in. A kill between those two lines leaves only `farm.json.tmp`, which Load Game ignores. Use `File.Replace`, and pick up a leftover `.tmp` when loading.
+- [ ] **H isn't blocked while menus are open.** `InputManager.cs:192` clears the other game keys but not `help`, so the help panel opens over the pause, dealer and settings menus.
+- [ ] **Money is a `float` (`PlayerValues.cs:14`).** Cents start to wobble above about $130,000. Above about $4 million the pump's per-frame charge at 60 fps rounds to nothing, so diesel is free. A `double` fixes it; the save field (`SaveData.money`) has to change too.
+
+**Decide with the owner:**
+- **Buying a ready field is as profitable as farming.** With the harvester, buying a Ready AI field, harvesting it and selling it back earns about $0.70 per unit (-2.10 + 1.12 + 1.68). Growing your own earns about $0.71 after seeds, but takes 83 s. Accept it, lower the sell-back price, or block resale for a while after buying.
+
+**Before publishing:**
+- [ ] No release keystore (`androidUseCustomKeystore: 0`), so builds are debug-signed. Google Play needs a release key.
+- [ ] "Farming Simulator" is the name of GIANTS Software's game series, and one AI field is called "John Deer" (`FieldController.FieldNames`). Check both names before going public.
+
+**Cleanup:**
+- [ ] README lines 57 and 61 still list the engine start sound and the zoom-out volume as upcoming; both are done.
+- [ ] Unused code: `topSpeed`, `harvestBonus`, `description` and `ForSale` in `VehicleCatalog` (the first two duplicate the prefab values), `Vehicle.SetColor` and `paintRenderers` (the paint shop was dropped).
+- [ ] No automated tests, though the test framework is installed. The save and economy rules are the best place to start.
 
 ## Smaller open notes
 - Sounds not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
