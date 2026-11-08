@@ -10256,7 +10256,7 @@ CharacterController:
   m_StepOffset: 0.4
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 2.5540621, z: 0}
+  m_Center: {x: 0, y: 2.59, z: 0}
 --- !u!65 &6221358072935377955
 BoxCollider:
   m_ObjectHideFlags: 0

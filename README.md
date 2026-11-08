@@ -58,7 +58,7 @@ The 3D version started from the feature set of the 2D game (buy fields, grow and
 - Street lamps across the map (bigger lamp first)
 - A minimap
 - Clearer error messages
-- Soon after: the tractor sitting on the ground properly, vehicle headlights, lights on the house and garage, engine quieter when zoomed out, vehicle mirrors, no mud flaps on the van
+- Soon after: vehicle headlights, lights on the house and garage, engine quieter when zoomed out, vehicle mirrors
 - Later: drive across a field to harvest it
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).
@@ -71,7 +71,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon, `Touch`: the steering wheel and the rounded button shapes)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: one-off editor tools while they are in use. **Now: Game Sounds Setup** (Tools > Game Sounds Setup: the sounds' prefab in `Assets/Resources`; delete when no more sounds are added), **Vehicle Ground Check** (Tools > Debug: Vehicle Ground Check, in Play mode: logs what the driven vehicle rests on and the gap under each tire; changes nothing) and **Street Lamp Builder** (Tools > Street Lamp Builder: the street lamp prefab and one test lamp in the middle of the map, `StreetLampBuilder.cs` + `StreetLampModel.cs`). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows, settings game tab, tire tread) were run and removed; they are in the git history
+- `Assets/Editor`: one-off editor tools while they are in use. **Now: Game Sounds Setup** (Tools > Game Sounds Setup: the sounds' prefab in `Assets/Resources`; delete when no more sounds are added) and **Street Lamp Builder** (Tools > Street Lamp Builder: the street lamp prefab and one test lamp in the middle of the map, `StreetLampBuilder.cs` + `StreetLampModel.cs`). The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows, settings game tab, tire tread, vehicle ground fix) were run and removed; they are in the git history
 - `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops, `Sounds/make_money_in.py`, `make_money_out.py` and `make_farm_sounds.py` make the money and farming sounds, `Touch/make_touch_sprites.py` draws the steering wheel and rounded button sprites
 - `PLAN.md`: roadmap, 2D game analysis and notes
 
