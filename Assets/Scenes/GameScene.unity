@@ -2597,7 +2597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc304fd048058df41a8c88aae20d7977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showTouchControls: 1
+  showTouchControls: 0
 --- !u!1 &26488877
 GameObject:
   m_ObjectHideFlags: 0
