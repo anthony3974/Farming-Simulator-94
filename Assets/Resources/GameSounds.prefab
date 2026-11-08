@@ -52,8 +52,10 @@ MonoBehaviour:
   planting: {fileID: 8300000, guid: 7e9df22d415304ec4a4e9f8f09d3cb79, type: 3}
   harvesting: {fileID: 8300000, guid: 5cc7ab8233d1a9ccfbfb273a744d8892, type: 3}
   fertilizing: {fileID: 8300000, guid: 14c90d04148a681d3a426ae5997cc4ce, type: 3}
+  error: {fileID: 8300000, guid: 40c5ed6887ac49c48847ee0dc6da4d59, type: 3}
   masterVolume: 1
   clickVolume: 0.5
   menuVolume: 0.8
   moneyVolume: 1
   farmVolume: 1
+  errorVolume: 1

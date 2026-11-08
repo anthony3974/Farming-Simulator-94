@@ -25,7 +25,7 @@ SR = 44100
 # (431, 0.024, 0.70), (640, 0.013, 0.40), peak -4.
 MODES = [(82, 0.220, 0.50), (131, 0.150, 0.70), (197, 0.100, 0.90), (296, 0.060, 0.90), (445, 0.030, 0.60)]
 LENGTH = 0.80
-PEAK_DB = -5.0
+PEAK_DB = -2.0   # was -5; owner, 2026-11-08: a bit louder (GameSounds' errorVolume is already at its maximum, 1)
 FADE = 0.15
 CRACK = 0.20   # level of the crack, as a part of the body's peak
 
