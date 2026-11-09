@@ -197,7 +197,7 @@ public class FieldController : MonoBehaviour
     [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
     [SerializeField, Range(0f, 1f)] private float sellBackFraction = 0.8f;
 
-    private bool IsPlayerField => ownerName == playerName;
+    public bool IsPlayerField => ownerName == playerName;
 
     // B key: first press asks, second press (within a few seconds) confirms.
     private int seedQuote;
