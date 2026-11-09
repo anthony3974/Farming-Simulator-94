@@ -124,6 +124,23 @@ Today harvesting is instant (E / USE on a Ready field, `FieldController.Harvest`
 - Open: fuel per cell? Cell size vs. phone performance. Keep instant harvest as a fallback?
 - Order: cell grid with gizmos, mode toggle, payout, progress and reset, visuals, touch button.
 
+## Notes from chat (Nov 8, 2026)
+
+### Unity farming game: advanced harvesting
+- One game with a harvesting mode setting (regular vs. advanced), not two games. Both modes share the same fields, crops, tractor, dealership and saves. Could be per save or per field.
+- Advanced mode uses physical crop colliders:
+  - The field stays one object, with no splitting into sub-fields.
+  - Spawn real crop colliders only in a small zone around/ahead of the combine, and recycle them behind it.
+  - Use object pooling to keep it smooth on phone.
+  - Regular mode skips spawning and just uses the grid.
+- Field memory: a grid over the field, each cell storing how much crop is still standing (full = untouched, 0 = harvested). The combine reduces cells under the header, and colliders only spawn where crop remains.
+- Render the same grid as a texture so cut areas look bare. One data source drives both visuals and gameplay.
+- Suggested first step: a tiny test field with one machine, get spawn-and-recycle working, then scale up.
+
+### Open questions
+- How big are the fields? That sets the grid resolution.
+- Should cut crops fall or fly around, or just disappear as the header passes?
+
 ## 2D game reference (Sim94, `anthony3974/Sim94`, C# Windows Forms)
 | Feature | 2D behaviour |
 |---|---|
