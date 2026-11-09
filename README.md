@@ -54,7 +54,6 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 ## Roadmap
 The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, fuel with the gas station, save / load, fertilized fields turning blue, the touch controls rework (steering wheel, sliders, rounded buttons, SETTINGS), AI owners working their own fields, the day / night cycle, the first street lamp, tire tread with rolling wheels, and the menu, money and farming sounds. Next up, in order:
 
-- Lights on the house and garage
 - Vehicle mirrors
 - Later: drive across a field to harvest it
 
@@ -68,7 +67,7 @@ The full feature checklist from the 2D game, known issues and design notes are i
 - Building and vehicle materials: `Tractor`, `Vehicles`, `Dealer`, `Shops`, `SellStations`, `GasStation`, `House`, `Garage`, `MapBorder`; HUD images in `Images` (speedometer, app icon, `Touch`: the steering wheel and the rounded button shapes)
 - `Assets/AllSkyFree`: 4 skyboxes (`Epic_BlueSunset` is the one in use)
 - `Assets/TerrainSampleAssets`: terrain textures (kept layers: `Grass_B`, `Grass_A`, `Grass_Moss`, `Grass_Soil`, `Pebbles_B`, `Pebbles_C`)
-- `Assets/Editor`: `AndroidVersionCode.cs` (kept: every Android build sets the version code from the version, 0.6.8 -> 608) and one-off editor tools while they are in use. **Now: none.** The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows, settings game tab, tire tread, vehicle ground fix, game sounds, engine start, vehicle lights, street lamps, minimap) were run and removed; they are in the git history
+- `Assets/Editor`: `AndroidVersionCode.cs` (kept: every Android build sets the version code from the version, 0.6.8 -> 608) and one-off editor tools while they are in use. **Now: none.** The builders so far (map border, dealer, tractor and tractor V2, sell stations, shops, road look, house, garage, vehicle prefabs, menus, help menu, touch look, button prefab, harvester V2, app icon, engine sound, gas station, fuel gauge, touch controls, help menu rows, settings game tab, tire tread, vehicle ground fix, game sounds, engine start, vehicle lights, street lamps, minimap, house lights) were run and removed; they are in the git history
 - `Art`: source files kept outside `Assets` (Unity does not import them): `Icon/make_icon.py` draws the app icon, `Sounds/make_loops.py` makes the seamless engine loops, `Sounds/make_money_in.py`, `make_money_out.py` and `make_farm_sounds.py` make the money and farming sounds, `Touch/make_touch_sprites.py` draws the steering wheel and rounded button sprites
 - `PLAN.md`: roadmap, 2D game analysis and notes
 

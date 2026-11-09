@@ -9,8 +9,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## NEXT UP (in order)
 
-1. **Working lights on the house and garage** (same `NightLight.cs`).
-2. **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
+1. **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
 
 **Possible later (owner, 2026-11-07); ask before starting:**
 - **Trailers.** What for (carry grain, seeds / fertilizer, or looks), bought at the dealer, a hitch (physics joint or a simple follow-the-hitch trailer, steadier on phones), reversing, a capacity limit, saved in SaveGame.
@@ -48,6 +47,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **House and garage lights (2026-11-08):** the farmhouse porch light and the light over the garage's side door work at night (`NightLight.cs`): the street lamps' glowing lens plus one small warm Point Light each, called "Night Light" under the fixture (no shadows, Important; range 14 and 10, intensity 2 and 1.5). Owner happy. House Lights Setup git `8e8ee69`.
 - **Save file swapped in one step (2026-11-08):** `SaveGame.Save` uses `File.Replace`, so a kill mid-save can't leave no save.
 - **Vehicle headlights (2026-11-08):** automatic at night and only on the vehicle you drive (`VehicleLights.cs`): the lens parts glow, plus one real forward Spot `Light` per vehicle (`Headlight Beam` on the prefab). Owner: "headlights look right". Vehicle Lights Setup git `105213b`.
 - **Error messages (2026-11-08):** every failure says why in the centre box with `ErrorKnock.wav` (`ScreenPrompt.Error`, `Building.ShowError`). Full sentences end with a full stop, prices are written "$ 1,234", and seed and fertilizer errors give only the amount needed (what you have is on the Statistics panel). Every harvest of your own field shows a message. Left as they are on purpose (owner): E / USE or B / BUY SELL away from a field or building does nothing, buying a vehicle you already own, no special look for errors.
