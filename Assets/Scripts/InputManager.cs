@@ -74,6 +74,9 @@ public class InputManager : MonoBehaviour
     /// <summary>True on the frame a menu closed, so the same Esc press does not also open the pause menu.</summary>
     public bool MenuJustClosed => menuClosedFrame == Time.frameCount;
 
+    /// <summary>For a pop-up that doesn't use <see cref="MenuOpen"/> (the help): its Esc press was used up this frame.</summary>
+    public void MarkMenuClosed() => menuClosedFrame = Time.frameCount;
+
     void Awake()
     {
         // the touch buttons are a scene object ("Touch Controls", TouchControls.cs) that hides itself when this is false

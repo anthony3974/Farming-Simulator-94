@@ -6,10 +6,12 @@ using UnityEngine.UI;
 /// The controls pop-up in GameScene. A real object in the scene hierarchy ("Help Menu", made by
 /// Tools > Build Help Menu), so its panels and texts can be moved, resized, restyled and reworded in the editor.
 /// This script only opens and closes it. Press H, or the HELP button on touch, to open and close it; a tap
-/// anywhere on it also closes it. There are two panels: <see cref="keyboardPanel"/> on PC and
+/// anywhere on it, or Esc, also closes it. There are two panels: <see cref="keyboardPanel"/> on PC and
 /// <see cref="touchPanel"/> when the touch controls are on (phones, or Show Touch Controls in the editor).
 /// The touch panel's steer and drive rows name the controls picked in SETTINGS (buttons, wheel or slider).
+/// Runs before the other scripts (after InputManager), so its Esc is used up before the pause menu looks at the key.
 /// </summary>
+[DefaultExecutionOrder(-50)]
 public class HelpMenu : MonoBehaviour
 {
     [Header("Scene objects (set by the builder; keep them set if you rearrange)")]
@@ -59,6 +61,12 @@ public class HelpMenu : MonoBehaviour
         if (input.MenuOpen)
         {
             if (menuRoot.activeSelf) menuRoot.SetActive(false);
+            return;
+        }
+        if (menuRoot.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        {
+            Close();
+            input.MarkMenuClosed(); // so this press doesn't also pause the game or free the mouse
             return;
         }
         if (!input.Help) return;

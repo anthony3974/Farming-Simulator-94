@@ -73,7 +73,7 @@ public class PauseMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (IsPaused) Resume();
-            // Esc that just closed another menu (the dealer) should not also pause
+            // Esc that just closed another menu (the dealer, the help) should not also pause
             else if (!input.MenuOpen && !input.MenuJustClosed) Pause();
         }
 
