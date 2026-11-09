@@ -105,8 +105,8 @@ public class SaveGame : MonoBehaviour
             string temp = path + ".tmp";
             // write a new file first, then swap it in, so a crash mid-write never leaves half a save
             File.WriteAllText(temp, json);
-            if (File.Exists(path)) File.Delete(path);
-            File.Move(temp, path);
+            if (File.Exists(path)) File.Replace(temp, path, null); // one step, so there is never a moment with no save
+            else File.Move(temp, path);
             nextAutoSave = Time.unscaledTime + autoSaveSeconds;
             return true;
         }
