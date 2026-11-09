@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 // Editor tool: builds the street lamp (PLAN item 13) as a prefab and puts one in the middle of the map to look at.
@@ -14,8 +15,12 @@ using UnityEngine.SceneManagement;
 //   wherever it is (move it, run again, and it is set back on the ground; the prefab is rebuilt).
 // - The light is a warm spot light pointing down. The prefab's NightLight turns it (and the glowing lens) on only at
 //   night, following the DayNightCycle on the sun; in a scene with no cycle it stays on.
-//   It is set to Important so it shows on phones too (Android Medium quality has 1 pixel light, the sun's). With
-//   many lamps that will need another plan (see PLAN, daylight cycle). No shadows, to keep it cheap.
+//   It is set to Important so it shows on phones too (Android Medium quality has 1 pixel light, the sun's). No shadows,
+//   to keep it cheap.
+// - The prefab's "Light Pool" child is the fake light: a flat see-through circle on the ground, as wide as the real
+//   light's cone reaches (LightPool.cs, Assets/StreetLamp/LightPool.shader). "Build / rebuild street lamp" also puts
+//   StreetLampLights on the Street Lamps group: only the lamp nearest the driven vehicle has its real light on, and all
+//   the others show the pool. Its brightness and colour are on Assets/StreetLamp/Light Pool.mat.
 // - Lamp Scale (in the window) sizes the whole lamp: StreetLampModel stays the 1x design and its "Model" object is
 //   scaled. A Light's Range ignores scale, so the tool multiplies it too; the Intensity stays, because Unity's falloff
 //   depends on distance / Range, which scaling both leaves the same. Head Distance (in the window) sets the arm's
@@ -52,6 +57,9 @@ public class StreetLampBuilder : EditorWindow
     const int SpareLamps = 3;
     const float SpareLampGap = 15f;
     const float SameLine = 1f;    // a lamp this close to Street Lamp 1's Z counts as in line with it
+    const string PoolShaderPath = MaterialFolder + "/LightPool.shader";
+    const string PoolMaterialPath = MaterialFolder + "/Light Pool.mat";
+    const float PoolHeight = 0.15f; // above the ground, over the roads, lots and weighbridges (0.11 m at most)
 
     // World X / Z of each pole and the point its arm reaches towards. The poles stand just off the edge of each lot, or
     // tight against the dealer's building, so they are out of the way when driving in. Arms miss the silos.
@@ -178,6 +186,7 @@ public class StreetLampBuilder : EditorWindow
             group.SetParent(terrainRoot, false);
             group.localPosition = Vector3.zero;
         }
+        if (group.GetComponent<StreetLampLights>() == null) Undo.AddComponent<StreetLampLights>(group.gameObject);
 
         // the test lamp: kept if it is there (and still a copy of the prefab), else placed on the first run
         Transform lamp = group.Find(LampName);
@@ -497,11 +506,50 @@ public class StreetLampBuilder : EditorWindow
             foreach (var light in model.GetComponentsInChildren<Light>(true)) light.range *= scale;
             foreach (var t in model.GetComponentsInChildren<Transform>(true))
                 if (t.GetComponent<Light>() == null) t.gameObject.isStatic = true;
-            temp.AddComponent<NightLight>(); // light and lens on only at night (DayNightCycle)
+            temp.AddComponent<NightLight>(); // lens on only at night (DayNightCycle)
+            AddLightPool(temp.transform);
             var saved = PrefabUtility.SaveAsPrefabAsset(temp, PrefabPath, out bool ok);
             return ok ? saved : null;
         }
         finally { DestroyImmediate(temp); }
+    }
+
+    // The fake light under the head. One flat quad is enough because the terrain is completely flat (height 0 everywhere).
+    // The renderer starts off and LightPool turns it on at night, so the Scene view isn't covered in circles.
+    // The temporary lamp is at the origin, so the light's world position is its position in the prefab.
+    static void AddLightPool(Transform lamp)
+    {
+        var light = lamp.GetComponentInChildren<Light>(true);
+        Vector3 head = light.transform.position;
+        float reach = head.y * Mathf.Tan(light.spotAngle * 0.5f * Mathf.Deg2Rad);
+
+        var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        go.name = "Light Pool";
+        DestroyImmediate(go.GetComponent<Collider>());
+        go.transform.SetParent(lamp, false);
+        go.transform.localPosition = new Vector3(head.x, PoolHeight, head.z);
+        go.transform.localRotation = Quaternion.Euler(90f, 0f, 0f); // lying flat, facing up
+        go.transform.localScale = new Vector3(reach * 2f, reach * 2f, 1f);
+
+        var renderer = go.GetComponent<Renderer>();
+        renderer.sharedMaterial = PoolMaterial();
+        renderer.enabled = false;
+        renderer.shadowCastingMode = ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.lightProbeUsage = LightProbeUsage.Off;
+        renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+
+        go.AddComponent<LightPool>().realLight = light;
+    }
+
+    // an existing material is reused as it is, so a tuned colour survives a rebuild
+    static Material PoolMaterial()
+    {
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(PoolMaterialPath);
+        if (mat != null) return mat;
+        mat = new Material(AssetDatabase.LoadAssetAtPath<Shader>(PoolShaderPath));
+        AssetDatabase.CreateAsset(mat, PoolMaterialPath);
+        return mat;
     }
 
     // First run: just off the farm-side edge of the main road (lower Z, where the farm is), at the middle of the map
