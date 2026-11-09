@@ -381,7 +381,7 @@ public class FieldController : MonoBehaviour
             fertilizerQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minFertilizerPerYield, maxFertilizerPerYield)));
         if (playerValues.Fertilizer < fertilizerQuote)
         {
-            box.Error($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}.\nBuy more at the fertilizer shop.", 3f);
+            box.Error($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}.", 3f);
             return;
         }
 
