@@ -499,13 +499,11 @@ public class FieldController : MonoBehaviour
         float vehicleBonus = vehicle != null ? vehicle.harvestBonus : 0f;
         float fertilizerBonus = fertStage * fertilizerBonusPerLevel;
         int amount = Convert.ToInt32(size * (1f + vehicleBonus + fertilizerBonus));
-        if (vehicleBonus > 0f || fertilizerBonus > 0f)
-        {
-            var parts = new List<string>();
-            if (vehicleBonus > 0f) parts.Add($"+{vehicleBonus * 100f:0}% with the {vehicle.displayName}");
-            if (fertilizerBonus > 0f) parts.Add($"+{fertilizerBonus * 100f:0}% from fertilizer");
-            ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType} ({string.Join(", ", parts)})", 3f);
-        }
+        var parts = new List<string>();
+        if (vehicleBonus > 0f) parts.Add($"+{vehicleBonus * 100f:0}% with the {vehicle.displayName}");
+        if (fertilizerBonus > 0f) parts.Add($"+{fertilizerBonus * 100f:0}% from fertilizer");
+        string bonuses = parts.Count > 0 ? $" ({string.Join(", ", parts)})" : "";
+        ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType}{bonuses}", 3f);
 
         if (cropType == CropType.Wheat) playerValues.InWheat += amount;
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;
