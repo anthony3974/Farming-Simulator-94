@@ -5,19 +5,19 @@
 
 Cleaned up on 2026-11-08: finished work is one line each under "Done"; the long notes on it (how each tool worked, test steps, old decisions) are in the git history of this file (`git log -p PLAN.md`, last long version in `356ea6b`). Sound details are in `Assets/Sounds/AUDIO_NOTES.md`.
 
-Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.6.10. **Releasing:** change only Project Settings > Player > Version; the Android version code is set from it on every Android build (`Assets/Editor/AndroidVersionCode.cs`: major x 10000 + minor x 100 + patch, 0.6.8 -> 608; it was the version without dots, 68, before).
+Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.unity` (opens first), `Assets/Scenes/GameScene.unity`. Scripts in `Assets/Scripts`. Version 0.7. **Releasing:** change only Project Settings > Player > Version; the Android version code is set from it on every Android build (`Assets/Editor/AndroidVersionCode.cs`: major x 10000 + minor x 100 + patch, 0.6.8 -> 608; it was the version without dots, 68, before).
 
 ## NEXT UP (in order)
 
-1. **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
+Nothing queued: the owner has moved on to a new game (2026-11-08) and may not be back for a while. If work resumes, start with the phone checks under "Waiting on the owner".
 
-**Possible later (owner, 2026-11-07); ask before starting:**
-- **Trailers.** What for (carry grain, seeds / fertilizer, or looks), bought at the dealer, a hitch (physics joint or a simple follow-the-hitch trailer, steadier on phones), reversing, a capacity limit, saved in SaveGame.
+**Maybe, if the owner comes back to this game; ask before starting:**
 - **More tractors.** New `VehicleKind`s in `VehicleCatalog` plus prefabs (built like Tractor V2); keys 1 / 2 / 3 only cover three (Tab and CAR cycle); the dealer menu needs more rows.
+- **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
+- **Advanced crop harvesting (bottom of the queue).** Drive across the field to harvest it; design and notes below. The owner does want it if work on this game continues, but it is the complicated one, and it could lead to advanced seeds and advanced fertilizing too.
 
-**Distant:** advanced crop harvesting (drive across the field to harvest it; design below).
 
-**Dropped (owner, 2026-11-04):** the paint shop.
+**Dropped (owner):** the paint shop (2026-11-04), trailers (2026-11-08).
 
 ## Waiting on the owner (built, not yet tried or decided)
 - **Phone checks (2026-11-08, needs a new build):**
@@ -25,25 +25,14 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
   2. **Minimap:** check that the letters are big enough to read, and that it doesn't crowd the fuel gauge or the Settings button.
   3. **Light pools at night:** confirm they look right on the phone too, if only seen in the editor.
   4. **Back button:** with the help menu open, it should close the help, the same as Esc.
-- **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
+- **SETTINGS > GAME tab leftovers:** check the night brightness on the phone.
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.
-- **Old history backup:** `../Farming-Simulator-94-mirror-backup.git` (outside the project) can be deleted; the rewritten history was pushed and checked on 2026-11-03.
-
-## Code review findings (2026-11-08)
-Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project settings and the newest APK. No crash or save-corrupting bug found. The game was not run for it, a clean clone was not tried, phone performance was not measured, and the seven Python art scripts were not read. Not ordered against NEXT UP; ask the owner when to do these.
-
-- [ ] No automated tests, though the test framework is installed. The save and economy rules are the best place to start.
 
 ## Smaller open notes
-- Sounds not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
 - Game Sounds Setup and Engine Start Setup were run and removed (git `105213b`); bring them back from there when adding sounds.
-- Android: check the touch layout against the field pop-up on phones with a notch / rounded corners (safe area); performance on a phone (terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`); sharing (APK for Android friends, maybe a WebGL build on itch.io); optional icons instead of `<` `>` `GAS` `BRAKE` `USE` labels, haptic feedback.
-- Help menu phase 2 (if wanted): icons instead of text, a gamepad layout.
-- One E press can act on a field and a building if their trigger zones overlap.
+- Android: performance on a phone (terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`); sharing (APK for Android friends, maybe a WebGL build on itch.io); optional icons instead of `<` `>` `GAS` `BRAKE` `USE` labels, haptic feedback.
 - `PlayerValues` has no null checks on the wheat, barley and oat labels; other scripts besides `FieldController` and `Dealer` have no missing-reference check.
-- A scene-set field name that is also in the AI name list is not reserved, so an AI field could get the same name.
-- Getting out of the vehicle on foot is not built (ask if wanted).
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
