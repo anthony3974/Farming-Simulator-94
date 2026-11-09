@@ -14,6 +14,7 @@ Nothing queued: the owner has moved on to a new game (2026-11-08) and may not be
 **Maybe, if the owner comes back to this game; ask before starting:**
 - **More tractors.** New `VehicleKind`s in `VehicleCatalog` plus prefabs (built like Tractor V2); keys 1 / 2 / 3 only cover three (Tab and CAR cycle); the dealer menu needs more rows.
 - **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
+- **Spring-like camera lag at speed.** The camera trails a little as the vehicle speeds up and catches up as it slows, more at higher speed. Add it to `PlaceCamera` in `GameCharacter.cs` (no Cinemachine needed). The camera pivot is a child of the vehicle, so today the camera follows it rigidly. Keep the wall check (`ObstacleScale`) working on the lagged position, and don't let the lag carry over when switching vehicles.
 - **Advanced crop harvesting (bottom of the queue).** Drive across the field to harvest it; design and notes below. The owner does want it if work on this game continues, but it is the complicated one, and it could lead to advanced seeds and advanced fertilizing too.
 
 
