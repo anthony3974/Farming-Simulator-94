@@ -37,7 +37,6 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
-- **TEMPORARY, put back before a release: the game starts at night** for lamp testing (`DayNightCycle.cs:92`). Put back `night = false; part = startDayPart;` when testing is done.
 - **Vehicle headlights (owner, 2026-11-08):** built and on the three prefabs, not yet confirmed in the game. `VehicleLights.cs`, set up by the one-off Tools > Vehicle Lights Setup (`VehicleLightsSetup.cs`, delete it once the owner is happy). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
 - **Sun rotation (owner, 2026-11-08):** check in the game that the sun (`Directional Light`) turns over the day. If it is not turning, make it rotate. `DayNightCycle.cs` already rotates it while the cycle is on, and holds it still when SETTINGS > GAME has the cycle off, so check that setting first.
 - **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
