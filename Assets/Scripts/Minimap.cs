@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The small map on the right of the screen (PLAN: minimap). A real object in the scene hierarchy ("Minimap", made by
+/// The small map on the left of the screen (PLAN: minimap). A real object in the scene hierarchy ("Minimap", made by
 /// Tools > Build Minimap): the roads, fields and buildings are plain UI images, north up, so they can be moved and
 /// recoloured in the editor. There is no camera and no RenderTexture. This script only:
 ///  - shows or hides the map with <see cref="GameSettings.Minimap"/> (SETTINGS > GAME), also while a game is running;
@@ -42,12 +42,6 @@ public class Minimap : MonoBehaviour
     [Tooltip("How much world X and Z the map shows.")]
     public Vector2 worldSize;
 
-    [Header("Place on the screen (Anchored Position of the panel)")]
-    [Tooltip("Without touch controls: at the right edge.")]
-    public Vector2 pcPosition = new(-20f, 0f);
-    [Tooltip("With touch controls: 10 left of the column of buttons (USE, CROP, GAS...), which fills the right edge.")]
-    public Vector2 touchPosition = new(-340f, 0f);
-
     [Header("Fields")]
     [Tooltip("Seconds between updates of the field colours and owners.")]
     public float fieldRefreshSeconds = 2f;
@@ -70,9 +64,6 @@ public class Minimap : MonoBehaviour
             enabled = false;
             return;
         }
-
-        var input = FindFirstObjectByType<InputManager>();
-        panel.anchoredPosition = input != null && input.TouchControlsActive ? touchPosition : pcPosition;
 
         foreach (var mark in fields)
             if (mark.field != null) mark.worldRenderer = mark.field.GetComponent<Renderer>();

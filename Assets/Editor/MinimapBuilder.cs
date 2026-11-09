@@ -11,14 +11,15 @@ using UnityEngine.UI;
 // Use: open GameScene, Tools > Build Minimap, save the scene (Ctrl+S).
 //
 // - The "Minimap" canvas (sorted with the gauges, under the touch buttons and the menus) holds "Border" (the panel, in
-//   the middle of the right edge) and inside it "Map Area" with Roads, Fields, Buildings, the N and the Vehicle Marker.
+//   the middle of the left edge) and inside it "Map Area" with Roads, Fields, Buildings, the N and the Vehicle Marker.
 // - The world area shown is the Map Border fence (the whole terrain if there is no fence). Roads and fields are placed
 //   with their anchors, so they follow if the panel is resized. Fields and roads use their world bounds, so a rotated
 //   one would show as its bounding box (all of them are square to the map now).
 // - Buildings are a letter in a box, fixed size: W B O sell that crop, S seeds, F fertilizer, G gas, D dealer, H home.
 //   Boxes that would overlap are pushed apart a little. The letters can be edited in the scene.
-// - The Minimap script gets its references here. On a phone the panel moves left of the touch buttons by itself
-//   (Touch Position on the script); the position set here is the PC one.
+// - The panel's place works with and without touch controls: between the fuel gauge and the Settings button, on the
+//   narrowest phones too. That gap is why it sits a little above the exact middle.
+// - The Minimap script gets its references here.
 // - Running it again only adds what is missing (a new field, say) and sets the references again, so hand changes stay.
 //   To place something again, delete it and run the tool.
 public static class MinimapBuilder
@@ -39,6 +40,7 @@ public static class MinimapBuilder
     const int PushPasses = 20;
 
     static readonly Vector2 PanelSize = new(240f, 280f); // the same shape as the map, about 1000 x 1166 m
+    static readonly Vector2 PanelPosition = new(20f, 30f);
 
     static readonly Color Yellow = new Color32(255, 204, 0, 255);
     static readonly Color Brown = new Color32(60, 45, 20, 255);
@@ -82,11 +84,12 @@ public static class MinimapBuilder
 
         Image border = NewImage(root.transform, "Border", Yellow, out bool created);
         RectTransform panel = border.rectTransform;
-        if (created)
+        if (created || panel.anchorMin.x > 0.5f) // also moves a panel built on the right side, where it first was
         {
-            panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(1f, 0.5f);
+            Undo.RecordObject(panel, UndoName);
+            panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(0f, 0.5f);
             panel.sizeDelta = PanelSize;
-            panel.anchoredPosition = minimap.pcPosition;
+            panel.anchoredPosition = PanelPosition;
         }
 
         Image ground = NewImage(panel, "Map Area", Brown, out created);
