@@ -12,6 +12,8 @@ using UnityEngine.UI;
 //
 // - The "Minimap" canvas (sorted with the gauges, under the touch buttons and the menus) holds "Border" (the panel, in
 //   the middle of the left edge) and inside it "Map Area" with Roads, Fields, Buildings, the N and the Vehicle Marker.
+// - Map Area is turned -90 degrees (north points right), inside an unturned Border. The letters are turned back so they
+//   read upright, and the arrow turns with the map by itself.
 // - The world area shown is the Map Border fence (the whole terrain if there is no fence). Roads and fields are placed
 //   with their anchors, so they follow if the panel is resized. Fields and roads use their world bounds, so a rotated
 //   one would show as its bounding box (all of them are square to the map now).
@@ -39,7 +41,8 @@ public static class MinimapBuilder
     const float ArrowSize = 30f;
     const int PushPasses = 20;
 
-    static readonly Vector2 PanelSize = new(240f, 280f); // the same shape as the map, about 1000 x 1166 m
+    static readonly Vector2 PanelSize = new(280f, 240f); // the shape of the map on its side, about 1166 x 1000 m
+    const float MapRotation = -90f;
     static readonly Vector2 PanelPosition = new(20f, 30f);
 
     static readonly Color Yellow = new Color32(255, 204, 0, 255);
@@ -94,7 +97,8 @@ public static class MinimapBuilder
 
         Image ground = NewImage(panel, "Map Area", Brown, out created);
         RectTransform mapArea = ground.rectTransform;
-        if (created) Stretch(mapArea, BorderWidth);
+        bool turning = created || Mathf.Approximately(mapArea.localEulerAngles.z, 0f); // new, or built before the map was turned
+        if (turning) TurnMap(panel, mapArea);
 
         RectTransform roads = Group(mapArea, "Roads");
         RectTransform fields = Group(mapArea, "Fields");
@@ -105,13 +109,16 @@ public static class MinimapBuilder
         AddBuildings(buildings, terrain, mapArea.rect.size, worldMin, worldSize);
 
         TMP_Text north = Letter(mapArea, "North", "N", 18f, out created);
-        if (created)
+        if (created || turning)
         {
             RectTransform rt = north.rectTransform;
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0f, 1f);
+            Undo.RecordObject(rt, UndoName);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f); // the map's north edge, the middle of the right side on screen
+            rt.pivot = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(20f, 22f);
-            rt.anchoredPosition = new Vector2(4f, -2f);
+            rt.anchoredPosition = new Vector2(0f, -13f);
         }
+        Upright(north);
 
         Image marker = NewImage(mapArea, "Vehicle Marker", ArrowColor, out created);
         if (created)
@@ -289,7 +296,28 @@ public static class MinimapBuilder
             if (created) Stretch(fill.rectTransform, BoxBorder);
             TMP_Text letter = Letter(box.transform, "Letter", entry.letter, 20f, out created);
             if (created) Stretch(letter.rectTransform, 0f);
+            Upright(letter);
         }
+    }
+
+    // Border stays square to the screen, so its size and place are simple; only what is inside it turns.
+    // Map Area keeps the map's own shape (taller than wide), so the arrow's sums don't change.
+    static void TurnMap(RectTransform panel, RectTransform mapArea)
+    {
+        Undo.RecordObject(panel, UndoName);
+        panel.sizeDelta = PanelSize;
+
+        Undo.RecordObject(mapArea, UndoName);
+        mapArea.anchorMin = mapArea.anchorMax = mapArea.pivot = new Vector2(0.5f, 0.5f);
+        mapArea.anchoredPosition = Vector2.zero;
+        mapArea.sizeDelta = new Vector2(PanelSize.y - 2f * BorderWidth, PanelSize.x - 2f * BorderWidth);
+        mapArea.localRotation = Quaternion.Euler(0f, 0f, MapRotation);
+    }
+
+    static void Upright(TMP_Text label)
+    {
+        Undo.RecordObject(label.rectTransform, UndoName);
+        label.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -MapRotation);
     }
 
     static BuildingEntry Entry(string name, string letter, Vector3 world, Vector2 area, Vector2 worldMin, Vector2 worldSize)

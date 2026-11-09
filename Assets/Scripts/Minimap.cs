@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// The small map on the left of the screen (PLAN: minimap). A real object in the scene hierarchy ("Minimap", made by
-/// Tools > Build Minimap): the roads, fields and buildings are plain UI images, north up, so they can be moved and
+/// Tools > Build Minimap): the roads, fields and buildings are plain UI images, north to the right, so they can be moved and
 /// recoloured in the editor. There is no camera and no RenderTexture. This script only:
 ///  - shows or hides the map with <see cref="GameSettings.Minimap"/> (SETTINGS > GAME), also while a game is running;
 ///    when off, the map is hidden and this script does no per-frame work,
@@ -107,7 +107,7 @@ public class Minimap : MonoBehaviour
         var place = new Vector2(
             Mathf.Clamp01((position.x - worldMin.x) / worldSize.x) * area.x,
             Mathf.Clamp01((position.z - worldMin.y) / worldSize.y) * area.y);
-        float yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg; // 0 = north (+Z), clockwise
+        float yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg; // 0 = north (+Z), clockwise; Map Area's own turn adds to it
 
         // a parked vehicle changes nothing, so the canvas is not redrawn for it
         if (!markerPlaced || (place - lastPlace).sqrMagnitude > 0.01f)
