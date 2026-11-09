@@ -21,7 +21,11 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
-- **Save swap (2026-11-08):** check on the phone: play past two autosaves (over 2 minutes), close the app, and see that Load Game brings back recent progress. If it doesn't, `File.Replace` is failing there (`SaveGame.Save`).
+- **Phone checks (2026-11-08, needs a new build):**
+  1. **Save, the most important one:** play for over 2 minutes so it autosaves twice, close the app, then check that Load Game brings back recent progress. If it doesn't, `File.Replace` is failing there (`SaveGame.Save`), and saves are quietly not working: fix this first.
+  2. **Minimap:** check that the letters are big enough to read, and that it doesn't crowd the fuel gauge or the Settings button.
+  3. **Light pools at night:** confirm they look right on the phone too, if only seen in the editor.
+  4. **Back button:** with the help menu open, it should close the help, the same as Esc.
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.

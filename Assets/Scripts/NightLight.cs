@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// On a street lamp (and later the house and garage lights): its lights and glowing parts are on only at night,
+/// On a street lamp and on the house and garage lights: its lights and glowing parts are on only at night,
 /// following <see cref="DayNightCycle.LampsOn"/>. Finds its own lights (every Light below it) and glowing parts
 /// (renderers whose material has emission turned on). In a scene with no day / night cycle it stays on.
 /// A lamp with a <see cref="LightPool"/> leaves its real light to <see cref="StreetLampLights"/> and only does the glow here.
