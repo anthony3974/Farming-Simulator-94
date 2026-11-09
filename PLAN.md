@@ -9,16 +9,8 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 
 ## NEXT UP (in order)
 
-1. **Error messages (owner, 2026-11-08).** When something can't be done, say why. Most cases already flash a plain message in the centre box, so this is mostly making errors look and sound like errors and filling the gaps.
-   - **Already shown:** field not yours (`FieldController.NotYours`); not enough seeds / fertilizer; fully fertilized / already fertilized this stage; the van can't work fields; not enough money (field, seeds, fertilizer, diesel, vehicle); no crop to sell (`Building.Sell`); tank already full; pumping stopped (out of money, tank full, drove off); no vehicle of that kind on the map (dealer).
-   - **Still open (owner to say):** some messages end with a full stop and some don't.
-   - **Harvest message: done (2026-11-08).** Every harvest of your own field now says "Harvested 1,234 Wheat", with the bonuses in brackets when there are any.
-   - **Left as they are (owner, 2026-11-08):** E / USE or B / BUY SELL away from a field or building does nothing and shows nothing; buying a vehicle you already own; no special look for error messages.
-   - **Error sound: done (owner, 2026-11-08).** `ErrorKnock.wav` plays with the "Already shown" failures above, through `ScreenPrompt.Error` and `Building.ShowError` (`GameSounds.Sound.Error`, below money in importance; Game Sounds Setup git `105213b`). A stopped diesel fill keeps its money sound and low fuel warnings stay silent. Check on the phone: the knock is deep and may be thin there.
-
-**Soon (owner, 2026-11-06 / 11-08):**
-- **Working lights on the house and garage** (same `NightLight.cs`).
-- **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
+1. **Working lights on the house and garage** (same `NightLight.cs`).
+2. **Vehicle mirrors.** Side mirrors, maybe a rear-view mirror: a small camera per mirror into a small RenderTexture on the mirror (or a screen overlay; decide). Reads `GameSettings.Mirrors` (switch exists); cameras off when off. Check the Android frame rate.
 
 **Possible later (owner, 2026-11-07); ask before starting:**
 - **Trailers.** What for (carry grain, seeds / fertilizer, or looks), bought at the dealer, a hitch (physics joint or a simple follow-the-hitch trailer, steadier on phones), reversing, a capacity limit, saved in SaveGame.
@@ -70,6 +62,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
+- **Error messages (2026-11-08):** every failure says why in the centre box with `ErrorKnock.wav` (`ScreenPrompt.Error`, `Building.ShowError`; check on the phone, the knock is deep and may be thin there). Full sentences end with a full stop, prices are written "$ 1,234", and seed and fertilizer errors give only the amount needed (what you have is on the Statistics panel). Every harvest of your own field shows a message. Left as they are on purpose (owner): E / USE or B / BUY SELL away from a field or building does nothing, buying a vehicle you already own, no special look for errors.
 - **Minimap (2026-11-08):** middle of the left edge, between the fuel gauge and the Settings button, on phone and PC alike, turned 90 degrees so north points left. Plain UI objects under the `Minimap` canvas, no camera (`Minimap.cs`): roads, fields (real colour every 2 s, gold edge on your own), buildings as letters (W B O sell, S seeds, F fertilizer, G gas, D dealer, H home), red arrow for the driven vehicle. Follows `GameSettings.Minimap` during a game; takes no touches. A moved field or building keeps its old mark on the map until that mark is fixed by hand or the tool re-run. Owner: "minimap good". Build Minimap git `edb9979`.
 - **Street lamps (2026-11-05 to 11-08):** 33 copies of `Assets/Prefabs/Street Lamp.prefab` under `Terrain > Street Lamps`: 15 along the main road (3 were spares to move by hand), 7 along the sub road about 70 m apart, 11 at the buildings. 2.5x size (20.3 m tall), 10 m arm. Every lamp shows a fake "Light Pool" on the ground at night (`LightPool.cs`, `Assets/StreetLamp/LightPool.shader`; brightness and colour on `Assets/StreetLamp/Light Pool.mat`), and `StreetLampLights.cs` keeps the real light on the lamp nearest the driven vehicle, cross-fading with a 5 m margin; the same on phone and PC. One flat quad works because the terrain is completely flat; hills would need a mesh that follows the ground. The owner saw it at night and is happy, and the phone ran great even with all 33 real lights. Street Lamp Builder git `edb9979`.
 - **All 12 AI field names replaced with made-up ones (2026-11-08)** in `FieldController.FieldNames`, away from the John Deere brand and the map and expansion names from GIANTS' games. A save puts its own field names back, so an old save keeps the old names until a new game.

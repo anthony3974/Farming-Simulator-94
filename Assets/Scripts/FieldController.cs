@@ -215,7 +215,7 @@ public class FieldController : MonoBehaviour
         {
             if (!IsPlayerField && playerValues.Money < value)
             {
-                box.Error($"Not enough money. {fieldName} costs $ {price}", 3f);
+                box.Error($"Not enough money. {fieldName} costs $ {price}.", 3f);
                 return;
             }
 
@@ -224,7 +224,7 @@ public class FieldController : MonoBehaviour
             string question = IsPlayerField
                 ? $"Sell {fieldName} for $ {price}?" + (stage != Stage.Empty ? " (the crop stays on the field)" : "")
                 : $"Buy {fieldName} from {ownerName} for $ {price}?";
-            box.Flash($"{question}\nPress again to confirm", ConfirmSeconds);
+            box.Flash($"{question}\nPress again to confirm.", ConfirmSeconds);
             return;
         }
 
@@ -237,16 +237,16 @@ public class FieldController : MonoBehaviour
             // the crop keeps growing, so you can buy the field back and harvest it
             ownerName = AiOwners[UnityEngine.Random.Range(0, AiOwners.Length)];
             RefreshUI();
-            box.Flash($"Sold {fieldName} for $ {price}", 3f);
+            box.Flash($"Sold {fieldName} for $ {price}.", 3f);
         }
         else
         {
-            if (playerValues.Money < value) { box.Error("Not enough money", 3f); return; }
+            if (playerValues.Money < value) { box.Error("Not enough money.", 3f); return; }
             playerValues.Money -= value;
             GameSounds.Play(GameSounds.Sound.MoneyOut);
             ownerName = playerName;
             RefreshUI();
-            box.Flash($"Bought {fieldName} for $ {price}", 3f);
+            box.Flash($"Bought {fieldName} for $ {price}.", 3f);
         }
     }
 
@@ -350,7 +350,7 @@ public class FieldController : MonoBehaviour
             seedQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield)));
         if (playerValues.Seeds < seedQuote)
         {
-            ScreenPrompt.Instance.Error($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}, you have {playerValues.Seeds:N0}", 3f);
+            ScreenPrompt.Instance.Error($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}.", 3f);
             return;
         }
         playerValues.Seeds -= seedQuote;
@@ -387,7 +387,7 @@ public class FieldController : MonoBehaviour
             fertilizerQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minFertilizerPerYield, maxFertilizerPerYield)));
         if (playerValues.Fertilizer < fertilizerQuote)
         {
-            box.Error($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}, you have {playerValues.Fertilizer:N0}.\nBuy more at the fertilizer shop.", 3f);
+            box.Error($"Not enough fertilizer. {fieldName} needs {fertilizerQuote:N0}.\nBuy more at the fertilizer shop.", 3f);
             return;
         }
 
@@ -500,7 +500,7 @@ public class FieldController : MonoBehaviour
         if (vehicleBonus > 0f) parts.Add($"+{vehicleBonus * 100f:0}% with the {vehicle.displayName}");
         if (fertilizerBonus > 0f) parts.Add($"+{fertilizerBonus * 100f:0}% from fertilizer");
         string bonuses = parts.Count > 0 ? $" ({string.Join(", ", parts)})" : "";
-        ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType}{bonuses}", 3f);
+        ScreenPrompt.Instance.Flash($"Harvested {amount:N0} {cropType}{bonuses}.", 3f);
 
         if (cropType == CropType.Wheat) playerValues.InWheat += amount;
         else if (cropType == CropType.Barley) playerValues.InBarley += amount;

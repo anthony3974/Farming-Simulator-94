@@ -142,12 +142,12 @@ public class PlayerValues : MonoBehaviour
         if (fuel <= 0f && !emptyWarned)
         {
             emptyWarned = lowFuelWarned = true;
-            if (prompt != null) prompt.Flash("Out of fuel! You can only crawl.\nFill up at Jerrys Gas Station (bottom of the map)", 5f);
+            if (prompt != null) prompt.Flash("Out of fuel! You can only crawl.\nFill up at Jerrys Gas Station (bottom of the map).", 5f);
         }
         else if (!lowFuelWarned)
         {
             lowFuelWarned = true;
-            if (prompt != null) prompt.Flash("Low fuel! Fill up at Jerrys Gas Station (bottom of the map)", 4f);
+            if (prompt != null) prompt.Flash("Low fuel! Fill up at Jerrys Gas Station (bottom of the map).", 4f);
         }
     }
 }

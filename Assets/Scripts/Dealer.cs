@@ -138,7 +138,7 @@ public class Dealer : MonoBehaviour
 
         if (playerValues.Money < info.price)
         {
-            box.Error($"Not enough money. The {info.name} costs $ {info.price:N0}", 3f);
+            box.Error($"Not enough money. The {info.name} costs $ {info.price:N0}.", 3f);
             return;
         }
         var vehicle = FindParked(info.kind);

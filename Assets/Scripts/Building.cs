@@ -193,7 +193,7 @@ public class Building : MonoBehaviour
 
         if (amount <= 0)
         {
-            ShowError($"No {crop} to sell");
+            ShowError($"No {crop} to sell.");
             return;
         }
 
@@ -208,14 +208,14 @@ public class Building : MonoBehaviour
         int cost = Mathf.RoundToInt(Random.Range(minSeedPrice, maxSeedPrice));
         if (playerValues.Money < cost)
         {
-            ShowError($"Not enough money. {seedsPerBuy:N0} seeds cost $ {cost:N0}");
+            ShowError($"Not enough money. {seedsPerBuy:N0} seeds cost $ {cost:N0}.");
             return;
         }
 
         playerValues.Money -= cost;
         playerValues.Seeds += seedsPerBuy;
         GameSounds.Play(GameSounds.Sound.MoneyOut);
-        ShowMessage($"Bought {seedsPerBuy:N0} seeds for $ {cost:N0}");
+        ShowMessage($"Bought {seedsPerBuy:N0} seeds for $ {cost:N0}.");
     }
 
     private void BuyFertilizer()
@@ -223,14 +223,14 @@ public class Building : MonoBehaviour
         int cost = Mathf.RoundToInt(Random.Range(minFertilizerPrice, maxFertilizerPrice));
         if (playerValues.Money < cost)
         {
-            ShowError($"Not enough money. {fertilizerPerBuy:N0} fertilizer costs $ {cost:N0}");
+            ShowError($"Not enough money. {fertilizerPerBuy:N0} fertilizer costs $ {cost:N0}.");
             return;
         }
 
         playerValues.Money -= cost;
         playerValues.Fertilizer += fertilizerPerBuy;
         GameSounds.Play(GameSounds.Sound.MoneyOut);
-        ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}");
+        ShowMessage($"Bought {fertilizerPerBuy:N0} fertilizer for $ {cost:N0}.");
     }
 
     // ---- gas station: fills the shared tank slowly (every vehicle uses the same diesel) ----
@@ -257,8 +257,8 @@ public class Building : MonoBehaviour
 
     private void StartPumping()
     {
-        if (playerValues.FuelCapacity - playerValues.Fuel < 0.05f) { ShowError("The tank is already full"); return; }
-        if (playerValues.Money < fuelPrice * 0.1f) { ShowError($"Not enough money. Diesel costs $ {fuelPrice:0.00} per litre"); return; }
+        if (playerValues.FuelCapacity - playerValues.Fuel < 0.05f) { ShowError("The tank is already full."); return; }
+        if (playerValues.Money < fuelPrice * 0.1f) { ShowError($"Not enough money. Diesel costs $ {fuelPrice:0.00} per litre."); return; }
 
         pumping = true;
         pumpingVehicle = Vehicle.Active;
