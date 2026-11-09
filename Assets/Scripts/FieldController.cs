@@ -177,21 +177,15 @@ public class FieldController : MonoBehaviour
         if (inputManager.Trade)
             Trade();
 
-        // the van is for the road: it cannot plant, harvest or fertilize (owner, 2026-11-03)
-        if (Vehicle.Active.kind == VehicleKind.Van)
-        {
-            if (inputManager.Interact)
-                ScreenPrompt.Instance.Error(inputManager.TouchControlsActive
-                    ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
-                    : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
-            return;
-        }
+        if (!inputManager.Interact) return;
 
-        if (inputManager.Interact)
-        {
-            if (IsPlayerField) Interact();
-            else NotYours();
-        }
+        if (!IsPlayerField) NotYours();
+        // the van is for the road: it cannot plant, harvest or fertilize (owner, 2026-11-03)
+        else if (Vehicle.Active.kind == VehicleKind.Van)
+            ScreenPrompt.Instance.Error(inputManager.TouchControlsActive
+                ? "The van can't work fields. Switch to the tractor or the harvester (CAR)."
+                : "The van can't work fields. Use the tractor (1) or the harvester (3).", 3f);
+        else Interact();
     }
 
     [Tooltip("Selling a field pays this fraction of its value (buy at 100%, sell back at 80%).")]
