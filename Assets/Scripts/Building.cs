@@ -200,7 +200,7 @@ public class Building : MonoBehaviour
         float profit = amount * Random.Range(minPrice, maxPrice);
         playerValues.Money += profit;
         GameSounds.Play(GameSounds.Sound.MoneyIn);
-        ShowMessage($"{crop} Sold, Profit ({profit:N0}$)");
+        ShowMessage($"{crop} Sold, Profit ($ {profit:N0})");
     }
 
     private void BuySeeds()
