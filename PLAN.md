@@ -10,7 +10,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 ## NEXT UP (in order)
 
 1. **Error messages (owner, 2026-11-08).** When something can't be done, say why. Most cases already flash a plain message in the centre box, so this is mostly making errors look and sound like errors and filling the gaps.
-   - **Already shown:** field not yours (`FieldController.NotYours`); not enough seeds / fertilizer; fertilize an empty field / a ready crop / fully fertilized / already fertilized this stage; the van can't work fields; not enough money (field, seeds, fertilizer, diesel, vehicle); no crop to sell (`Building.Sell`); tank already full; pumping stopped (out of money, tank full, drove off); no vehicle of that kind on the map (dealer).
+   - **Already shown:** field not yours (`FieldController.NotYours`); not enough seeds / fertilizer; fully fertilized / already fertilized this stage; the van can't work fields; not enough money (field, seeds, fertilizer, diesel, vehicle); no crop to sell (`Building.Sell`); tank already full; pumping stopped (out of money, tank full, drove off); no vehicle of that kind on the map (dealer).
    - **Still open (owner to say):** some messages end with a full stop and some don't.
    - **Harvest message: done (2026-11-08).** Every harvest of your own field now says "Harvested 1,234 Wheat", with the bonuses in brackets when there are any.
    - **Left as they are (owner, 2026-11-08):** E / USE or B / BUY SELL away from a field or building does nothing and shows nothing; buying a vehicle you already own; no special look for error messages.

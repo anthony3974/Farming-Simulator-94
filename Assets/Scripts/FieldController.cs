@@ -371,9 +371,6 @@ public class FieldController : MonoBehaviour
     private void Fertilize()
     {
         var box = ScreenPrompt.Instance;
-        if (!IsPlayerField) { NotYours(); return; }
-        if (stage == Stage.Empty) { box.Error("Plant the field first, then fertilize it while it grows.", 3f); return; }
-        if (stage == Stage.Ready) { box.Error("The crop is ready. Harvest it first.", 3f); return; }
         if (fertStage >= MaxFertilizerLevel)
         {
             box.Error($"{fieldName} is fully fertilized ({MaxFertilizerLevel}/{MaxFertilizerLevel}).", 3f);
