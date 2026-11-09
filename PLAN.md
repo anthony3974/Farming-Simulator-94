@@ -23,7 +23,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 3. **Error messages (owner, 2026-11-08).** When something can't be done, say why. Most cases already flash a plain message in the centre box, so this is mostly making errors look and sound like errors and filling the gaps.
    - **Already shown:** field not yours (`FieldController.NotYours`); not enough seeds / fertilizer; fertilize an empty field / a ready crop / fully fertilized / already fertilized this stage; the van can't work fields; not enough money (field, seeds, fertilizer, diesel, vehicle); no crop to sell (`Building.Sell`); tank already full; pumping stopped (out of money, tank full, drove off); no vehicle of that kind on the map (dealer).
    - **Gaps (nothing happens now):** E / USE away from any field or building; B / BUY SELL away from a field; harvesting with no bonus (tractor, unfertilized) shows no message, so give it a plain "Harvested 1,234 Wheat"; buying a vehicle you already own (`Dealer.Buy` returns silently; check whether the row is already greyed out); C in the van (maybe fine).
-   - **Error sound: done (owner, 2026-11-08).** `ErrorKnock.wav` plays with the "Already shown" failures above, through `ScreenPrompt.Error` and `Building.ShowError` (`GameSounds.Sound.Error`, below money in importance; Tools > Game Sounds Setup fills its slot). A stopped diesel fill keeps its money sound and low fuel warnings stay silent. Check on the phone: the knock is deep and may be thin there.
+   - **Error sound: done (owner, 2026-11-08).** `ErrorKnock.wav` plays with the "Already shown" failures above, through `ScreenPrompt.Error` and `Building.ShowError` (`GameSounds.Sound.Error`, below money in importance; Game Sounds Setup git `105213b`). A stopped diesel fill keeps its money sound and low fuel warnings stay silent. Check on the phone: the knock is deep and may be thin there.
    - **Decide with the owner:** a shared error look (for example a red or orange border, inside `ScreenPrompt.Error`); the same wording everywhere ("Not enough X. You need N, you have M.", money as "$ 1,234"; the crop sale still says "Profit (1,234$)"); whether E away from everything should say anything (could be noisy).
 
 **Soon (owner, 2026-11-06 / 11-08), after the minimap:**
@@ -39,7 +39,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
-- **Vehicle headlights (owner, 2026-11-08):** built and on the three prefabs, not yet confirmed in the game. `VehicleLights.cs`, set up by the one-off Tools > Vehicle Lights Setup (`VehicleLightsSetup.cs`, delete it once the owner is happy). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
+- **Vehicle headlights (owner, 2026-11-08):** built and on the three prefabs, not yet confirmed in the game. `VehicleLights.cs`, set up by Vehicle Lights Setup (run, then removed; git `105213b`). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
 - **Sun rotation (owner, 2026-11-08):** check in the game that the sun (`Directional Light`) turns over the day. If it is not turning, make it rotate. `DayNightCycle.cs` already rotates it while the cycle is on, and holds it still when SETTINGS > GAME has the cycle off, so check that setting first.
 - **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
@@ -70,7 +70,7 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Smaller open notes
 - Sounds not asked for yet: engine shut-down and rev-up, music, ambience, a volume setting.
-- Tidy: `Assets/Editor/GameSoundsSetup.cs` and `Assets/Editor/EngineStartSetup.cs` have been run; delete them when no more sounds are added.
+- Game Sounds Setup and Engine Start Setup were run and removed (git `105213b`); bring them back from there when adding sounds.
 - Android: check the touch layout against the field pop-up on phones with a notch / rounded corners (safe area); performance on a phone (terrain detail and grass, sky materials, shadows, `TerrainGrass.shadergraph`); sharing (APK for Android friends, maybe a WebGL build on itch.io); optional icons instead of `<` `>` `GAS` `BRAKE` `USE` labels, haptic feedback.
 - Help menu phase 2 (if wanted): icons instead of text, a gamepad layout.
 - One E press can act on a field and a building if their trigger zones overlap.

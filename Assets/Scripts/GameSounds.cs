@@ -64,7 +64,7 @@ public class GameSounds : MonoBehaviour
         if (prefab == null)
         {
             Debug.LogWarning("GameSounds: no Assets/Resources/GameSounds.prefab, so there are no click, menu or money sounds. " +
-                             "Run Tools > Game Sounds Setup.");
+                             "It was made by the Game Sounds Setup tool (git 105213b).");
             return;
         }
         instance = Instantiate(prefab);

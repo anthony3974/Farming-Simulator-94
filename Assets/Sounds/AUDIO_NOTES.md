@@ -136,7 +136,7 @@ These were made from scratch earlier (commits `16379ca`, `43ac49c`), but the gen
 
 # In the game (`GameSounds.cs`)
 
-`Tools > Game Sounds Setup` sets the five short sounds to mono, PCM, Decompress On Load, and makes `Assets/Resources/GameSounds.prefab` with them in its slots. `GameSounds` loads that prefab when the game starts and keeps it across scenes, so no scene has a sounds object. Volumes are tuned on the prefab (click 0.5, because it peaks louder than the rest; menu 0.8; money 1).
+The one-off Game Sounds Setup tool (git history `105213b`) set the short sounds to mono, PCM, Decompress On Load, and made `Assets/Resources/GameSounds.prefab` with them in its slots. `GameSounds` loads that prefab when the game starts and keeps it across scenes, so no scene has a sounds object. Volumes are tuned on the prefab (click 0.5, because it peaks louder than the rest; menu 0.8; money 1).
 
 | Sound | When |
 |---|---|

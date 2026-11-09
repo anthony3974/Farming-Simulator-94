@@ -4,7 +4,7 @@ using UnityEngine;
 /// The headlights of one vehicle (owner, 2026-11-08). They are on only for the vehicle the player is driving, and only
 /// at night (<see cref="DayNightCycle.LampsOn"/>, the same moment the street lamps come on). Parked vehicles stay dark.
 /// In a scene with no day / night cycle the driven vehicle's lights stay on, like <see cref="NightLight"/>.
-/// Set up on the three vehicle prefabs by Tools > Vehicle Lights Setup.
+/// Set up on the three vehicle prefabs.
 /// </summary>
 [RequireComponent(typeof(Vehicle))]
 public class VehicleLights : MonoBehaviour
