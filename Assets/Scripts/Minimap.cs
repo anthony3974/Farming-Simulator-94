@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// The small map on the left of the screen (PLAN: minimap). A real object in the scene hierarchy ("Minimap", made by
-/// Tools > Build Minimap): the roads, fields and buildings are plain UI images, north to the right, so they can be moved and
+/// Tools > Build Minimap): the roads, fields and buildings are plain UI images, north to the left, so they can be moved and
 /// recoloured in the editor. There is no camera and no RenderTexture. This script only:
 ///  - shows or hides the map with <see cref="GameSettings.Minimap"/> (SETTINGS > GAME), also while a game is running;
 ///    when off, the map is hidden and this script does no per-frame work,

@@ -12,7 +12,7 @@ using UnityEngine.UI;
 //
 // - The "Minimap" canvas (sorted with the gauges, under the touch buttons and the menus) holds "Border" (the panel, in
 //   the middle of the left edge) and inside it "Map Area" with Roads, Fields, Buildings, the N and the Vehicle Marker.
-// - Map Area is turned -90 degrees (north points right), inside an unturned Border. The letters are turned back so they
+// - Map Area is turned 90 degrees (north points left), inside an unturned Border. The letters are turned back so they
 //   read upright, and the arrow turns with the map by itself.
 // - The world area shown is the Map Border fence (the whole terrain if there is no fence). Roads and fields are placed
 //   with their anchors, so they follow if the panel is resized. Fields and roads use their world bounds, so a rotated
@@ -42,7 +42,7 @@ public static class MinimapBuilder
     const int PushPasses = 20;
 
     static readonly Vector2 PanelSize = new(280f, 240f); // the shape of the map on its side, about 1166 x 1000 m
-    const float MapRotation = -90f;
+    const float MapRotation = 90f;
     static readonly Vector2 PanelPosition = new(20f, 30f);
 
     static readonly Color Yellow = new Color32(255, 204, 0, 255);
@@ -97,7 +97,7 @@ public static class MinimapBuilder
 
         Image ground = NewImage(panel, "Map Area", Brown, out created);
         RectTransform mapArea = ground.rectTransform;
-        bool turning = created || Mathf.Approximately(mapArea.localEulerAngles.z, 0f); // new, or built before the map was turned
+        bool turning = created || !Mathf.Approximately(Mathf.DeltaAngle(mapArea.localEulerAngles.z, MapRotation), 0f); // new, or built at another angle
         if (turning) TurnMap(panel, mapArea);
 
         RectTransform roads = Group(mapArea, "Roads");
@@ -113,7 +113,7 @@ public static class MinimapBuilder
         {
             RectTransform rt = north.rectTransform;
             Undo.RecordObject(rt, UndoName);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f); // the map's north edge, the middle of the right side on screen
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f); // the map's north edge, the middle of the left side on screen
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(20f, 22f);
             rt.anchoredPosition = new Vector2(0f, -13f);
