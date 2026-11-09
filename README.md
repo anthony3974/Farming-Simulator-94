@@ -54,11 +54,8 @@ A small farming game built in Unity. Drive around the map, buy fields, plant cro
 ## Roadmap
 The 3D version started from the feature set of the 2D game (buy fields, grow and sell crops, spend the money on vehicles) and now goes its own way. Done so far: planting, growing, harvesting, selling crops, money, buying and selling fields, seeds and fertilizer with their shops, the map border, the car dealer (van and harvester), the main and pause menus, look around on phones, the menus moved into the scene, the tractor and harvester redesigns, the app icon, engine sound, fuel with the gas station, save / load, fertilized fields turning blue, the touch controls rework (steering wheel, sliders, rounded buttons, SETTINGS), AI owners working their own fields, the day / night cycle, the first street lamp, tire tread with rolling wheels, and the menu, money and farming sounds. Next up, in order:
 
-- Engine start sound
-- Street lamps across the map (bigger lamp first)
-- A minimap
-- Clearer error messages
-- Soon after: vehicle headlights, lights on the house and garage, engine quieter when zoomed out, vehicle mirrors
+- Lights on the house and garage
+- Vehicle mirrors
 - Later: drive across a field to harvest it
 
 The full feature checklist from the 2D game, known issues and design notes are in [`PLAN.md`](PLAN.md).

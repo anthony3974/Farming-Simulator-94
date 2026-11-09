@@ -21,9 +21,7 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 **Dropped (owner, 2026-11-04):** the paint shop.
 
 ## Waiting on the owner (built, not yet tried or decided)
-- **Vehicle headlights (owner, 2026-11-08):** built and on the three prefabs, not yet confirmed in the game. `VehicleLights.cs`, set up by Vehicle Lights Setup (run, then removed; git `105213b`). **Automatic only, no button** ("it's really dark in the nighttime"). On at night, and **only on the vehicle you drive** (owner: parked vehicles stay fully dark, lenses too). The models' own lens parts glow, plus one real forward Spot `Light` per vehicle (no shadows, Important, tune `Headlight Beam` on the prefab). Maybe later: red rear lights.
-- **Sun rotation (owner, 2026-11-08):** check in the game that the sun (`Directional Light`) turns over the day. If it is not turning, make it rotate. `DayNightCycle.cs` already rotates it while the cycle is on, and holds it still when SETTINGS > GAME has the cycle off, so check that setting first.
-- **Licences of the two engine start clips:** check their download pages (the filenames look like Pixabay's).
+- **Save swap (2026-11-08):** check on the phone: play past two autosaves (over 2 minutes), close the app, and see that Load Game brings back recent progress. If it doesn't, `File.Replace` is failing there (`SaveGame.Save`).
 - **SETTINGS > GAME tab leftovers:** check the night brightness on the phone; the time of day is not saved (ask if it should be).
 - **Empty tank:** the vehicle crawls at 15% (owner: fine for now; may become game over later).
 - **Sky and terrain layers:** final for now; one or two may be deleted later.
@@ -32,22 +30,6 @@ Unity 6000.0.85f1, Built-in render pipeline. Scenes: `Assets/Scenes/MainMenu.uni
 ## Code review findings (2026-11-08)
 Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project settings and the newest APK. No crash or save-corrupting bug found. The game was not run for it, a clean clone was not tried, phone performance was not measured, and the seven Python art scripts were not read. Not ordered against NEXT UP; ask the owner when to do these.
 
-**To fix, most important first:**
-- [ ] **Walls don't reduce the vehicle's speed.** `Vehicle.Drive` (`Vehicle.cs:185`) keeps `acceleration` while the vehicle is blocked. The engine stays at full pitch, the vehicle leaps away at top speed once it is free, and reversing has to count down from full speed first. Bring `acceleration` down to the ground really covered.
-- [ ] **A save can be lost if the app is killed mid-save.** `SaveGame.cs:108` deletes the old file before moving the new one in. A kill between those two lines leaves only `farm.json.tmp`, which Load Game ignores. Use `File.Replace`, and pick up a leftover `.tmp` when loading.
-
-**Before publishing:**
-- [ ] No release keystore (`androidUseCustomKeystore: 0`), so builds are debug-signed. Google Play needs a release key.
-- [ ] **Rename the game to "Ace's Farm" (owner's pick, 2026-11-08).** "Farming Simulator" is GIANTS Software's trademark, and "Farming Simulator 94" looks like an entry in their numbered series (Farming Simulator 22, 25). A web search on 2026-11-08 found no other game called Ace's Farm (the nearest is Fiona's Farm, a puzzle game from a publisher called Ace Games; different enough). Search Google Play once more just before publishing. Places to change:
-  - The main menu title: `FARMING SIMULATOR 94` in `Assets/Scenes/MainMenu.unity`.
-  - Player Settings > Product Name (`FarmSim943D`), which is also the app's name on the phone. It can be `Ace's Farm` with the apostrophe.
-  - The Android package (`com.Tony3974.FarmSim943D`) can't have an apostrophe; use something like `com.Tony3974.AcesFarm`. Set it before the first Google Play upload: it can never change after that.
-  - Changing the Product Name or the package moves the save folder (`Application.persistentDataPath`), so test saves from the old name won't load, and on Android the renamed app installs beside the old one (uninstall the old one).
-  - The README and PLAN titles, and the comment at the top of `Art/Icon/make_icon.py`. The GitHub repo is also called Farming-Simulator-94 (can be renamed on GitHub; old links redirect).
-
-**Cleanup:**
-- [ ] README lines 57 and 61 still list the engine start sound and the zoom-out volume as upcoming; both are done.
-- [ ] Unused code: `topSpeed`, `harvestBonus`, `description` and `ForSale` in `VehicleCatalog` (the first two duplicate the prefab values), `Vehicle.SetColor` and `paintRenderers` (the paint shop was dropped).
 - [ ] No automated tests, though the test framework is installed. The save and economy rules are the best place to start.
 
 ## Smaller open notes
@@ -62,7 +44,9 @@ Whole-project review at 0.6.8: all 36 C# scripts, the scene, prefabs, project se
 
 ## Done (newest first)
 One line each; tools named "(git `abc1234`)" were run and then removed, and can be brought back from that commit.
-- **Error messages (2026-11-08):** every failure says why in the centre box with `ErrorKnock.wav` (`ScreenPrompt.Error`, `Building.ShowError`; check on the phone, the knock is deep and may be thin there). Full sentences end with a full stop, prices are written "$ 1,234", and seed and fertilizer errors give only the amount needed (what you have is on the Statistics panel). Every harvest of your own field shows a message. Left as they are on purpose (owner): E / USE or B / BUY SELL away from a field or building does nothing, buying a vehicle you already own, no special look for errors.
+- **Save file swapped in one step (2026-11-08):** `SaveGame.Save` uses `File.Replace`, so a kill mid-save can't leave no save.
+- **Vehicle headlights (2026-11-08):** automatic at night and only on the vehicle you drive (`VehicleLights.cs`): the lens parts glow, plus one real forward Spot `Light` per vehicle (`Headlight Beam` on the prefab). Owner: "headlights look right". Vehicle Lights Setup git `105213b`.
+- **Error messages (2026-11-08):** every failure says why in the centre box with `ErrorKnock.wav` (`ScreenPrompt.Error`, `Building.ShowError`). Full sentences end with a full stop, prices are written "$ 1,234", and seed and fertilizer errors give only the amount needed (what you have is on the Statistics panel). Every harvest of your own field shows a message. Left as they are on purpose (owner): E / USE or B / BUY SELL away from a field or building does nothing, buying a vehicle you already own, no special look for errors.
 - **Minimap (2026-11-08):** middle of the left edge, between the fuel gauge and the Settings button, on phone and PC alike, turned 90 degrees so north points left. Plain UI objects under the `Minimap` canvas, no camera (`Minimap.cs`): roads, fields (real colour every 2 s, gold edge on your own), buildings as letters (W B O sell, S seeds, F fertilizer, G gas, D dealer, H home), red arrow for the driven vehicle. Follows `GameSettings.Minimap` during a game; takes no touches. A moved field or building keeps its old mark on the map until that mark is fixed by hand or the tool re-run. Owner: "minimap good". Build Minimap git `edb9979`.
 - **Street lamps (2026-11-05 to 11-08):** 33 copies of `Assets/Prefabs/Street Lamp.prefab` under `Terrain > Street Lamps`: 15 along the main road (3 were spares to move by hand), 7 along the sub road about 70 m apart, 11 at the buildings. 2.5x size (20.3 m tall), 10 m arm. Every lamp shows a fake "Light Pool" on the ground at night (`LightPool.cs`, `Assets/StreetLamp/LightPool.shader`; brightness and colour on `Assets/StreetLamp/Light Pool.mat`), and `StreetLampLights.cs` keeps the real light on the lamp nearest the driven vehicle, cross-fading with a 5 m margin; the same on phone and PC. One flat quad works because the terrain is completely flat; hills would need a mesh that follows the ground. The owner saw it at night and is happy, and the phone ran great even with all 33 real lights. Street Lamp Builder git `edb9979`.
 - **All 12 AI field names replaced with made-up ones (2026-11-08)** in `FieldController.FieldNames`, away from the John Deere brand and the map and expansion names from GIANTS' games. A save puts its own field names back, so an old save keeps the old names until a new game.
