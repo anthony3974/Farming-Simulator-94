@@ -344,7 +344,7 @@ public class FieldController : MonoBehaviour
             seedQuote = Mathf.Max(1, Mathf.RoundToInt(size * UnityEngine.Random.Range(minSeedsPerYield, maxSeedsPerYield)));
         if (playerValues.Seeds < seedQuote)
         {
-            ScreenPrompt.Instance.Error($"Not enough seeds. Planting {fieldName} needs {seedQuote:N0}.", 3f);
+            ScreenPrompt.Instance.Error($"Not enough seeds. {fieldName} needs {seedQuote:N0}.", 3f);
             return;
         }
         playerValues.Seeds -= seedQuote;
